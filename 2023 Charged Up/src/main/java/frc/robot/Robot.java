@@ -103,4 +103,13 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+
+  public double joystickDeadband(double inputJoystick) {
+    if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
+      return 0;
+    } else {
+      return inputJoystick;
+    }
+  }
 }
