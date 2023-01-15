@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
   private boolean fastMode;
   private boolean slowModeToggle;
   public LED ledStrips;
+  public Vision visionPiece;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -58,6 +59,12 @@ public class Robot extends TimedRobot {
     shooterController = new XboxController(1);
     drive = new Drivetrain();
     ledStrips = new LED();
+    visionPiece = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT,
+    Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
+    Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
+    Constants.BALL_ROTATE_KD);
+
 
   }
 
@@ -113,6 +120,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+
     double rotatePower;
     double translatePower;
     double translateX;
@@ -191,7 +199,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    SmartDashboard.putNumber("Dx", visionPiece.delta());
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
