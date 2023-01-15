@@ -224,10 +224,7 @@ public class Drivetrain {
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
     }
     
-    public void beastMode(){
-        m_frontLeftModule.getDriveController().getDriveFalcon().set(ControlMode.Current, 0);
-        m_backLeftModule.getDriveController().getDriveFalcon().set(ControlMode.Current,0);
-        m_backRightModule.getDriveController().getDriveFalcon().set(ControlMode.Current,0);
-        m_frontRightModule.getDriveController().getDriveFalcon().set(ControlMode.Current,0);
+    public void beastMode(double outputValue){
+        m_frontLeftModule.getDriveController().getDriveFalcon().set(ControlMode.Current, outputValue);
     }
 }
