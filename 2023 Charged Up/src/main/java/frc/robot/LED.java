@@ -1,5 +1,6 @@
 package frc.robot;
 
+
 import java.awt.Color;
 
 import com.ctre.phoenix.CANifier.PWMChannel;
@@ -12,7 +13,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Parity;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 
-public class LEDstrips {
+public class LED {
     
     private AddressableLED liftNEOPIXELS;
     private AddressableLEDBuffer liftBuffer;
@@ -22,7 +23,7 @@ public class LEDstrips {
 
     final int LED_LENGTH = 45;
 
-    public LEDstrips(){
+    public LED(){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
@@ -41,6 +42,7 @@ public class LEDstrips {
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");
     }
+
 
     public void upAndDown(){
         timer.start();
@@ -69,5 +71,24 @@ public class LEDstrips {
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");
         
+    }
+
+    public void setPurple(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            liftBuffer.setRGB(ledIndex, 138,43,226);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+    
+    public void setYellow(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            liftBuffer.setRGB(ledIndex, 255,255, 0);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+
     }
 }

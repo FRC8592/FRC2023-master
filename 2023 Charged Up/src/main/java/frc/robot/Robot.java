@@ -4,9 +4,26 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
+
+import edu.wpi.first.networktables.NetworkTableInstance;
+
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
+import java.rmi.registry.LocateRegistry;
+
+import javax.swing.DropMode;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,6 +36,13 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  
+  public XboxController driverController;
+  public XboxController shooterController;
+  public Drivetrain drive;
+  private boolean fastMode;
+  private boolean slowModeToggle;
+  public LED ledStrips;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,6 +53,12 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    driverController = new XboxController(0);
+    shooterController = new XboxController(1);
+    drive = new Drivetrain();
+    ledStrips = new LED();
+
   }
 
   /**
@@ -74,11 +104,78 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    fastMode     = true;
+    slowModeToggle = false;
+
+  }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    double rotatePower;
+    double translatePower;
+    double translateX;
+    double translateY;
+    double rotate;
+
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+
+    //
+    // Read gamepad controls for drivetrain and scale control values
+    //
+
+    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
+      drive.zeroGyroscope();
+    }
+  
+    if (driverController.getRightBumperPressed()){
+      slowModeToggle = ! slowModeToggle;
+    }
+    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    
+
+    if (fastMode) {
+      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
+      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
+    }
+    else {
+      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
+      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+    }
+      
+    rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+                                                                                                                        // is
+                                                                                                                        // forward
+                                                                                                                        // Direction,
+                                                                                                                        // Forward
+                                                                                                                        // on
+                                                                                                                        // Joystick
+                                                                                                                        // is
+                                                                                                                        // Y
+    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+
+    //
+    // Normal teleop drive
+    //
+    
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+        -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+                                                                    // opposite of controller directions
+    
+    drive.getCurrentPos();
+
+    if (shooterController.getXButtonPressed()){
+      ledStrips.setPurple();
+    }
+
+    if (shooterController.getYButtonPressed()){
+      ledStrips.setYellow();
+    }
+  }
+
 
   /** This function is called once when the robot is disabled. */
   @Override
