@@ -38,9 +38,11 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
   public XboxController driverController;
+  public XboxController shooterController;
   public Drivetrain drive;
   private boolean fastMode;
   private boolean slowModeToggle;
+  public LED ledStrips;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -53,7 +55,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     driverController = new XboxController(0);
+    shooterController = new XboxController(1);
     drive = new Drivetrain();
+    ledStrips = new LED();
+
   }
 
   /**
@@ -157,6 +162,14 @@ public class Robot extends TimedRobot {
                                                                     // opposite of controller directions
     
     drive.getCurrentPos();
+
+    if (shooterController.getXButtonPressed()){
+      ledStrips.setPurple();
+    }
+
+    if (shooterController.getYButtonPressed()){
+      ledStrips.setYellow();
+    }
   }
 
 
