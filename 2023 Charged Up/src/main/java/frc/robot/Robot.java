@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
     
     if(driverController.getLeftBumper())
     {
-      double speed = gameObjectVision.moveTowardsTarget(0.5, 0.5);
+      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
     }
