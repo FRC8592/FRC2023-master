@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -43,6 +44,9 @@ public class Robot extends TimedRobot {
   private boolean fastMode;
   private boolean slowModeToggle;
   public LED ledStrips;
+  private Autonomous autonomous;
+
+  public static Field2d FIELD = new Field2d();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -59,6 +63,7 @@ public class Robot extends TimedRobot {
     drive = new Drivetrain();
     ledStrips = new LED();
 
+    autonomous = new Autonomous(drive);
   }
 
   /**
@@ -84,6 +89,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
+    autonomous.initialize();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
   }
@@ -91,15 +97,17 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    // switch (m_autoSelected) {
+    //   case kCustomAuto:
+    //     // Put custom auto code here
+    //     break;
+    //   case kDefaultAuto:
+    //   default:
+    //     // Put default auto code here
+    //     break;
+    // }
+
+    autonomous.autonomousPeriodic();
   }
 
   /** This function is called once when teleop is enabled. */
