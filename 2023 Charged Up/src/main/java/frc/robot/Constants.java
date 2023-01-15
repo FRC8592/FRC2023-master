@@ -223,4 +223,8 @@ public final class Constants {
     public static final double ANGLE_A = -82;
     public static final double ANGLE_B = -55;
     public static final double ANGLE_C = 24;
+
+    public static final int CUBE_PIPELINE = 1;
+    public static final int CONE_PIPELINE = 0;
+
 }

@@ -22,6 +22,8 @@ import java.rmi.registry.LocateRegistry;
 
 import javax.swing.DropMode;
 
+import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -44,6 +46,7 @@ public class Robot extends TimedRobot {
   private boolean slowModeToggle;
   public LED ledStrips;
   public Vision gameObjectVision;
+  public int currentPiecePipeline;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -182,10 +185,14 @@ public class Robot extends TimedRobot {
     drive.getCurrentPos();
 
     if (shooterController.getXButtonPressed()){
+      currentPiecePipeline = Constants.CUBE_PIPELINE;
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(currentPiecePipeline);
       ledStrips.setPurple();
     }
-
+    
     if (shooterController.getYButtonPressed()){
+      currentPiecePipeline = Constants.CONE_PIPELINE;
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(currentPiecePipeline);
       ledStrips.setYellow();
     }
   }
