@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
@@ -221,5 +222,12 @@ public class Drivetrain {
     } 
     SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+    }
+    
+    public void beastMode(){
+        m_frontLeftModule.getDriveController().getDriveFalcon().set(ControlMode.Current, 0);
+        m_backLeftModule.getDriveController().getDriveFalcon().set(ControlMode.Current,0);
+        m_backRightModule.getDriveController().getDriveFalcon().set(ControlMode.Current,0);
+        m_frontRightModule.getDriveController().getDriveFalcon().set(ControlMode.Current,0);
     }
 }
