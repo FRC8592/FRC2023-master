@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
   private boolean slowModeToggle;
   public LED ledStrips;
   public Vision gameObjectVision;
-  public int currentPiecePipeline;
+  public String currentPiecePipeline;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -185,15 +185,15 @@ public class Robot extends TimedRobot {
     drive.getCurrentPos();
 
     if (shooterController.getXButtonPressed()){
-      currentPiecePipeline = Constants.CUBE_PIPELINE;
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(currentPiecePipeline);
-      ledStrips.setPurple();
+      currentPiecePipeline = "CUBE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      ledStrips.setFullPurple();
     }
     
     if (shooterController.getYButtonPressed()){
-      currentPiecePipeline = Constants.CONE_PIPELINE;
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(currentPiecePipeline);
-      ledStrips.setYellow();
+      currentPiecePipeline = "CONE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.setFullYellow();
     }
   }
 

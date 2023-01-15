@@ -73,7 +73,7 @@ public class LED {
         
     }
 
-    public void setPurple(){
+    public void setFullPurple(){
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
             liftBuffer.setRGB(ledIndex, 138,43,226);
         }
@@ -82,13 +82,35 @@ public class LED {
         System.out.println("LED METHOD RUNNING");
     }
     
-    public void setYellow(){
+    public void setFullYellow(){
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
             liftBuffer.setRGB(ledIndex, 255,255, 0);
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");
-
+        
+    }
+    
+    public void setHalfPurple(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            if (ledIndex % 2 == 0){
+                liftBuffer.setRGB(ledIndex, 138, 43, 226);
+            }
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+    
+    public void setHalfYellow(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            if (ledIndex % 2 == 0){
+                liftBuffer.setRGB(ledIndex, 255,255, 0);
+            }
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
     }
 }
