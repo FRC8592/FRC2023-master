@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 
 import static com.swervedrivespecialties.swervelib.rev.RevUtils.checkNeoError;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
 public final class NeoSteerControllerFactoryBuilder {
     // PID configuration
     private double pidProportional = Double.NaN;
@@ -168,6 +170,11 @@ public final class NeoSteerControllerFactoryBuilder {
             }
 
             return motorAngleRadians;
+        }
+
+        @Override
+        public TalonFX getSteerMotor() {
+            return null;
         }
     }
 }
