@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveTrajectory {
     private HolonomicDriveController mDrivePID;
@@ -22,7 +23,7 @@ public class SwerveTrajectory {
     public SwerveTrajectory(Trajectory trajectory, Rotation2d pRotation, boolean pRelative) {
         mXPID = new PIDController(0.01, 0, 0);
         mYPID = new PIDController(0.01, 0, 0);
-        mTurnPID = new ProfiledPIDController(0.01, 0, 0, new Constraints(Math.PI/2, Math.PI/2));
+        mTurnPID = new ProfiledPIDController(1, 0, 0, new Constraints(Math.PI, Math.PI/2));
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
@@ -51,7 +52,14 @@ public class SwerveTrajectory {
 
     public ChassisSpeeds sample(double pSeconds, Pose2d robotPose) {
         State state = mTrajectory.sample(pSeconds);
+
+
         if (Robot.isReal()) {
+            SmartDashboard.putNumber("Desired Turn", mDrivePID.calculate(
+                robotPose, 
+                state, 
+                mRelative ? mRotation.plus(getInitialPose().getRotation()) : mRotation
+            ).omegaRadiansPerSecond);
             return mDrivePID.calculate(
                 robotPose, 
                 state, 

@@ -32,8 +32,8 @@ public enum Trajectories {
 
     // Score Pre-load and second game piece [*Bottom Start*][*Blue*](13 pts)
 
-    BOTTOM_2_CUBE_1("output/Bottom2Cube1.wpilib.json", new Rotation2d(), false),
-    BOTTOM_2_CUBE_2("output/Bottom2Cube2.wpilib.json", new Rotation2d(), false),
+    BOTTOM_2_CUBE_1("output/Bottom2Cube1.wpilib.json", Rotation2d.fromDegrees(45), true),
+    BOTTOM_2_CUBE_2("output/Bottom2Cube2.wpilib.json", Rotation2d.fromDegrees(-45), true),
     
 
     // Score Pre-load and second game piece and Balance Charge Station [*Bottom Start*][*Blue*](25 pts)
