@@ -45,6 +45,7 @@ public enum Trajectories {
     // Test Trajectory for turning while moving
 
     TEST_TURN("output/TestTurn.wpilib.json", Rotation2d.fromDegrees(90), true),
+    TEST_TURN_COLE("output/test.wpilib.json", Rotation2d.fromDegrees(180), true);
     ;
 
     private String path;
@@ -63,6 +64,7 @@ public enum Trajectories {
 
     Trajectories(String path, Rotation2d rot, boolean relative) {
         this.path = path;
+        this.rot = rot;
         this.relative = relative;
     }
 

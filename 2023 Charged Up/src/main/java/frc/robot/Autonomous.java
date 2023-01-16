@@ -109,6 +109,11 @@ public class Autonomous{
           Trajectories.TEST_TURN.toTrajectory()
         );
         break;
+      case TestTurnCole:
+        trajectoryQueue = new TrajectoryQueue(
+          Trajectories.TEST_TURN_COLE.toTrajectory()
+        );
+        break;
     }
 
     trajectoryTimer.reset();

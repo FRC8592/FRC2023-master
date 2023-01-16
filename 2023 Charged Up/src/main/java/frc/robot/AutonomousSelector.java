@@ -18,6 +18,7 @@ public class AutonomousSelector {
         MidPark,
         Mid2CubePark,
         TestTurn,
+        TestTurnCole
     }
 
     private Enum[] mAutons = Autons.values();
