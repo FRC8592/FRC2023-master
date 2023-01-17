@@ -35,7 +35,6 @@ public class Drivetrain {
     private SwerveModuleState[] states;   //possible hold the state of the swerve modules
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
 
-
     /**
      * The maximum voltage that will be delivered to the drive motors.
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
@@ -47,8 +46,8 @@ public class Drivetrain {
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-        SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-        SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
+        SdsModuleConfigurations.MK4_L3.getDriveReduction() *
+        SdsModuleConfigurations.MK4_L3.getWheelDiameter() * Math.PI;
 
     // The maximum angular velocity of the robot in radians per second.\
     //
@@ -75,7 +74,6 @@ public class Drivetrain {
     // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
     
-
     /**Initialize drivetrain
      * 
      */
@@ -102,7 +100,7 @@ public class Drivetrain {
             // Motor configuration
             swerveMotorConfig,
             // This can either be L!, L2, L3 or L4
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L3,
             // This is the ID of the drive motor
             FRONT_LEFT_MODULE_DRIVE_MOTOR,
             // This is the ID of the steer motor
@@ -119,7 +117,7 @@ public class Drivetrain {
             .withSize(2, 4)
             .withPosition(2, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L3,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             FRONT_RIGHT_MODULE_STEER_MOTOR,
             FRONT_RIGHT_MODULE_STEER_ENCODER,
@@ -131,7 +129,7 @@ public class Drivetrain {
             .withSize(2, 4)
             .withPosition(4, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L3,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR,
             BACK_LEFT_MODULE_STEER_ENCODER,
@@ -143,7 +141,7 @@ public class Drivetrain {
             .withSize(2, 4)
             .withPosition(6, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L3,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
             BACK_RIGHT_MODULE_STEER_ENCODER,
@@ -152,7 +150,6 @@ public class Drivetrain {
 
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
     }
-
 
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
@@ -164,7 +161,6 @@ public class Drivetrain {
         m_navx.zeroYaw();   // We're using a NavX
     }
 
-
     public Rotation2d getGyroscopeRotation() {
         // FIXME Remove if you are using a Pigeon
         // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
@@ -175,8 +171,8 @@ public class Drivetrain {
          //   return Rotation2d.fromDegrees(m_navx.getFusedHeading());
         //}
 
-    // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
-    return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
+        // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
+        return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
 
@@ -188,12 +184,10 @@ public class Drivetrain {
         return m_navx.isRotating();
     }
 
-
     public double getYaw(){
         return m_navx.getYaw();
 
     }
-
 
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
@@ -202,10 +196,10 @@ public class Drivetrain {
         SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
         return pos;
     }
+
     public void resetPose(Pose2d pose){
         odometry.resetPosition(new Rotation2d(0), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, pose);
     }
-
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
@@ -219,7 +213,8 @@ public class Drivetrain {
         getSMPosition(m_backRightModule)});
 
     } 
-    SwerveModulePosition getSMPosition(SwerveModule mod){
+
+    private SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
     }
 }
