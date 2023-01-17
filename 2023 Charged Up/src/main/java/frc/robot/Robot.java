@@ -4,28 +4,9 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
-
-import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
-import java.rmi.registry.LocateRegistry;
-
-import javax.swing.DropMode;
-
-import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -39,14 +20,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
-  public XboxController driverController;
-  public XboxController shooterController;
+  private Periodic periodic;
+
   public Drivetrain drive;
-  private boolean fastMode;
-  private boolean slowModeToggle;
   public LED ledStrips;
   public Vision gameObjectVision;
-  public String currentPiecePipeline;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -58,15 +36,21 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    driverController = new XboxController(0);
-    shooterController = new XboxController(1);
     drive = new Drivetrain();
     ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    gameObjectVision = new Vision(
+      Constants.LIMELIGHT_BALL, 
+      Constants.BALL_LOCK_ERROR,
+      Constants.BALL_CLOSE_ERROR, 
+      Constants.BALL_CAMERA_HEIGHT, 
+      Constants.BALL_CAMERA_ANGLE, 
+      Constants.BALL_TARGET_HEIGHT, 
+      Constants.BALL_ROTATE_KP, 
+      Constants.BALL_ROTATE_KI, 
+      Constants.BALL_ROTATE_KD
+    );
     
-
+    periodic = new Periodic(drive, gameObjectVision, ledStrips);
   }
 
   /**
@@ -113,88 +97,13 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    fastMode     = true;
-    slowModeToggle = false;
 
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double rotatePower;
-    double translatePower;
-    double translateX;
-    double translateY;
-    double rotate;
-
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
-    gameObjectVision.updateVision();
-    //
-    // Read gamepad controls for drivetrain and scale control values
-    //
-    
-    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
-      drive.zeroGyroscope();
-    }
-  
-    if (driverController.getRightBumperPressed()){
-      slowModeToggle = ! slowModeToggle;
-    }
-    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-    
-
-    if (fastMode) {
-      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
-      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
-    }
-    else {
-      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
-      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
-    }
-    
-    if(driverController.getLeftBumper())
-    {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else{  
-      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                          // is
-                                                                                                                          // forward
-                                                                                                                          // Direction,
-                                                                                                                          // Forward
-                                                                                                                          // on
-                                                                                                                          // Joystick
-                                                                                                                          // is
-                                                                                                                          // Y
-      translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
-
-      //
-      // Normal teleop drive
-      //
-      
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    } // Inverted due to Robot Directions being the
-                                                                    // opposite of controller directions
-    
-    drive.getCurrentPos();
-
-    if (shooterController.getXButtonPressed()){
-      currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
-    }
-    
-    if (shooterController.getYButtonPressed()){
-      currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
-    }
+    periodic.teleopPeriodic();
   }
 
 

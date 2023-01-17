@@ -19,6 +19,8 @@ public class LED {
     private AddressableLEDBuffer liftBuffer;
     private Timer timer;
 
+    private boolean blink = false;
+
     private int count = 0;
 
     final int LED_LENGTH = 45;
@@ -119,6 +121,38 @@ public class LED {
                 setColor(ledIndex, Color.OFF);
             }
         }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+
+    public void setOff() {
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++) {
+            setColor(ledIndex, Color.OFF);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+
+    public void setAllToColor(Color color) {
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++) {
+            setColor(ledIndex, color);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+
+    public void blinkColor(double frequency, Color color) {
+        if (timer.get() / (frequency / 2) == 0) {
+            blink = !blink;
+        } 
+        
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++) {
+            setColor(ledIndex, blink ? color : Color.OFF);
+        }
+
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");
