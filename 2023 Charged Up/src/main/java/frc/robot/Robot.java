@@ -157,7 +157,16 @@ public class Robot extends TimedRobot {
     {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+      if (gameObjectVision.isTargetValid() &&gameObjectVision.isTargetLocked() && gameObjectVision.distanceToTarget() >= 24){
+        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+    
+    }else if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget()<=24){
+      if (currentPiecePipeline == "CUBE"){
+        ledStrips.setFullTeal();
+      }else if (currentPiecePipeline == "CONE"){
+        ledStrips.setFullOrange();
+      }
+    }
     }
     else{  
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)

@@ -123,4 +123,22 @@ public class LED {
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");
     }
+
+    public void setFullOrange(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            setColor(ledIndex, Color.ORANGE);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+
+    public void setFullTeal(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            setColor(ledIndex, Color.BLUE);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
 }
