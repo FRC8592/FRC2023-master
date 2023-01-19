@@ -127,6 +127,19 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
 
+    if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= 24){
+      if (currentPiecePipeline == "CUBE"){
+        ledStrips.setFull(Color.BLUE);
+      }else if (currentPiecePipeline == "CONE"){
+        ledStrips.setFull(Color.ORANGE);
+      }
+    }else {
+      if (currentPiecePipeline == "CUBE"){
+        ledStrips.setHalf(Color.BLUE);
+      }else if (currentPiecePipeline == "CONE"){
+        ledStrips.setHalf(Color.ORANGE);
+      }
+    }
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
@@ -168,19 +181,8 @@ public class Robot extends TimedRobot {
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
       * rotatePower; // Right joystick
       translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-      if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= 24){
-        if (currentPiecePipeline == "CUBE"){
-          ledStrips.setFull(Color.BLUE);
-        }else if (currentPiecePipeline == "CONE"){
-          ledStrips.setFull(Color.ORANGE);
-        }
-      }else {
-        if (currentPiecePipeline == "CUBE"){
-          ledStrips.setHalf(Color.BLUE);
-        }else if (currentPiecePipeline == "CONE"){
-          ledStrips.setHalf(Color.ORANGE);
-        }
-      }
+
+      
                                                                                                                           // is
                                                                                                                           // forward
                                                                                                                           // Direction,
