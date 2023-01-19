@@ -157,21 +157,30 @@ public class Robot extends TimedRobot {
     {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
-      if (gameObjectVision.isTargetValid() &&gameObjectVision.isTargetLocked() && gameObjectVision.distanceToTarget() >= 24){
+      if (!gameObjectVision.isTargetValid()){
         drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    
-    }else if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget()<=24){
-      if (currentPiecePipeline == "CUBE"){
-        ledStrips.setFullTeal();
-      }else if (currentPiecePipeline == "CONE"){
-        ledStrips.setFullOrange();
       }
-    }
+      else if (gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() >= 24){
+        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+      }
     }
     else{  
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
+      * rotatePower; // Right joystick
       translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= 24){
+        if (currentPiecePipeline == "CUBE"){
+          ledStrips.setFull(Color.BLUE);
+        }else if (currentPiecePipeline == "CONE"){
+          ledStrips.setFull(Color.ORANGE);
+        }
+      }else {
+        if (currentPiecePipeline == "CUBE"){
+          ledStrips.setHalf(Color.BLUE);
+        }else if (currentPiecePipeline == "CONE"){
+          ledStrips.setHalf(Color.ORANGE);
+        }
+      }
                                                                                                                           // is
                                                                                                                           // forward
                                                                                                                           // Direction,
@@ -196,13 +205,13 @@ public class Robot extends TimedRobot {
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
+      ledStrips.setFull(Color.PURPLE);
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
+      ledStrips.setFull(Color.YELLOW);
     }
   }
 

@@ -76,69 +76,35 @@ public class LED {
         
     }
 
-    public void setFullPurple(){
+    public void setFull(Color color){
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            setColor(ledIndex, Color.PURPLE);
+            setColor(ledIndex, color);
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
-    }
-    
-    public void setFullYellow(){
-        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            setColor(ledIndex, Color.YELLOW);
-        }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+        System.out.println("LED METHOD RUNNING");   
         
     }
     
-    public void setHalfPurple(){
+    public void setHalf(Color color){
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
             if (ledIndex % 2 == 0){
-                setColor(ledIndex, Color.PURPLE);
-            }
-            else{
-                setColor(ledIndex, Color.OFF);
-            }
-            
-        }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
-    }
-    
-    public void setHalfYellow(){
-        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            if (ledIndex % 2 == 0){
-                setColor(ledIndex, Color.YELLOW);
-            }
-            else{
+                setColor(ledIndex, color);
+            }else {
                 setColor(ledIndex, Color.OFF);
             }
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+        System.out.println("LED METHOD RUNNING");   
     }
 
-    public void setFullOrange(){
+    public void setOff(){
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            setColor(ledIndex, Color.ORANGE);
+            setColor(ledIndex, Color.OFF);
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
-    }
-
-    public void setFullTeal(){
-        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            setColor(ledIndex, Color.BLUE);
-        }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+        System.out.println("LED METHOD RUNNING");   
     }
 }
