@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
+import com.ctre.phoenix.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
@@ -33,6 +34,8 @@ public class Drivetrain {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
+    
+    private FRCLogger logger;
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -76,7 +79,7 @@ public class Drivetrain {
     /**Initialize drivetrain
      * 
      */
-    public Drivetrain() {
+    public Drivetrain(FRCLogger logger) {
         Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -86,6 +89,8 @@ public class Drivetrain {
         swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
         swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_CURRENT);
         swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
+        
+        this.logger = logger;
 
         // Create motor objects
         //
@@ -178,6 +183,7 @@ public class Drivetrain {
         SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
         SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
         SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
+        logger.log(this, "Position", pos);
         return pos;
     }
 
@@ -193,7 +199,6 @@ public class Drivetrain {
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
-        
         this.odometry.update(
             getGyroscopeRotation(), 
             new SwerveModulePosition[] {
@@ -203,11 +208,7 @@ public class Drivetrain {
                 getSMPosition(m_backRightModule)
             }
         );
-
-        SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
+        logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
 
     } 
 
