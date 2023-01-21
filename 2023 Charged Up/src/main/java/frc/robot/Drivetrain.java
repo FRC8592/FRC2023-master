@@ -32,6 +32,7 @@ public class Drivetrain {
     private final SwerveModule m_frontRightModule;
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
+    private SwerveModuleState[] states;   //possible hold the state of the swerve modules
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
 
 
@@ -165,17 +166,34 @@ public class Drivetrain {
 
 
     public Rotation2d getGyroscopeRotation() {
-        // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
-        return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
+        // FIXME Remove if you are using a Pigeon
+        // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+
+        // FIXME Uncomment if you are using a NavX
+        //if (m_navx.isMagnetometerCalibrated()) {
+            // We will only get valid fused headings if the magnetometer is calibrated
+         //   return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+        //}
+
+    // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
+    return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+
+    public double getAutoHeading() {
+        return m_navx.getYaw();
+    }
+    
     public boolean isGyroscopeRotating(){
         return m_navx.isRotating();
     }
 
+
     public double getYaw(){
         return m_navx.getYaw();
+
     }
+
 
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
@@ -184,7 +202,6 @@ public class Drivetrain {
         SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
         return pos;
     }
-
     public void resetPose(Pose2d pose){
         odometry.resetPosition(new Rotation2d(0), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, pose);
     }
@@ -198,25 +215,11 @@ public class Drivetrain {
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
-        
-        this.odometry.update(
-            getGyroscopeRotation(), 
-            new SwerveModulePosition[] {
-                getSMPosition(m_frontLeftModule), 
-                getSMPosition(m_frontRightModule),
-                getSMPosition(m_backLeftModule),
-                getSMPosition(m_backRightModule)
-            }
-        );
-
-        SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
+        this.odometry.update(getGyroscopeRotation(), new SwerveModulePosition[] {getSMPosition(m_frontLeftModule), getSMPosition(m_frontRightModule),getSMPosition(m_backLeftModule),
+        getSMPosition(m_backRightModule)});
 
     } 
-
-    private SwerveModulePosition getSMPosition(SwerveModule mod){
+    SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
     }
 }
