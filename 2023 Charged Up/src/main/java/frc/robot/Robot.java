@@ -22,6 +22,7 @@ import java.rmi.registry.LocateRegistry;
 import javax.swing.DropMode;
 
 import com.swervedrivespecialties.swervelib.DriveController;
+import org.littletonrobotics.junction.LoggedRobot;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
@@ -29,6 +30,14 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.LogFileUtil;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -99,7 +108,8 @@ public class Robot extends LoggedRobot {
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, logger);
+     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
+    logger = new FRCLogger(true, "CustomLogs");
     
 
      turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);

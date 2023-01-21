@@ -186,6 +186,7 @@ public class Drivetrain {
         SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
         SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
         SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
+        logger.log(this, "Position", pos);
         return pos;
     }
 
@@ -199,10 +200,6 @@ public class Drivetrain {
         SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-        // m_frontLeftModule.setModuleSteerAngle(states[0].angle.getRadians())
-        // m_frontRightModule.setModuleSteerAngle(states[1].angle.getRadians());
-        // m_backLeftModule.setModuleSteerAngle(states[2].angle.getRadians());
-        // m_backRightModule.setModuleSteerAngle(states[3].angle.getRadians());
 
         // setDriveVelocity(metersPerSecondToTicks(states[0].speedMetersPerSecond), m_frontLeftModule);
         // setDriveVelocity(metersPerSecondToTicks(states[1].speedMetersPerSecond), m_frontRightModule);
@@ -214,7 +211,7 @@ public class Drivetrain {
         setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
         setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
         setModule(m_backRightModule, states[3].angle.getRadians(), metersPerSecondToTicks(states[3].speedMetersPerSecond));
-        
+
         this.odometry.update(
             getGyroscopeRotation(), 
             new SwerveModulePosition[] {

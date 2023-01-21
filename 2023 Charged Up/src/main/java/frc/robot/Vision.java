@@ -39,6 +39,8 @@ public class Vision {
   public boolean targetClose;     // Indicate when the robot is close to centered on the target
   public double  targetRange;     // Range from robot to target (inches)
   public Timer timer;
+  private PIDController turnPID;
+  private PIDController closeTurnPID;
   private double processedDx = 0;
   private double processedDy = 0;
   //Private autoaim variables
@@ -75,7 +77,7 @@ public class Vision {
    */
   public Vision(String limelightName, double lockError, double closeError,
                 double cameraHeight, double cameraAngle, double targetHeight,
-                FRCLogger logger) {
+                double rotationKP, double rotationKI, double rotationKD, FRCLogger logger) {
 
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
@@ -102,7 +104,8 @@ public class Vision {
     this.targetHeight  = targetHeight;
 
     // Creat the PID controller for turning
-
+    turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
+    closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
     
     this.logger = logger;
   }
@@ -252,6 +255,33 @@ public class Vision {
       turnSpeed = turnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
       turnSpeed = Math.max(turnSpeed, -limit);
       turnSpeed = Math.min(turnSpeed, limit);
+    }
+
+    // If no targetValid, spin in a circle to search
+    else {
+      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
+    }
+
+    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+
+    logger.log(this, "Turn Speed", turnSpeed);
+
+    return turnSpeed;
+  }
+
+  public double closeTurnRobot(double visionSearchSpeed){
+
+    // Stop turning if we have locked onto the target within acceptable angular error
+    if (targetValid && targetLocked) {
+      turnSpeed = 0;
+    }
+
+    // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
+    // Limit maximum speed
+    else if (targetValid) {
+      turnSpeed = closeTurnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
+      turnSpeed = Math.max(turnSpeed, -8);
+      turnSpeed = Math.min(turnSpeed, 8);
     }
 
     // If no targetValid, spin in a circle to search
