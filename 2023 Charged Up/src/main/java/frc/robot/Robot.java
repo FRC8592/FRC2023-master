@@ -124,21 +124,25 @@ public class Robot extends TimedRobot {
     //
     // Read gamepad controls for drivetrain and scale control values
     //
-  
-      if (driverController.getRightBumperPressed()){
-        slowModeToggle = ! slowModeToggle;
-      }
-      fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-      
 
-      if (fastMode) {
-        rotatePower    = ConfigRun.ROTATE_POWER_FAST;
-        translatePower = ConfigRun.TRANSLATE_POWER_FAST;
-      }
-      else {
-        rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
-        translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
-      }
+    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
+      drive.zeroGyroscope();
+    }
+  
+    if (driverController.getRightBumperPressed()){
+      slowModeToggle = ! slowModeToggle;
+    }
+    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    
+
+    if (fastMode) {
+      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
+      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
+    }
+    else {
+      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
+      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+    }
       
     rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
         * rotatePower; // Right joystick
