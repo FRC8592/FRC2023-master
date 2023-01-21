@@ -160,9 +160,11 @@ public class Robot extends TimedRobot {
     //
     // Normal teleop drive
     //
-    drive.beastMode(0);
+    // drive.beastMode(0);
     // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-    //     -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+        // -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+        0, new Rotation2d())); // Inverted due to Robot Directions being the
                                                                  // opposite of controller directions
     drive.getCurrentPos();
 
