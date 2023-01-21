@@ -36,6 +36,7 @@ public class AutoDrive {
     public double lastMoveTime;
     public double lastTurnTime;
     private Drivetrain drive;
+    private SmoothingFilter sf;
 
     private TrajectoryFollower mFollower;
 
@@ -61,6 +62,7 @@ public class AutoDrive {
         lastMoveTime = moveTimer.get();
         lastTurnTime = turnTimer.get();
         this.drive = drive;
+        sf = new SmoothingFilter(5, 5, 5);
     }
 
     public AutoDrive(SwerveTrajectory trajectory, Drivetrain pDrive) {
@@ -81,7 +83,8 @@ public class AutoDrive {
 
     public void followTrajectory(double pTime, boolean targetLock) {
         ChassisSpeeds speeds = mFollower.follow(drive.getCurrentPos(), pTime, targetLock);
-        drive.drive(speeds);
+        // Smooth ChassisSpeed output
+        drive.drive(sf.smooth(speeds));
     }
 
     // Needs to be called every update

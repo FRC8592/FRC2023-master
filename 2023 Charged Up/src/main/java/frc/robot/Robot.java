@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
   private boolean slowModeToggle;
   public LED ledStrips;
   private Autonomous autonomous;
+  private SmoothingFilter sf = new SmoothingFilter(5, 5, 5);
 
   public static Field2d FIELD = new Field2d();
 
@@ -157,9 +158,15 @@ public class Robot extends TimedRobot {
     // Normal teleop drive
     //
     
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-        -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-                                                                    // opposite of controller directions
+    //FOR TESTING - hold A to enable smoothing, otherwise normal drive
+    if(driverController.getAButtonPressed()) {
+      drive.drive(sf.smooth(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+        -joystickDeadband(rotate), drive.getGyroscopeRotation()))); 
+    } else {
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+      -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+                                                                  // opposite of controller directions
+    }
     
     drive.getCurrentPos();
 
