@@ -127,6 +127,11 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
 
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    
+    
+    gameObjectVision.updateVision();
+    
     if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= 24){
       if (currentPiecePipeline == "CUBE"){
         ledStrips.setFull(Color.BLUE);
@@ -140,9 +145,6 @@ public class Robot extends TimedRobot {
         ledStrips.setHalf(Color.ORANGE);
       }
     }
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
-    gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -168,14 +170,9 @@ public class Robot extends TimedRobot {
     
     if(driverController.getLeftBumper())
     {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
-      if (!gameObjectVision.isTargetValid()){
-        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-      }
-      else if (gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() >= 24){
-        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-      }
+      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
     }
     else{  
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
