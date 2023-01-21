@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
   private boolean slowModeToggle;
   public LED ledStrips;
   public Vision gameObjectVision;
+  public Claw claw;
   public String currentPiecePipeline;
 
   /**
@@ -62,6 +63,7 @@ public class Robot extends TimedRobot {
     shooterController = new XboxController(1);
     drive = new Drivetrain();
     ledStrips = new LED();
+    claw = new Claw();
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -194,6 +196,14 @@ public class Robot extends TimedRobot {
       currentPiecePipeline = "CONE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
+    }
+
+    if(shooterController.getAButtonPressed()) {
+      claw.closeClaw();
+    }
+
+    if(shooterController.getBButtonPressed()) {
+      claw.openClaw();
     }
   }
 
