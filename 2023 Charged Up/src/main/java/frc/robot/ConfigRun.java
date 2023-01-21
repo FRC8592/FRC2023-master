@@ -29,7 +29,7 @@ public final class ConfigRun {
     //
     // Joystick configuration
     //
-    public static final double JOYSTICK_DEADBAND = 0.01;    // Deadband for translate and rotate joysticks
+    public static final double JOYSTICK_DEADBAND = 0.05;    // Deadband for translate and rotate joysticks
 
     //
     // Maximum current provided to motors to help limit battery drain and harsh turning & acceleration
