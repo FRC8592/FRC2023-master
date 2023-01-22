@@ -24,6 +24,7 @@ import javax.swing.DropMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
   private boolean fastMode;
   private boolean slowModeToggle;
   public LED ledStrips;
+  private Rotation2d rotAngle = Rotation2d.fromDegrees(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -54,10 +56,11 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    driverController = new XboxController(0);
-    shooterController = new XboxController(1);
+    //driverController = new XboxController(0);
+    //shooterController = new XboxController(1);
+    DriverStation.reportError("robotInit just ran", false);
     drive = new Drivetrain();
-    ledStrips = new LED();
+    //ledStrips = new LED();
 
   }
 
@@ -119,20 +122,20 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
 
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     //
     // Read gamepad controls for drivetrain and scale control values
     //
 
-    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
-      drive.zeroGyroscope();
-    }
+    //if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
+    //  drive.zeroGyroscope();
+    //}
   
-    if (driverController.getRightBumperPressed()){
-      slowModeToggle = ! slowModeToggle;
-    }
-    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    // if (driverController.getRightBumperPressed()){
+    //   slowModeToggle = ! slowModeToggle;
+    // }
+    // fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
     
 
     if (fastMode) {
@@ -144,18 +147,18 @@ public class Robot extends TimedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
       
-    rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-        * rotatePower; // Right joystick
-    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                        // is
-                                                                                                                        // forward
-                                                                                                                        // Direction,
-                                                                                                                        // Forward
-                                                                                                                        // on
-                                                                                                                        // Joystick
-                                                                                                                        // is
-                                                                                                                        // Y
-    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    // rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+    //     * rotatePower; // Right joystick
+    // translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+    //                                                                                                                     // is
+    //                                                                                                                     // forward
+    //                                                                                                                     // Direction,
+    //                                                                                                                     // Forward
+    //                                                                                                                     // on
+    //                                                                                                                     // Joystick
+    //                                                                                                                     // is
+    //                                                                                                                     // Y
+    // translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     //
     // Normal teleop drive
@@ -164,18 +167,18 @@ public class Robot extends TimedRobot {
     // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
         // -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-        0, new Rotation2d())); // Inverted due to Robot Directions being the
+        0, rotAngle)); // Inverted due to Robot Directions being the
                                                                  // opposite of controller directions
     drive.getCurrentPos();
 
-    if (shooterController.getXButtonPressed()){
-      ledStrips.setPurple();
-    }
+  //   if (shooterController.getXButtonPressed()){
+  //     ledStrips.setPurple();
+  //   }
 
-    if (shooterController.getYButtonPressed()){
-      ledStrips.setYellow();
+  //   if (shooterController.getYButtonPressed()){
+  //     ledStrips.setYellow();
+  //   }
     }
-  }
 
 
   /** This function is called once when the robot is disabled. */
@@ -184,7 +187,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+    // 0, rotAngle)); // Inverted due to Robot Directions being the
+    //                                                          // opposite of controller direct
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
