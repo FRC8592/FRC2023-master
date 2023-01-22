@@ -132,7 +132,7 @@ public class Robot extends TimedRobot {
     
     gameObjectVision.updateVision();
     
-    if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= 24){
+    if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
       if (currentPiecePipeline == "CUBE"){
         ledStrips.setFull(Color.BLUE);
       }else if (currentPiecePipeline == "CONE"){
@@ -168,16 +168,23 @@ public class Robot extends TimedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
     
+    SmartDashboard.putNumber("targetDistance", gameObjectVision.distanceToTarget());
+
     if(driverController.getLeftBumper())
     {
-      double turn = gameObjectVision.turnRobot(1.0);
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else{  
-      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-      * rotatePower; // Right joystick
-      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+
+        double turn = gameObjectVision.turnRobot(1.0);
+        double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      if (gameObjectVision.targetLocked && gameObjectVision.distanceToTarget()<Constants.OBJECT_GRAB_DISTANCE && gameObjectVision.targetValid){
+        drive.drive(new ChassisSpeeds());
+      }
+      else{
+        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+      }
+    }  else{  
+        rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+        translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
 
       
                                                                                                                           // is
