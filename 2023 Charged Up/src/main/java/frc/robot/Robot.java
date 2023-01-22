@@ -198,11 +198,11 @@ public class Robot extends TimedRobot {
       ledStrips.setFullYellow();
     }
 
-    if(shooterController.getAButtonPressed()) {
+    if(driverController.getAButtonPressed()) {
       claw.closeClaw();
     }
 
-    if(shooterController.getBButtonPressed()) {
+    if(driverController.getBButtonPressed()) {
       claw.openClaw();
     }
   }
