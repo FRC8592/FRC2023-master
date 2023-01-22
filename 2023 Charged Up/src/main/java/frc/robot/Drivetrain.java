@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.SPI;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -45,8 +45,8 @@ public class Drivetrain {
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-        SdsModuleConfigurations.MK4_L3.getDriveReduction() *
-        SdsModuleConfigurations.MK4_L3.getWheelDiameter() * Math.PI;
+        SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
+        SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
 
     // The maximum angular velocity of the robot in radians per second.\
     //
@@ -91,7 +91,7 @@ public class Drivetrain {
         //
         // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
         // you MUST change it. If you do not, your code will crash on startup.
-        m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
@@ -99,7 +99,7 @@ public class Drivetrain {
             // Motor configuration
             swerveMotorConfig,
             // This can either be L!, L2, L3 or L4
-            Mk4SwerveModuleHelper.GearRatio.L3,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             // This is the ID of the drive motor
             FRONT_LEFT_MODULE_DRIVE_MOTOR,
             // This is the ID of the steer motor
@@ -111,36 +111,36 @@ public class Drivetrain {
         );
 
         // We will do the same for the other modules
-        m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(2, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L3,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             FRONT_RIGHT_MODULE_STEER_MOTOR,
             FRONT_RIGHT_MODULE_STEER_ENCODER,
             FRONT_RIGHT_MODULE_STEER_OFFSET
         );
 
-        m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L3,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR,
             BACK_LEFT_MODULE_STEER_ENCODER,
             BACK_LEFT_MODULE_STEER_OFFSET
         );
 
-        m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L3,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
             BACK_RIGHT_MODULE_STEER_ENCODER,
