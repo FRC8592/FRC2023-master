@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.commands.CommandQueue;
+import frc.robot.commands.TrajectoryFollowerCommand;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -10,6 +12,8 @@ public class Autonomous{
   private Drivetrain mDrive;
   private TrajectoryQueue trajectoryQueue;
   private AutonomousSelector selector;
+
+  private CommandQueue commandQueue;
 
   public Autonomous(Drivetrain drive) {
     trajectoryTimer = new Timer();
@@ -21,70 +25,33 @@ public class Autonomous{
   public void initialize() {
     switch (selector.getSelectedAutonomous()) {
       case MidPark:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.MID_PARK_1.toTrajectory(),
-          Trajectories.MID_PARK_2.toTrajectory()
-        );
-        break;
-      case Bottom2Cube:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.BOTTOM_2_CUBE_1.toTrajectory(),
-          Trajectories.BOTTOM_2_CUBE_2.toTrajectory()
-        );
-        break;
-      case Bottom2CubePark:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.BOTTOM_2_CUBE_PARK1.toTrajectory(),
-          Trajectories.BOTTOM_2_CUBE_PARK2.toTrajectory(),
-          Trajectories.BOTTOM_2_CUBE_PARK3.toTrajectory()
-        );
-        break;
-      case BottomCrossLine:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.BOTTOM_CROSS_LINE_1.toTrajectory()
-        );
-        break;
-      case Bottom1CubePark:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.BOTTOM_1_CUBE_PARK.toTrajectory()
-        );
-        break;
-      case Mid2CubePark:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.MID_2_CUBE_PARK_1.toTrajectory(),
-          Trajectories.MID_2_CUBE_PARK_2.toTrajectory(),
-          Trajectories.MID_2_CUBE_PARK_3.toTrajectory()
-        );
-        break;
-      case TestTurn:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.TEST_TURN.toTrajectory()
-        );
-        break;
-      case TestTurnCole:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.TEST_TURN_COLE.toTrajectory()
+        commandQueue = new CommandQueue(
+          new TrajectoryFollowerCommand(mDrive, Trajectories.MID_PARK_1.toTrajectory()),
+          new TrajectoryFollowerCommand(mDrive, Trajectories.MID_PARK_2.toTrajectory())
         );
         break;
     }
+
+    commandQueue.initialize();
 
     trajectoryTimer.reset();
     trajectoryTimer.start();
 
-    autoDrive = new AutoDrive(trajectoryQueue.currentTrajectory(), mDrive);
-    mDrive.resetPose(trajectoryQueue.currentTrajectory().getInitialPose());
+    // autoDrive = new AutoDrive(trajectoryQueue.currentTrajectory(), mDrive);
+    // mDrive.resetPose(trajectoryQueue.currentTrajectory().getInitialPose());
   }
 
   public void periodic() 
   {
-    if (!trajectoryQueue.isFinished()) {
-      if (trajectoryQueue.isTrajectoryComplete()) {
-        autoDrive = new AutoDrive(trajectoryQueue.nextTrajectory(), mDrive);
-        trajectoryTimer.reset();
-      } else {
-        autoDrive.followTrajectory(trajectoryTimer.get(), false);
-      }
-    }
+    // if (!trajectoryQueue.isFinished()) {
+    //   if (trajectoryQueue.isTrajectoryComplete()) {
+    //     autoDrive = new AutoDrive(trajectoryQueue.nextTrajectory(), mDrive);
+    //     trajectoryTimer.reset();
+    //   } else {
+    //     autoDrive.followTrajectory(trajectoryTimer.get(), false);
+    //   }
+    // }
+    commandQueue.run();
   }
 
   public boolean moveCloserToRing(Drivetrain drive, Vision visionRing, AutoDrive locality, double targetLockedSpeed, double targetCloseSpeed, double visionSearchSpeed, double distanceToShoot){

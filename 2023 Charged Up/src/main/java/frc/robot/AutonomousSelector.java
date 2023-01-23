@@ -11,14 +11,7 @@ public class AutonomousSelector {
     private SendableChooser<Enum> chooser = new SendableChooser<>();
 
     public enum Autons {
-        BottomCrossLine,
-        Bottom1CubePark,
-        Bottom2Cube,
-        Bottom2CubePark,
         MidPark,
-        Mid2CubePark,
-        TestTurn,
-        TestTurnCole
     }
 
     private Enum[] mAutons = Autons.values();
