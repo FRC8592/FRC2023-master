@@ -4,27 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autons.AutonomousSelector;
+import frc.robot.autons.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
-import java.rmi.registry.LocateRegistry;
-
-import javax.swing.DropMode;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -33,18 +21,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
   public XboxController driverController;
   public XboxController shooterController;
+
   public Drivetrain drive;
+  public LED ledStrips;
+
   private boolean fastMode;
   private boolean slowModeToggle;
-  public LED ledStrips;
-  private Autonomous autonomous;
+
+  private AutonomousSelector selector;
+  private BaseAuto selectedAutonomous;
 
   public static Field2d FIELD = new Field2d();
 
@@ -54,16 +41,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
     drive = new Drivetrain();
     ledStrips = new LED();
 
-    autonomous = new Autonomous(drive);
+    selector = new AutonomousSelector();
   }
 
   /**
@@ -90,16 +73,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    autonomous.initialize();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    selectedAutonomous = selector.getSelectedAutonomous();
+    selectedAutonomous.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAutonomous.initialize();
+    if (!isReal()) {
+      selectedAutonomous.setInitialSimulationPose();
+    }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    autonomous.periodic();
+    selectedAutonomous.periodic();
   }
 
   /** This function is called once when teleop is enabled. */

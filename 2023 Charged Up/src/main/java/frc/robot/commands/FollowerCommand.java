@@ -8,20 +8,20 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
-import frc.robot.SwerveTrajectory;
+import frc.robot.autons.trajectory.SwerveTrajectory;
 
-public class TrajectoryFollowerCommand extends Command {
+public class FollowerCommand extends Command {
     private Drivetrain drive;
     private SwerveTrajectory trajectory;
     private Timer timer;
 
-    public TrajectoryFollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj) {
+    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj) {
         drive = pDrive;
         trajectory = pTraj;
         timer = new Timer();
     }
 
-    public TrajectoryFollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot) {
+    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot) {
         drive = pDrive;
         trajectory = pTraj;
         timer = new Timer();
@@ -47,6 +47,11 @@ public class TrajectoryFollowerCommand extends Command {
         return time >= trajectory.trajectory().getTotalTimeSeconds();
     }
 
+    @Override
+    public Pose2d getStartPose() {
+        return trajectory.getInitialPose();
+    }
+
     private void simulateRobotPose(Pose2d pose, ChassisSpeeds desiredSpeeds) {
         Trajectory traj = trajectory.trajectory();
         Robot.FIELD.setRobotPose(new Pose2d(pose.getTranslation(), traj.sample(traj.getTotalTimeSeconds()).poseMeters.getRotation()));
@@ -56,4 +61,8 @@ public class TrajectoryFollowerCommand extends Command {
         SmartDashboard.putNumber("Field Relative Omega", desiredSpeeds.omegaRadiansPerSecond);
     }
 
+    @Override
+    public void shutdown() {
+
+    }
 }

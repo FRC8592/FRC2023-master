@@ -20,6 +20,23 @@
         }
       },
       "/SmartDashboard/Field": {
+        "Robot": {
+          "arrowColor": [
+            1.0,
+            1.0,
+            1.0,
+            255.0
+          ],
+          "color": [
+            0.0,
+            0.0,
+            0.0,
+            255.0
+          ],
+          "image": "C:\\Users\\Dell G7\\Pictures\\Saved Pictures\\254.jpg",
+          "length": 0.6223000288009644,
+          "width": 0.5715000033378601
+        },
         "image": "C:\\Users\\Dell G7\\PathWeaver\\Games\\2023\\2023-field.png",
         "window": {
           "visible": true

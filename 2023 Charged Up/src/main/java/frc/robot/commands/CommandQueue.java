@@ -3,12 +3,14 @@ package frc.robot.commands;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CommandQueue {
     private Queue<Command> queue;
+    private Command[] commandArray;
     private Timer timer;
-    private double prevTime = 0;
 
     public CommandQueue(Command ... commands) {
         queue = new LinkedList<Command>();
@@ -16,21 +18,21 @@ public class CommandQueue {
             queue.add(command);
         }
 
+        commandArray = commands;
+
         timer = new Timer();
     }
 
     public void initialize() {
         timer.reset();
         timer.start();
-        // for (Command command : queue) {
-        //     command.initialize(timer.get());
-        // }
-        queue.peek().initialize(0);
+        queue.peek().initialize(timer.get());
     }
 
     public void run() {
         if (!isFinished()) {
             if (queue.peek().execute()) {
+                queue.peek().shutdown();
                 queue.poll();
                 timer.reset();
                 timer.start();
@@ -43,5 +45,20 @@ public class CommandQueue {
 
     public boolean isFinished() {
         return queue.size() <= 0;
+    }
+
+    public Pose2d getStartPose() {
+        for (Command command : commandArray) {
+            if (command.getClass() == FollowerCommand.class) {
+                return command.getStartPose();
+            } else if (command.getClass() == JointCommand.class) {
+                for (Command jointCommand : ((JointCommand)command).getCommands()) {
+                    if (jointCommand.getClass() == FollowerCommand.class) {
+                        return jointCommand.getStartPose();
+                    }
+                }
+            }
+        }
+        return new Pose2d();
     }
 }

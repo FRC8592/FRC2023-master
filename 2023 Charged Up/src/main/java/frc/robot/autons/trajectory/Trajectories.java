@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.autons.trajectory;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -9,29 +9,22 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public enum Trajectories {
+    MOBILITY_A("output/output/Park_B.wpilib.json"),
 
-    // Score Pre-load && Cross Line [*Bottom Start*][*Blue*](9 pts)
-
-    // Score Pre-load && Park [*Bottom Start*][*Blue*](21 pts)
-
-    // Cross Line and Balance Charge Station [*Middle Start*][*Blue*](15 pts)
-
-    // Score Pre-load and second game piece [*Bottom Start*][*Blue*](13 pts)
-
-    // Score Pre-load and second game piece and Balance Charge Station [*Bottom Start*][*Blue*](25 pts)
-
-    // Test Autos
-    MID_PARK_1("output/output/Mid_Park1.wpilib.json", Rotation2d.fromDegrees(0)),
-    MID_PARK_2("output/output/Mid_Park2.wpilib.json", Rotation2d.fromDegrees(0)),
+    THREEPIECE_A_1("output/output/3Piece_A1.wpilib.json"),
+    THREEPIECE_A_2("output/output/3Piece_A2.wpilib.json"),
+    THREEPIECE_A_3("output/output/3Piece_A3.wpilib.json"),
+    THREEPIECE_A_4("output/output/3Piece_A4.wpilib.json"),
     ;
 
     private String path;
-    private boolean lock;
     private Rotation2d rot;
     private boolean relative;
 
     Trajectories(String path) {
         this.path = path;
+        this.rot = new Rotation2d();
+        this.relative = true;
     }
 
     Trajectories(String path, Rotation2d rot) {
@@ -60,10 +53,6 @@ public enum Trajectories {
         }
 
         return new SwerveTrajectory(traj, rot, relative);
-    }
-
-    public boolean lockToTarget() {
-        return lock;
     }
 
     public static Trajectories parseEnum(SwerveTrajectory trajectory) {
