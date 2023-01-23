@@ -115,6 +115,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
+    drive.zeroGyroscope();
 
   }
 

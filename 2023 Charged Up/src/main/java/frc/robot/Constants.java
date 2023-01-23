@@ -38,22 +38,22 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR    = 2; // Named Green in Electronics
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR    = 3;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER  = 10;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(91.8);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(91.8); //91.8
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR     = 8; // Named Black in Electronics
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR     = 9;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 13;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(245.7);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(245.7); //245.7
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR     = 6; // Named Orange in Electronics
     public static final int BACK_LEFT_MODULE_STEER_MOTOR     = 7;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER   = 12;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(136.9);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(136.9); //136.9
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR     = 4; // Named White in Electronics
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR     = 5;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 11;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(284);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(284); //284
 
     //
     // CAN IDs for the ball collector and launching system
