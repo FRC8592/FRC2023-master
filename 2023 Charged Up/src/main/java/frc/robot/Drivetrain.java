@@ -179,6 +179,10 @@ public class Drivetrain {
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+    public double getPitch(){
+        return m_navx.getPitch();
+    }
+
 
     public double getAutoHeading() {
         return m_navx.getYaw();
