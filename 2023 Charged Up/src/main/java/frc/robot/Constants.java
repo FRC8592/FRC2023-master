@@ -56,6 +56,31 @@ public final class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
 
     //
+    // CAN IDs for intake hardware (NEEDS SETTING)
+    //
+    public static final int ROLLER_MOTOR    = 0;
+    public static final int BEAM_BREAK      = 0;
+
+    //
+    // Constants and IDs for elevator hardware (NEEDS SETTING)
+    //
+    public static final int ELEVATOR_MOTOR_ID   = 0;
+    public static final int ANGLE_MOTOR_ID      = 0;
+    public static final double ARM_ANGLE        = 60;
+    public static final double STOWED_HEIGHT    = 0;
+    public static final double LOW_HEIGHT       = 1;
+    public static final double MID_HEIGHT       = 2;
+    public static final double HIGH_HEIGHT      = 3;
+
+    //
+    // IDs for claw pneumatics (NEEDS SETTING)
+    //
+    public static final int PNEUMATIC_MODULE_ID = 14;
+    public static final int CLAW_PNEUMATIC_CHANNEL = 15;
+    public static final int MIN_COMPRESSOR_PSI = 60;
+    public static final int MAX_COMPRESSOR_PSI = 100;
+
+    //
     // CAN IDs for the ball collector and launching system
     //
     public static final int newFlywheelLeft      = 22;

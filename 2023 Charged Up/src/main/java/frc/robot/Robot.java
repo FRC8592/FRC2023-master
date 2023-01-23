@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Elevator.ScoreStates;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -47,6 +48,10 @@ public class Robot extends TimedRobot {
   public LED ledStrips;
   public Vision gameObjectVision;
   public String currentPiecePipeline;
+  public Intake intake;
+  public Elevator elevator;
+  public Claw claw;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -65,6 +70,9 @@ public class Robot extends TimedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    intake = new Intake();
+    elevator = new Elevator();
+    claw = new Claw();
     
 
   }
@@ -195,7 +203,47 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
-  }
+
+    if(shooterController.getAButtonPressed()) {
+      intake.intake();
+    }
+
+    if(shooterController.getAButtonPressed()) {
+      intake.outtake();
+    }
+
+    // LeftTrigger = Line up elevator arm to 60 deg and then move to desired position
+    if(driverController.getLeftTriggerAxis() > 0.1 || shooterController.getLeftTriggerAxis() > 0.1) {
+      slowModeToggle = true;
+      fastMode = false;
+
+      ScoreStates goal = ScoreStates.LOW;
+      // Lift arm to set angle
+      elevator.liftArm();
+
+      // Move arm up or down one level
+      //  X = up
+      //  Y = down
+      if(driverController.getXButtonPressed() || shooterController.getXButtonPressed()) {
+        goal = elevator.upOneLevel(goal);
+      } else if (driverController.getYButtonPressed() || shooterController.getYButtonPressed()) {
+        goal = elevator.downOneLevel(goal);
+      }
+
+      // Raise arm to desired distance
+      elevator.set(goal);
+    }
+
+    // RightTrigger = Place piece and move arm back to a stowed position
+    if(driverController.getRightTriggerAxis() > 0.1 || shooterController.getRightTriggerAxis() > 0.1) {
+      claw.openClaw();
+      elevator.set(ScoreStates.STOWED);
+      // Retract claw when arm is back in (tune error value?)
+      if(elevator.getEncoderPosition() < 0.1) {
+        claw.closeClaw();
+      }
+    }
+  } 
 
 
   /** This function is called once when the robot is disabled. */
