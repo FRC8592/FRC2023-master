@@ -158,15 +158,9 @@ public class Robot extends TimedRobot {
     // Normal teleop drive
     //
     
-    //FOR TESTING - hold A to enable smoothing, otherwise normal drive
-    if(driverController.getAButtonPressed()) {
       drive.drive(sf.smooth(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-        -joystickDeadband(rotate), drive.getGyroscopeRotation()))); 
-    } else {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-      -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+      -joystickDeadband(rotate), drive.getGyroscopeRotation()))); // Inverted due to Robot Directions being the
                                                                   // opposite of controller directions
-    }
     
     drive.getCurrentPos();
 
