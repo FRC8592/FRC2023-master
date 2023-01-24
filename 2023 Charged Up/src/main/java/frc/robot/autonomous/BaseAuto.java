@@ -1,4 +1,4 @@
-package frc.robot.autons;
+package frc.robot.autonomous;
 
 import frc.robot.Drivetrain;
 import frc.robot.Robot;

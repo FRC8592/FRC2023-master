@@ -6,8 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.autons.AutonomousSelector;
-import frc.robot.autons.BaseAuto;
+import frc.robot.autonomous.AutonomousSelector;
+import frc.robot.autonomous.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.XboxController;

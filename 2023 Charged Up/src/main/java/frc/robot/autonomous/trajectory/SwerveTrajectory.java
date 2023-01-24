@@ -1,4 +1,4 @@
-package frc.robot.autons.trajectory;
+package frc.robot.autonomous.trajectory;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;

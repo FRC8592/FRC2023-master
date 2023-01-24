@@ -1,4 +1,4 @@
-package frc.robot.autons;
+package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -12,7 +12,8 @@ public class AutonomousSelector {
 
     public Class<?>[] autos = {
         MidParkAuto.class,
-        TopThreePieceAuto.class
+        TopThreePieceAuto.class,
+        TopTwoPieceParkAuto.class
     };
 
     public AutonomousSelector() {

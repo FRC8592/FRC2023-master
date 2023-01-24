@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
-import frc.robot.autons.trajectory.SwerveTrajectory;
+import frc.robot.autonomous.trajectory.SwerveTrajectory;
 
 public class FollowerCommand extends Command {
     private Drivetrain drive;

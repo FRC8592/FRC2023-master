@@ -8,21 +8,35 @@ public class IntakeCommand extends Command {
     private double forSeconds;
     private IntakeMode mode;
     private boolean isDependent;
+    private double delay;
 
     public static enum IntakeMode {
         IN,
         OUT,
     }
 
-    // FOR TESTING
-    public IntakeCommand(double forSeconds) {
-        this.forSeconds = forSeconds;
-    }
-
     // ACTUAL CONSTRUCTOR
     public IntakeCommand(IntakeMode pMode, double forSeconds) {
         mode = pMode;
         this.forSeconds = forSeconds;
+        this.delay = 0;
+    }
+
+    //
+    // FOR TESTING
+    //
+
+    public IntakeCommand(double forSeconds, double delay) {
+        this.forSeconds = forSeconds;
+        this.delay = delay;
+        isDependent = false;
+    }
+
+    public IntakeCommand(IntakeMode mode, double forSeconds, double delay) {
+        this.mode = mode;
+        this.forSeconds = forSeconds;
+        this.delay = delay;
+        isDependent = false;
     }
 
     public IntakeCommand setDependency(boolean dependency) {
@@ -39,8 +53,11 @@ public class IntakeCommand extends Command {
 
     @Override
     public boolean execute() {
-        SmartDashboard.putString("Intaking", mode.toString());
-        return timer.get() >= forSeconds || !isDependent;
+        if (timer.get() >= delay) {
+            SmartDashboard.putString("Intaking", mode.toString());
+            return timer.get() >= forSeconds || isDependent;
+        }
+        return false;
     }
 
     @Override

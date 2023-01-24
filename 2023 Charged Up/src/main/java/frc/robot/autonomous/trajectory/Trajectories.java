@@ -1,4 +1,4 @@
-package frc.robot.autons.trajectory;
+package frc.robot.autonomous.trajectory;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -15,6 +15,11 @@ public enum Trajectories {
     THREEPIECE_A_2("output/output/3Piece_A2.wpilib.json"),
     THREEPIECE_A_3("output/output/3Piece_A3.wpilib.json"),
     THREEPIECE_A_4("output/output/3Piece_A4.wpilib.json"),
+
+    TWOPIECE_PARK_A_1("output/output/2Piece_Park_A1.wpilib.json"),
+    TWOPIECE_PARK_A_2("output/output/2Piece_Park_A2.wpilib.json"),
+    TWOPIECE_PARK_A_3("output/output/2Piece_Park_A3.wpilib.json"),
+    TWOPIECE_PARK_A_4("output/output/2Piece_Park_A4.wpilib.json"),
     ;
 
     private String path;

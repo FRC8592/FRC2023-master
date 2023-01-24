@@ -1,6 +1,6 @@
-package frc.robot.autons;
+package frc.robot.autonomous;
 
-import frc.robot.autons.trajectory.Trajectories;
+import frc.robot.autonomous.trajectory.Trajectories;
 import frc.robot.commands.CommandQueue;
 import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.ScoreCommand.Height;
