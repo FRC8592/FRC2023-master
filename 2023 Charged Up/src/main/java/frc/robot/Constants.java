@@ -43,7 +43,7 @@ public final class Constants {
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR     = 8; // Named Black in Electronics
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR     = 9;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 13;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(245.7); //245.7
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(245.7 - 180); //245.7
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR     = 6; // Named Orange in Electronics
     public static final int BACK_LEFT_MODULE_STEER_MOTOR     = 7;
