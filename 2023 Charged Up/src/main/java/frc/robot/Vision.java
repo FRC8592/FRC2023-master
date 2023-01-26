@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 import java.util.LinkedList;
 
+import org.ejml.dense.row.decomposition.hessenberg.TridiagonalDecompositionHouseholderOrig_DDRM;
+
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
 public class Vision {
@@ -67,13 +69,15 @@ public class Vision {
   private final double DEG_TO_RAD = 0.0174533;
   private final double IN_TO_METERS = 0.0254;
   
+  private FRCLogger logger;
+  
 
   /**
    * This constructor will intialize internal variables for the robot turret
    */
   public Vision(String limelightName, double lockError, double closeError,
                 double cameraHeight, double cameraAngle, double targetHeight,
-                double rotationKP, double rotationKI, double rotationKD) {
+                double rotationKP, double rotationKI, double rotationKD, FRCLogger logger) {
 
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
@@ -102,6 +106,8 @@ public class Vision {
     // Creat the PID controller for turning
     turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
     closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
+    
+    this.logger = logger;
   }
 
 
@@ -128,6 +134,9 @@ public class Vision {
     yError      = ty.getDouble(0.0);
     area        = ta.getDouble(0.0);
     targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
+
+    logger.log(this, "NewestTargetValid", targetValid); //Logging up here instead of down
+    //below because targetValid gets modified with the processed value in a few lines
 
     //generates average of limelight parameters
     previousCoordinates.add(new LimelightData(xError, yError, targetValid));
@@ -157,11 +166,22 @@ public class Vision {
     }
 
     if (Math.abs(processedDx) < closeError) { // Turret is close to locking
-      targetClose = targetValid;              // We are only locked when targetValid
+      targetClose = targetValid;              // We are only close when targetValid
     }           
     else{
       targetClose = false;
     }
+
+    //Log all the data
+    logger.log(this, "NewestDX", xError);
+    logger.log(this, "NewestDY", yError);
+    logger.log(this, "Area", area);
+    logger.log(this, "ProcessedDX", processedDx);
+    logger.log(this, "ProcessedDY", processedDx);
+    logger.log(this, "ProcessedTargetValid", targetValid);
+    logger.log(this, "TargetRange", targetRange);
+    logger.log(this, "TargetLocked", targetLocked);
+    logger.log(this, "TargetClose", targetClose);
 
     //post driver data to smart dashboard periodically
     //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
@@ -220,7 +240,7 @@ public class Vision {
    * 2) if targetValid, turns towards the target using the PID controller output for turn speed
    * 3) if targetValid and processedDx is within our "locked" criteria, stop turning
    * 
-   * @return
+   * @return The turn speed
    */
   public double turnRobot(double visionSearchSpeed){
 
@@ -243,6 +263,8 @@ public class Vision {
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+
+    logger.log(this, "Turn Speed", turnSpeed);
 
     return turnSpeed;
   }
@@ -268,6 +290,8 @@ public class Vision {
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+
+    logger.log(this, "Turn Speed", turnSpeed);
 
     return turnSpeed;
   }
@@ -319,5 +343,8 @@ public class Vision {
       this.ballValid = ballValid;
     }
 
+  }
+  public String getVisionName(){
+    return this.limelightName;
   }
 }
