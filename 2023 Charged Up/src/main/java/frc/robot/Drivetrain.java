@@ -216,10 +216,14 @@ public class Drivetrain {
         SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
         SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
-
+        // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+    }
+
+    public void teleopInitLogSwerve(){
+        logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
     }
 }

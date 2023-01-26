@@ -143,6 +143,7 @@ public class Robot extends LoggedRobot {
     fastMode     = true;
     slowModeToggle = false;
     drive.zeroGyroscope();
+    drive.teleopInitLogSwerve();
 
   }
 
