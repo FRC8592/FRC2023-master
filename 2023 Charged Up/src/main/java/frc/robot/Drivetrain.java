@@ -222,7 +222,6 @@ public class Drivetrain {
             }
         );
 
-
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
@@ -251,10 +250,6 @@ public class Drivetrain {
         m_backRightModule.getSteerController().resetAbsoluteAngle();
     }
 
-    public void teleopInitLogSwerve(){
-        logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
-    }
-
     public void setModule(SwerveModule module, double steerAngle, double velocityMetersPerSecond){
         double velocityToApply;
         if (module.setModuleSteerAngle(steerAngle)){
@@ -279,5 +274,9 @@ public class Drivetrain {
     }
     public void setAutoCurrentLimit(){
         setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_AUTO_CURRENT);
+    }
+
+    public void teleopInitLogSwerve(){
+        logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
     }
 }
