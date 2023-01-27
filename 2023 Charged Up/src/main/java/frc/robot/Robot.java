@@ -24,6 +24,7 @@ import javax.swing.DropMode;
 
 import com.swervedrivespecialties.swervelib.DriveController;
 
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -46,7 +47,10 @@ public class Robot extends TimedRobot {
   private boolean fastMode;
   private boolean slowModeToggle;
   public LED ledStrips;
-  private Rotation2d rotAngle = Rotation2d.fromDegrees(0);
+
+  public Vision gameObjectVision;
+  public String currentPiecePipeline;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -62,7 +66,12 @@ public class Robot extends TimedRobot {
     //shooterController = new XboxController(1);
     DriverStation.reportError("robotInit just ran", false);
     drive = new Drivetrain();
-    //ledStrips = new LED();
+
+    ledStrips = new LED();
+    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    
 
   }
 
@@ -127,21 +136,22 @@ public class Robot extends TimedRobot {
 
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
+    gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
 
-    //if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
-    //  drive.zeroGyroscope();
-    //}
-  
-    // if (driverController.getRightBumperPressed()){
-    //   slowModeToggle = ! slowModeToggle;
-    // }
-    // fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-    if (driverController.getBackButtonPressed() && driverController.getXButtonPressed()){
+    
+    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
     }
+
+  
+    if (driverController.getRightBumperPressed()){
+       slowModeToggle = ! slowModeToggle;
+     }
+     fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+  
 
     if (fastMode) {
       rotatePower    = ConfigRun.ROTATE_POWER_FAST;
@@ -151,38 +161,49 @@ public class Robot extends TimedRobot {
       rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
-      
-    rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-        * rotatePower; // Right joystick
-    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                        // is
-                                                                                                                        // forward
-    //                                                                                                                     // Direction,
-    //                                                                                                                     // Forward
-    //                                                                                                                     // on
-    //                                                                                                                     // Joystick
-    //                                                                                                                     // is
-    //                                                                                                                     // Y
-    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
-    //
-    // Normal teleop drive
-    //
-    // drive.beastMode(0);
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-        -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-    //     0, rotAngle)); // Inverted due to Robot Directions being the
-                                                                 // opposite of controller directions
+    
+    if(driverController.getLeftBumper())
+    {
+      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      double turn = gameObjectVision.turnRobot(1.0);
+      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+    }
+    else{  
+      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+          * rotatePower; // Right joystick
+      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+                                                                                                                          // is
+                                                                                                                          // forward
+                                                                                                                          // Direction,
+                                                                                                                          // Forward
+                                                                                                                          // on
+                                                                                                                          // Joystick
+                                                                                                                          // is
+                                                                                                                          // Y
+      translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+
+      //
+      // Normal teleop drive
+      //
+      
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+    } // Inverted due to Robot Directions being the
+                                                                    // opposite of controller directions
+    
     drive.getCurrentPos();
 
-  //   if (shooterController.getXButtonPressed()){
-  //     ledStrips.setPurple();
-  //   }
-
-  //   if (shooterController.getYButtonPressed()){
-  //     ledStrips.setYellow();
-  //   }
+    if (shooterController.getXButtonPressed()){
+      currentPiecePipeline = "CUBE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      ledStrips.setFullPurple();
+    }
+    
+    if (shooterController.getYButtonPressed()){
+      currentPiecePipeline = "CONE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.setFullYellow();
     }
 
 
