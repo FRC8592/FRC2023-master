@@ -30,7 +30,7 @@ jobs:
       run: git config --global --add safe.directory $GITHUB_WORKSPACE
     
     - name: Change Directory to the 2023 Charged Up directory
-      run: cd "2023 Charge Up"
+      run: cd "2023 Charged Up"
       
 
     # Grant execute permission for gradlew
