@@ -22,6 +22,8 @@ import java.rmi.registry.LocateRegistry;
 
 import javax.swing.DropMode;
 
+import com.swervedrivespecialties.swervelib.DriveController;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -56,7 +58,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    //driverController = new XboxController(0);
+    driverController = new XboxController(0);
     //shooterController = new XboxController(1);
     DriverStation.reportError("robotInit just ran", false);
     drive = new Drivetrain();
@@ -110,6 +112,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
+    drive.zeroGyroscope();
 
   }
 
@@ -136,7 +139,9 @@ public class Robot extends TimedRobot {
     //   slowModeToggle = ! slowModeToggle;
     // }
     // fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-    
+    if (driverController.getBackButtonPressed() && driverController.getXButtonPressed()){
+      drive.zeroGyroscope();
+    }
 
     if (fastMode) {
       rotatePower    = ConfigRun.ROTATE_POWER_FAST;
@@ -147,27 +152,27 @@ public class Robot extends TimedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
       
-    // rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-    //     * rotatePower; // Right joystick
-    // translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-    //                                                                                                                     // is
-    //                                                                                                                     // forward
+    rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+                                                                                                                        // is
+                                                                                                                        // forward
     //                                                                                                                     // Direction,
     //                                                                                                                     // Forward
     //                                                                                                                     // on
     //                                                                                                                     // Joystick
     //                                                                                                                     // is
     //                                                                                                                     // Y
-    // translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     //
     // Normal teleop drive
     //
     // drive.beastMode(0);
-    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-        // -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-        0, rotAngle)); // Inverted due to Robot Directions being the
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+        -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+    //     0, rotAngle)); // Inverted due to Robot Directions being the
                                                                  // opposite of controller directions
     drive.getCurrentPos();
 
@@ -188,8 +193,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-    // 0, rotAngle)); // Inverted due to Robot Directions being the
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+    0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
   }
 
