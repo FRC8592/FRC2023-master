@@ -5,38 +5,60 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IntakeCommand extends Command {
     private Timer timer;
-    private double forSeconds;
-    private IntakeMode mode;
-    private boolean isDependent;
-    private double delay;
 
     public static enum IntakeMode {
         IN,
         OUT,
     }
 
+    private double forSeconds = 0;
+    private double delay = 0;
+    private boolean isDependent = false;
+    private IntakeMode mode = IntakeMode.IN;
+
     // ACTUAL CONSTRUCTOR
-    public IntakeCommand(IntakeMode pMode, double forSeconds) {
-        mode = pMode;
-        this.forSeconds = forSeconds;
-        this.delay = 0;
+    public IntakeCommand(IntakeMode mode, double delay) {
+        this.mode = mode;
+        this.delay = delay;
+        isDependent = true;
     }
 
-    //
-    // FOR TESTING
-    //
+    public IntakeCommand(IntakeMode mode, double delay, String tag) {
+        this.mode = mode;
+        this.delay = delay;
+        isDependent = true;
+        setTag(tag);
+    }
+
+    public IntakeCommand(IntakeMode mode) {
+        this.mode = mode;
+        isDependent = true;
+    }
+
+    // ===============================
+    // CONSTRUCTORS FOR TESTING
+    // ===============================
 
     public IntakeCommand(double forSeconds, double delay) {
         this.forSeconds = forSeconds;
         this.delay = delay;
-        isDependent = false;
     }
 
     public IntakeCommand(IntakeMode mode, double forSeconds, double delay) {
         this.mode = mode;
         this.forSeconds = forSeconds;
         this.delay = delay;
-        isDependent = false;
+    }
+
+    public IntakeCommand(IntakeMode mode, double delay, boolean dependency) {
+        this.mode = mode;
+        this.delay = delay;
+        isDependent = dependency;
+    }
+
+    public IntakeCommand setDelay(double delay) {
+        this.delay = delay;
+        return this;
     }
 
     public IntakeCommand setDependency(boolean dependency) {
@@ -49,12 +71,14 @@ public class IntakeCommand extends Command {
         timer = new Timer();
         timer.reset();
         timer.start();
+        // Initialize intake module
     }
 
     @Override
     public boolean execute() {
         if (timer.get() >= delay) {
             SmartDashboard.putString("Intaking", mode.toString());
+            // Run intake / Open intake claw until game piece in range
             return timer.get() >= forSeconds || isDependent;
         }
         return false;

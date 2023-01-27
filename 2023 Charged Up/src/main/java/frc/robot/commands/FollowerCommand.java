@@ -21,6 +21,13 @@ public class FollowerCommand extends Command {
         timer = new Timer();
     }
 
+    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, String tag) {
+        drive = pDrive;
+        trajectory = pTraj;
+        timer = new Timer();
+        setTag(tag);
+    }
+
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot) {
         drive = pDrive;
         trajectory = pTraj;

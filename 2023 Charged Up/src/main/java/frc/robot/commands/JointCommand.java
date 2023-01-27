@@ -5,6 +5,12 @@ public class JointCommand extends Command {
 
     public JointCommand(Command ... pCommands) {
         commands = pCommands;
+        setTag("JOINT COMMAND");
+    }
+
+    public JointCommand tag(String tag) {
+        setTag(tag);
+        return this;
     }
 
     @Override

@@ -14,18 +14,18 @@ public class TopTwoPieceParkAuto extends BaseAuto {
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new ScoreCommand(Height.HIGH, 1.25),
+            new ScoreCommand(Height.HIGH, scoreTime + 1d,"SCORE PRELOAD"),
             new JointCommand(
                 new FollowerCommand(drive, Trajectories.TWOPIECE_PARK_A_1.toTrajectory()),
-                new IntakeCommand(IntakeMode.OUT, 0, 1).setDependency(true)
-            ),
-            new FollowerCommand(drive, Trajectories.TWOPIECE_PARK_A_2.toTrajectory()),
-            new ScoreCommand(Height.HIGH, 1.25),
+                new IntakeCommand(IntakeMode.OUT, 1d)
+            ).tag("DRIVE AND INTAKE"),
+            new FollowerCommand(drive, Trajectories.TWOPIECE_PARK_A_2.toTrajectory(), "DRIVE TO SECOND PIECE"),
+            new ScoreCommand(Height.HIGH, scoreTime, "SCORE SECOND PIECE"),
             new JointCommand(
                 new FollowerCommand(drive, Trajectories.TWOPIECE_PARK_A_3.toTrajectory()),
-                new IntakeCommand(IntakeMode.OUT, 0, 1).setDependency(true)
-            ),
-            new FollowerCommand(drive, Trajectories.TWOPIECE_PARK_A_4.toTrajectory())
+                new IntakeCommand(IntakeMode.OUT, 1d)
+            ).tag("DRIVE AND INTAKE"),
+            new FollowerCommand(drive, Trajectories.TWOPIECE_PARK_A_4.toTrajectory(), "PARK ON CHARGING STATION")
         );
 
         queue.initialize();

@@ -8,6 +8,8 @@ public abstract class BaseAuto {
     protected Drivetrain drive;
     protected CommandQueue queue;
 
+    protected double scoreTime = 0.25;
+
     public void addModules(Drivetrain pDrive) {
         drive = pDrive;
     }

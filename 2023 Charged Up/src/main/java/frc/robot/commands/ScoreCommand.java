@@ -21,6 +21,12 @@ public class ScoreCommand extends Command {
         this.forSeconds = forSeconds;
     }
 
+    public ScoreCommand(Height pHeight, double forSeconds, String tag) {
+        height = pHeight;
+        this.forSeconds = forSeconds;
+        setTag(tag);
+    }
+
     // ACTUAL CONSTRUCTOR
     public ScoreCommand(Height pHeight) {
         height = pHeight;

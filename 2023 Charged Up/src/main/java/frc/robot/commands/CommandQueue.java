@@ -31,6 +31,8 @@ public class CommandQueue {
 
     public void run() {
         if (!isFinished()) {
+            SmartDashboard.putString("Current Running Command", queue.peek().tag() == "" ? "DEFAULT COMMAND" : queue.peek().tag());
+
             if (queue.peek().execute()) {
                 queue.peek().shutdown();
                 queue.poll();
@@ -38,6 +40,8 @@ public class CommandQueue {
                 timer.start();
                 if (queue.size() != 0) {
                     queue.peek().initialize(timer.get());
+                } else {
+                    SmartDashboard.putString("Current Running Command", "NO COMMAND");
                 }
             }
         }
