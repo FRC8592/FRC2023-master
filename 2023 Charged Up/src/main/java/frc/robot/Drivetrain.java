@@ -183,7 +183,6 @@ public class Drivetrain {
         SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
         SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
         SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
-        logger.log(this, "Position", pos);
         return pos;
     }
 
