@@ -205,11 +205,11 @@ public class Robot extends TimedRobot {
     }
 
     if(shooterController.getAButtonPressed()) {
-      intake.intake();
+      intake.intakeCone();
     }
 
-    if(shooterController.getAButtonPressed()) {
-      intake.outtake();
+    if(shooterController.getBButtonPressed()) {
+      intake.intakeCube();
     }
 
     // LeftTrigger = Line up elevator arm to 60 deg and then move to desired position

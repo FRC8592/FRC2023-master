@@ -20,14 +20,14 @@ public class Intake {
     }
 
     // Active rollers and stop once an item is collected
-    public void intake() {
+    public void intakeCone() {
         if(!beamBreak.get()) {
             rollerMotor.set(motorPID.calculate(rollerMotor.get(), 0.25));
         }
     }
 
-    // Reverse rollers to outtake an object
-    public void outtake() {
+    // Reverse rollers to intake cube
+    public void intakeCube() {
         rollerMotor.set(motorPID.calculate(rollerMotor.get(), -0.25));
     }
 }
