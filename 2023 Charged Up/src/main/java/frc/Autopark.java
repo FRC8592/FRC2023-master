@@ -17,12 +17,14 @@ public class Autopark {
     AutoBalanceStates currentState = AutoBalanceStates.DRIVE_FORWARD;
     
     public boolean balance(Drivetrain drivetrain){
-        
+        currentState = AutoBalanceStates.DRIVE_FORWARD;
         double pitch = drivetrain.getPitch();
         switch (currentState){
             case DRIVE_FORWARD:
+            System.out.println("State is driveforward");
                 if (Math.abs(pitch)<= Constants.LEVEL_PITCH){
-                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.5, 0, 0,  drivetrain.getGyroscopeRotation()));
+                    System.out.println("We are on the ground drive forward");
+                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(1.0, 0, 0,  drivetrain.getGyroscopeRotation()));
                 }
                 else if(pitch > Constants.LEVEL_PITCH)
                 {
@@ -31,6 +33,7 @@ public class Autopark {
                 else{
                     currentState = AutoBalanceStates.PITCH_DOWN;
                 }
+                break;
 
             case PITCH_UP:
                 if(Math.abs(pitch)<=Constants.LEVEL_PITCH){
@@ -43,7 +46,7 @@ public class Autopark {
                 else{
                     drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.5, 0, 0,  drivetrain.getGyroscopeRotation()));
                 }
-
+                break;
             case PITCH_DOWN:
                 if(Math.abs(pitch)<=Constants.LEVEL_PITCH){
                     currentState = AutoBalanceStates.STOP;
@@ -55,9 +58,11 @@ public class Autopark {
                 else{
                     drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.5, 0, 0,  drivetrain.getGyroscopeRotation()));
             }
+            break;
             
             case STOP:
-                drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0,  drivetrain.getGyroscopeRotation()));
+            drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0,  drivetrain.getGyroscopeRotation()));
+            break;  
         }
 
         return  true;
