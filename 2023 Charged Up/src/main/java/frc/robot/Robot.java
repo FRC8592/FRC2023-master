@@ -59,20 +59,20 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    // m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    // m_chooser.addOption("My Auto", kCustomAuto);
+    // SmartDashboard.putData("Auto choices", m_chooser);
 
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    drive = new Drivetrain();
-    ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    // drive = new Drivetrain();
+    // ledStrips = new LED();
+    // gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    //  Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+    //  Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
     intake = new Intake();
-    elevator = new Elevator();
-    claw = new Claw();
+    // elevator = new Elevator();
+    // claw = new Claw();
     
 
   }
@@ -129,120 +129,120 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double rotatePower;
-    double translatePower;
-    double translateX;
-    double translateY;
-    double rotate;
+    // double rotatePower;
+    // double translatePower;
+    // double translateX;
+    // double translateY;
+    // double rotate;
 
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    // SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
-    gameObjectVision.updateVision();
-    //
-    // Read gamepad controls for drivetrain and scale control values
-    //
+    // gameObjectVision.updateVision();
+    // //
+    // // Read gamepad controls for drivetrain and scale control values
+    // //
     
-    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
-      drive.zeroGyroscope();
-    }
+    // if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
+    //   drive.zeroGyroscope();
+    // }
   
-    if (driverController.getRightBumperPressed()){
-      slowModeToggle = ! slowModeToggle;
-    }
-    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    // if (driverController.getRightBumperPressed()){
+    //   slowModeToggle = ! slowModeToggle;
+    // }
+    // fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
     
 
-    if (fastMode) {
-      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
-      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
-    }
-    else {
-      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
-      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
-    }
+    // if (fastMode) {
+    //   rotatePower    = ConfigRun.ROTATE_POWER_FAST;
+    //   translatePower = ConfigRun.TRANSLATE_POWER_FAST;
+    // }
+    // else {
+    //   rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
+    //   translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+    // }
     
-    if(driverController.getLeftBumper())
-    {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else{  
-      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                          // is
-                                                                                                                          // forward
-                                                                                                                          // Direction,
-                                                                                                                          // Forward
-                                                                                                                          // on
-                                                                                                                          // Joystick
-                                                                                                                          // is
-                                                                                                                          // Y
-      translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    // if(driverController.getLeftBumper())
+    // {
+    //   double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+    //   double turn = gameObjectVision.turnRobot(1.0);
+    //   drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+    // }
+    // else{  
+    //   rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+    //       * rotatePower; // Right joystick
+    //   translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+    //                                                                                                                       // is
+    //                                                                                                                       // forward
+    //                                                                                                                       // Direction,
+    //                                                                                                                       // Forward
+    //                                                                                                                       // on
+    //                                                                                                                       // Joystick
+    //                                                                                                                       // is
+    //                                                                                                                       // Y
+    //   translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
-      //
-      // Normal teleop drive
-      //
+    //   //
+    //   // Normal teleop drive
+    //   //
       
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    } // Inverted due to Robot Directions being the
-                                                                    // opposite of controller directions
+    //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+    //       -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+    // } // Inverted due to Robot Directions being the
+    //                                                                 // opposite of controller directions
     
-    drive.getCurrentPos();
+    // drive.getCurrentPos();
 
-    if (shooterController.getXButtonPressed()){
-      currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
-    }
+    // if (shooterController.getXButtonPressed()){
+    //   currentPiecePipeline = "CUBE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    //   ledStrips.setFullPurple();
+    // }
     
-    if (shooterController.getYButtonPressed()){
-      currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
-    }
+    // if (shooterController.getYButtonPressed()){
+    //   currentPiecePipeline = "CONE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    //   ledStrips.setFullYellow();
+    // }
 
     if(shooterController.getAButtonPressed()) {
-      intake.intakeCone();
-    }
-
-    if(shooterController.getBButtonPressed()) {
       intake.intakeCube();
     }
 
-    // LeftTrigger = Line up elevator arm to 60 deg and then move to desired position
-    if(driverController.getLeftTriggerAxis() > 0.1 || shooterController.getLeftTriggerAxis() > 0.1) {
-      slowModeToggle = true;
-      fastMode = false;
-
-      ScoreStates goal = ScoreStates.LOW;
-      // Lift arm to set angle
-      elevator.liftArm();
-
-      // Move arm up or down one level
-      //  X = up
-      //  Y = down
-      if(driverController.getXButtonPressed() || shooterController.getXButtonPressed()) {
-        goal = elevator.upOneLevel(goal);
-      } else if (driverController.getYButtonPressed() || shooterController.getYButtonPressed()) {
-        goal = elevator.downOneLevel(goal);
-      }
-
-      // Raise arm to desired distance
-      elevator.set(goal);
+    if(shooterController.getBButtonPressed()) {
+      intake.intakeCone();
     }
 
-    // RightTrigger = Place piece and move arm back to a stowed position
-    if(driverController.getRightTriggerAxis() > 0.1 || shooterController.getRightTriggerAxis() > 0.1) {
-      claw.openClaw();
-      elevator.set(ScoreStates.STOWED);
-      // Retract claw when arm is back in (tune error value?)
-      if(elevator.getEncoderPosition() < 0.1) {
-        claw.closeClaw();
-      }
-    }
+    // // LeftTrigger = Line up elevator arm to 60 deg and then move to desired position
+    // if(driverController.getLeftTriggerAxis() > 0.1 || shooterController.getLeftTriggerAxis() > 0.1) {
+    //   slowModeToggle = true;
+    //   fastMode = false;
+
+    //   ScoreStates goal = ScoreStates.LOW;
+    //   // Lift arm to set angle
+    //   elevator.liftArm();
+
+    //   // Move arm up or down one level
+    //   //  X = up
+    //   //  Y = down
+    //   if(driverController.getXButtonPressed() || shooterController.getXButtonPressed()) {
+    //     goal = elevator.upOneLevel(goal);
+    //   } else if (driverController.getYButtonPressed() || shooterController.getYButtonPressed()) {
+    //     goal = elevator.downOneLevel(goal);
+    //   }
+
+    //   // Raise arm to desired distance
+    //   elevator.set(goal);
+    // }
+
+    // // RightTrigger = Place piece and move arm back to a stowed position
+    // if(driverController.getRightTriggerAxis() > 0.1 || shooterController.getRightTriggerAxis() > 0.1) {
+    //   claw.openClaw();
+    //   elevator.set(ScoreStates.STOWED);
+    //   // Retract claw when arm is back in (tune error value?)
+    //   if(elevator.getEncoderPosition() < 0.1) {
+    //     claw.closeClaw();
+    //   }
+    // }
   } 
 
 
