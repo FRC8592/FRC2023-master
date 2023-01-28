@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+ // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -18,7 +18,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 public final class Constants {
     // Treat like a static class.  No instantiation
     private Constants() {throw new UnsupportedOperationException();}
-
+    // public static final double JOYSTICK_SCALE_FACTOR = 0.5;
     /**
      * The left-to-right distance between the drivetrain wheels
      *

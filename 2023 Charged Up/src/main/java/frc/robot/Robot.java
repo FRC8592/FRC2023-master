@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     driverController = new XboxController(0);
-    //shooterController = new XboxController(1);
+    shooterController = new XboxController(1);
     DriverStation.reportError("robotInit just ran", false);
     drive = new Drivetrain();
 
@@ -205,7 +205,7 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
-
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
@@ -225,7 +225,10 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
+    SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -240,7 +243,7 @@ public class Robot extends TimedRobot {
     if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
       return 0;
     } else {
-      return inputJoystick;
+      return inputJoystick * 0.3;
     }
   }
 }
