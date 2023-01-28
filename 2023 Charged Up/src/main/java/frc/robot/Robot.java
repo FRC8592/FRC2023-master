@@ -133,6 +133,7 @@ public class Robot extends TimedRobot {
     
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     SmartDashboard.putNumber("pitch", drive.getPitch());
+    SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
     gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values

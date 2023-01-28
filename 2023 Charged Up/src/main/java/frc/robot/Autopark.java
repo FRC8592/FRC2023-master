@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Autopark {
 
@@ -20,7 +21,7 @@ public class Autopark {
         switch (currentState){
             
             case DRIVE_FORWARD:
-                System.out.println("State is driveforward");
+            
 
                 //check if pitch is within 1.5 degrees of 0 to confirm that the robot is in a level state
                 if (Math.abs(pitch) <= Constants.LEVEL_PITCH){
@@ -40,12 +41,11 @@ public class Autopark {
             
             case PITCH_UP:
                 //if level, stop
-                if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
-                    currentState = AutoBalanceStates.STOP;
-                }
-
-                else if (pitch < Constants.LEVEL_PITCH){
+                if (pitch < Constants.LEVEL_PITCH){
                     currentState = AutoBalanceStates.PITCH_DOWN;
+                }
+                else if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
+                    currentState = AutoBalanceStates.STOP;
                 }
                 else{
                     drivetrain.drive(new ChassisSpeeds(0.5, 0, 0));
@@ -55,14 +55,14 @@ public class Autopark {
 
             case PITCH_DOWN:
 
-                if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
-                    currentState = AutoBalanceStates.STOP;
-                }
-                else if (pitch > Constants.LEVEL_PITCH){
+                if (pitch > Constants.LEVEL_PITCH){
                     currentState = AutoBalanceStates.PITCH_UP;
                 }
+                else if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
+                    currentState = AutoBalanceStates.STOP;
+                }
                 else{
-                    drivetrain.drive(new ChassisSpeeds(-0.5, 0, 0));
+                    drivetrain.drive(new ChassisSpeeds(-0.8, 0, 0));
                 }
                 break;
             
@@ -74,4 +74,6 @@ public class Autopark {
 
         return  true;
     }
+
+
 }
