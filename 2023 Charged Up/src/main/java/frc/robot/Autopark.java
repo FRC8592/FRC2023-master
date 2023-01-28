@@ -25,7 +25,7 @@ public class Autopark {
                 //check if pitch is within 1.5 degrees of 0 to confirm that the robot is in a level state
                 if (Math.abs(pitch) <= Constants.LEVEL_PITCH){
                     System.out.println("We are on the ground drive forward");
-                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(1.0, 0, 0,  drivetrain.getGyroscopeRotation()));
+                    drivetrain.drive(new ChassisSpeeds(1, 0, 0));
                 }
                 //if pitched up
                 else if(pitch > Constants.LEVEL_PITCH)
@@ -48,7 +48,7 @@ public class Autopark {
                     currentState = AutoBalanceStates.PITCH_DOWN;
                 }
                 else{
-                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.5, 0, 0,  drivetrain.getGyroscopeRotation()));
+                    drivetrain.drive(new ChassisSpeeds(0.5, 0, 0));
                 }
                 break;
 
@@ -62,7 +62,7 @@ public class Autopark {
                     currentState = AutoBalanceStates.PITCH_UP;
                 }
                 else{
-                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.5, 0, 0,  drivetrain.getGyroscopeRotation()));
+                    drivetrain.drive(new ChassisSpeeds(-0.5, 0, 0));
                 }
                 break;
             
