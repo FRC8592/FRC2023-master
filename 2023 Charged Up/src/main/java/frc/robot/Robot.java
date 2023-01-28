@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.Autopark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -48,6 +49,8 @@ public class Robot extends TimedRobot {
   public LED ledStrips;
   public Vision gameObjectVision;
   public String currentPiecePipeline;
+  public Autopark autoPark;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -66,20 +69,21 @@ public class Robot extends TimedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+      //This is for Autopark
+      autoPark = new Autopark();
+      
+    }
     
-
-  }
-
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
-  @Override
+    /**
+     * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+     * that you want ran during disabled, autonomous, teleoperated and test.
+     *
+     * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+     * SmartDashboard integrated updating.
+     */
+    @Override
   public void robotPeriodic() {}
-
+  
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
    * autonomous modes using the dashboard. The sendable chooser code works with the Java
@@ -96,29 +100,29 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
   }
-
+  
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
       case kCustomAuto:
-        // Put custom auto code here
-        break;
+      // Put custom auto code here
+      break;
       case kDefaultAuto:
       default:
-        // Put default auto code here
-        break;
+      // Put default auto code here
+      break;
     }
   }
-
+  
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-
+    
   }
-
+  
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
@@ -127,13 +131,14 @@ public class Robot extends TimedRobot {
     double translateX;
     double translateY;
     double rotate;
-
+    
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
+    SmartDashboard.putNumber("pitch", drive.getPitch());
     gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
+    
     
     if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
@@ -159,6 +164,8 @@ public class Robot extends TimedRobot {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+    }else if (driverController.getBButton()){
+      autoPark.balance(drive);
     }
     else{  
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
@@ -206,7 +213,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    SmartDashboard.putNumber("pitch", drive.getPitch());
   }
 
   /** This function is called once when test mode is enabled. */
