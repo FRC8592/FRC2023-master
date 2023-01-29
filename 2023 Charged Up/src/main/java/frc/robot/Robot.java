@@ -60,6 +60,8 @@ public class Robot extends LoggedRobot {
   public String currentPiecePipeline;
   public FRCLogger logger;
 
+  private boolean hasRun;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -95,6 +97,8 @@ public class Robot extends LoggedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
     logger = new FRCLogger(true, "CustomLogs");
+
+    hasRun = false;
     
 
   }
@@ -124,6 +128,10 @@ public class Robot extends LoggedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    if (!hasRun){
+      hasRun = true;
+      drive.zeroGyroscope();
+    }
   }
 
   /** This function is called periodically during autonomous. */
@@ -147,6 +155,12 @@ public class Robot extends LoggedRobot {
     slowModeToggle = false;
     drive.zeroGyroscope();
     drive.teleopInitLogSwerve();
+
+    if (!hasRun){
+      drive.zeroGyroscope();
+      hasRun = true;
+    }
+    
 
   }
 
