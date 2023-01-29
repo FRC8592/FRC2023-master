@@ -224,5 +224,10 @@ public final class Falcon500SteerControllerFactoryBuilder {
 
             return motorAngleRadians;
         }
+
+        @Override
+        public TalonFX getSteerMotor() {
+            return motor;
+        }
     }
 }

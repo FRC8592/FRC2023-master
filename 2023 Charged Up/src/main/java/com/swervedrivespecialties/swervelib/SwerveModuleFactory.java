@@ -105,5 +105,10 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         public DriveController getDriveController() {
             return driveController;
         }
+
+        @Override
+        public SteerController getSteerController() {
+            return steerController;
+        }
     }
 }

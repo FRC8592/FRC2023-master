@@ -12,4 +12,6 @@ public interface SwerveModule {
     void setSteerAngle(double voltage);
 
     DriveController getDriveController();
+
+    SteerController getSteerController();
 }

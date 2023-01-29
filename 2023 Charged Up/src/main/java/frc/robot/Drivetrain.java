@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.*;
 
+import org.ejml.dense.row.mult.SubmatrixOps_FDRM;
+
 
 public class Drivetrain {
     /**
@@ -195,7 +197,6 @@ public class Drivetrain {
 
     }
 
-
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
         SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
@@ -203,6 +204,7 @@ public class Drivetrain {
         SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
         return pos;
     }
+
     public void resetPose(Pose2d pose){
         odometry.resetPosition(new Rotation2d(0), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, pose);
     }
@@ -220,11 +222,16 @@ public class Drivetrain {
         getSMPosition(m_backRightModule)});
 
     } 
+
     SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
     }
     
     public void beastMode(double outputValue){
         m_frontLeftModule.getDriveController().getDriveFalcon().set(ControlMode.Current, outputValue);
+        m_backLeftModule.getDriveController().getDriveFalcon().set(ControlMode.Current, outputValue);
+        m_frontRightModule.getDriveController().getDriveFalcon().set(ControlMode.Current, outputValue);
+        m_backRightModule.getDriveController().getDriveFalcon().set(ControlMode.Current, outputValue);
+        SmartDashboard.putNumber("FRONT LEFT STEER VELOCITY", m_frontLeftModule.getSteerController().getSteerMotor().getSelectedSensorVelocity());
     }
 }
