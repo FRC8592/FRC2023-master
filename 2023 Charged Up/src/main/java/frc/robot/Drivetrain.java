@@ -187,6 +187,7 @@ public class Drivetrain {
 
     public void resetPose(Pose2d pose){
         odometry.resetPosition(new Rotation2d(0), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, pose);
+        zeroGyroscope();
     }
     
     public void drive(ChassisSpeeds chassisSpeeds) {
