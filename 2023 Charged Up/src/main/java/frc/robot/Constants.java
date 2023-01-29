@@ -56,7 +56,7 @@ public final class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
 
 
-    public static final double LEVEL_PITCH = 1.6;
+    public static final double LEVEL_PITCH = 3.0;
     //
     // CAN IDs for the ball collector and launching system
     //
