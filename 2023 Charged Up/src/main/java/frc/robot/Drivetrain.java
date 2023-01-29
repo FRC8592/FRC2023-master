@@ -183,6 +183,7 @@ public class Drivetrain {
 
     public void resetPose(Pose2d pose){
         odometry.resetPosition(new Rotation2d(0), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, pose);
+        zeroGyroscope();
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -212,6 +213,6 @@ public class Drivetrain {
     } 
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
-        return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+        return new SwerveModulePosition(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
     }
 }

@@ -23,12 +23,13 @@ import java.rmi.registry.LocateRegistry;
 import javax.swing.DropMode;
 
 import com.swervedrivespecialties.swervelib.DriveController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-
+import frc.robot.autonomous.*;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -50,6 +51,12 @@ public class Robot extends TimedRobot {
 
   public Vision gameObjectVision;
   public String currentPiecePipeline;
+  public static Field2d FIELD = new Field2d();
+  private AutoDrive2 autodrive;
+
+  private AutonomousSelector selector;
+  private BaseAuto selectedAutonomous;
+
 
 
   /**
@@ -72,7 +79,9 @@ public class Robot extends TimedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
     
+     autodrive = new AutoDrive2(0.3, 0, 0, 0.3, 0, 0, 2.0, 0, 0, 1, 0.9, 0.1);
 
+    selector = new AutonomousSelector();
   }
 
   /**
@@ -100,20 +109,39 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    selectedAutonomous = selector.getSelectedAutonomous();
+    selectedAutonomous.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAutonomous.initialize();
+    if (!isReal()) {
+      selectedAutonomous.setInitialSimulationPose();
+    }
+    // drive.resetPose(new Pose2d());
+    // drive.zeroGyroscope();
+    // autodrive.initWaypoints();
+    // autodrive.addWaypoint(new Pose2d(0, -2, new Rotation2d()));
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    selectedAutonomous.periodic();
+    // Pose2d pos = drive.getCurrentPos();
+    // Pose2d robotPos = new Pose2d(pos.getX() * 100, pos.getY() * 100, pos.getRotation());
+    // ChassisSpeeds speeds = autodrive.moveTo(new Pose2d(0, 2, new Rotation2d()), robotPos);
+    // double autoDriveX = robotPos.getX();
+    // double autoDriveY = robotPos.getY();
+    // SmartDashboard.putNumber("AutoDriveX", autoDriveX);
+    // SmartDashboard.putNumber("AutoDriveY", autoDriveY);
+
+
+
+    // ChassisSpeeds ChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getGyroscopeRotation());
+    // SmartDashboard.putNumber("CS X", ChassisSpeed.vxMetersPerSecond);
+    // SmartDashboard.putNumber("CS Y", ChassisSpeed.vyMetersPerSecond);
+    
+    // // ChassisSpeeds speeds = autodrive.moveToWayPoint(robotPos);
+    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getGyroscopeRotation()));
   }
 
   /** This function is called once when teleop is enabled. */
@@ -122,7 +150,6 @@ public class Robot extends TimedRobot {
     fastMode     = true;
     slowModeToggle = false;
     drive.zeroGyroscope();
-
   }
 
   /** This function is called periodically during operator control. */
