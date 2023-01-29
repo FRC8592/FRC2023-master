@@ -218,4 +218,9 @@ public class Drivetrain {
     public void teleopInitLogSwerve(){
         logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
     }
+
+
+    public void beastMode(){
+        
+    }
 }
