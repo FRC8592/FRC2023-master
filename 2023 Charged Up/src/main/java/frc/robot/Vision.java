@@ -15,57 +15,59 @@ import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 public class Vision {
   
   //constants passed in during initilization 
-  private double lockError;
-  private double closeError;
-  private double cameraHeight;
-  private double cameraAngle;
-  private double targetHeight;
-  private double rotationKP;
-  private double rotationKI;
-  private double rotationKD;
-  private double closeRotationKP;
-  private double closeRotationKI;
-  private double closeRotationKD;
+  protected double lockError;
+  protected double closeError;
+  protected double cameraHeight;
+  protected double cameraAngle;
+  protected double targetHeight;
+  protected double rotationKP;
+  protected double rotationKI;
+  protected double rotationKD;
+  protected double closeRotationKP;
+  protected double closeRotationKI;
+  protected double closeRotationKD;
   // Network Table entries
-  private NetworkTableEntry tx;   // Angle error (x) from LimeLight camera
-  private NetworkTableEntry ty;   // Angle error (y) from LimeLight camera
-  private NetworkTableEntry ta;   // Target area measurement from LimeLight camera
-  private NetworkTableEntry tv;   // Target valid indicator from Limelight camera
+  protected NetworkTableEntry tx;   // Angle error (x) from LimeLight camera
+  protected NetworkTableEntry ty;   // Angle error (y) from LimeLight camera
+  protected NetworkTableEntry ta;   // Target area measurement from LimeLight camera
+  protected NetworkTableEntry tv;   // Target valid indicator from Limelight camera
   // Shared variables
   public boolean targetValid;     // Indicate when the Limelight camera has found a target
   public boolean targetLocked;    // Indicate when the turret is centered on the target
   public boolean targetClose;     // Indicate when the robot is close to centered on the target
   public double  targetRange;     // Range from robot to target (inches)
   public Timer timer;
-  private double processedDx = 0;
-  private double processedDy = 0;
-  //Private autoaim variables
-  private double turnSpeed;
-  private double lastTime  = 0;
-  private double xtime     = 0;
-  private double lastAngle = 0;
-  private double changeInAngleError = 0;
+  protected double processedDx = 0;
+  protected double processedDy = 0;
+  //protected autoaim variables
+  protected double turnSpeed;
+  protected double lastTime  = 0;
+  protected double xtime     = 0;
+  protected double lastAngle = 0;
+  protected double changeInAngleError = 0;
 
   // PID controller for turning;
-  private PIDController turnPID;
-  private PIDController closeTurnPID;
+  protected PIDController turnPID;
+  protected PIDController closeTurnPID;
   //constants for averaging limelight averages
-  private int MIN_LOCKS = 3;
-  private int STAT_SIZE = 5; 
+  protected int MIN_LOCKS = 3;
+  protected int STAT_SIZE = 5; 
 
-  private LinkedList<LimelightData> previousCoordinates;
+  protected LinkedList<LimelightData> previousCoordinates;
 
-  private String limelightName;
+  protected String limelightName;
 
-  private double optDistance;
-  private double distanceFeet;
+  protected double optDistance;
+  protected double distanceFeet;
 
   // Pipeline constants
-  private static int BLUE_PIPELINE = 1;
-  private static int RED_PIPELINE = 0;
+  protected static int RETROREFLECTIVE_PIPELINE = 3;
+  protected static int APRILTAGS2D_PIPELINE = 2;
+  protected static int CUBE_PIPELINE = 1;
+  protected static int CONE_PIPELINE = 0;
 
-  private final double DEG_TO_RAD = 0.0174533;
-  private final double IN_TO_METERS = 0.0254;
+  protected final double DEG_TO_RAD = 0.0174533;
+  protected final double IN_TO_METERS = 0.0254;
   
 
   /**
@@ -308,7 +310,7 @@ public class Vision {
   /**
    * Local class used to store a history of limelight data to allow averaging
    */
-  private class LimelightData{ 
+  protected class LimelightData{ 
     double dx;
     double dy;
     boolean ballValid;

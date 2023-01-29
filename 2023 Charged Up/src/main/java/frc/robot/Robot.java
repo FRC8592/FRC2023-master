@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.AprilTags.ObservationNode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
   private boolean fastMode;
   private boolean slowModeToggle;
   public LED ledStrips;
+  public AprilTags aprilTags;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -56,8 +58,9 @@ public class Robot extends TimedRobot {
 
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    drive = new Drivetrain();
+    //drive = new Drivetrain();
     ledStrips = new LED();
+    aprilTags = new AprilTags("limelight",0,0,0,0,0,0,0,0);
 
   }
 
@@ -113,7 +116,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    double rotatePower;
+    /*double rotatePower;
     double translatePower;
     double translateX;
     double translateY;
@@ -176,6 +179,9 @@ public class Robot extends TimedRobot {
     if (shooterController.getYButtonPressed()){
       ledStrips.setYellow();
     }
+
+    drive.getFalconEncoder();
+    */
   }
 
 
@@ -193,7 +199,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    SmartDashboard.putString("Pose 3d", aprilTags.getObservation().toString());
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
