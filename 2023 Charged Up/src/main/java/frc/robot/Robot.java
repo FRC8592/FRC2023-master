@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.AutoDrive2;
 import frc.robot.autonomous.AutonomousSelector;
 import frc.robot.autonomous.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.XboxController;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.rmi.registry.LocateRegistry;
 
@@ -38,12 +40,13 @@ public class Robot extends TimedRobot {
 
   private boolean fastMode;
   private boolean slowModeToggle;
-  public LED ledStrips;
   public Vision gameObjectVision;
   public String currentPiecePipeline;
 
   private AutonomousSelector selector;
   private BaseAuto selectedAutonomous;
+
+  private AutoDrive2 autodrive;
 
   public static Field2d FIELD = new Field2d();
 
@@ -89,18 +92,27 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    selectedAutonomous = selector.getSelectedAutonomous();
-    selectedAutonomous.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
-    selectedAutonomous.initialize();
-    if (!isReal()) {
-      selectedAutonomous.setInitialSimulationPose();
-    }
+    // selectedAutonomous = selector.getSelectedAutonomous();
+    // selectedAutonomous.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
+    // selectedAutonomous.initialize();
+    // if (!isReal()) {
+    //   selectedAutonomous.setInitialSimulationPose();
+    // }
+    drive.resetPose(new Pose2d());
+    autodrive = new AutoDrive2(2.0, 0, 0, 2.0, 0, 0, 2.0, 0, 0, 1, 0.9, 0.1);
+    drive.zeroGyroscope();
+    autodrive.initWaypoints();
+    autodrive.addWaypoint(new Pose2d(0, -2, new Rotation2d()));
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    selectedAutonomous.periodic();
+    // selectedAutonomous.periodic();
+    Pose2d pos = drive.getCurrentPos();
+    Pose2d robotPos = new Pose2d(pos.getX() * 1, pos.getY() * 1, pos.getRotation());
+    ChassisSpeeds speeds = autodrive.moveToWayPoint(robotPos);
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getGyroscopeRotation()));
   }
 
   /** This function is called once when teleop is enabled. */
@@ -176,6 +188,8 @@ public class Robot extends TimedRobot {
                                                                     // opposite of controller directions
     
     drive.getCurrentPos();
+
+    
 
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
