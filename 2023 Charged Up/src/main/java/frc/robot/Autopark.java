@@ -23,30 +23,30 @@ public class Autopark {
             case DRIVE_FORWARD:
             
 
-                //check if pitch is within 1.5 degrees of 0 to confirm that the robot is in a level state
-                if (Math.abs(pitch) <= Constants.LEVEL_PITCH){
-                    drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
-                }
-                //if pitched up
-                else if(pitch > Constants.LEVEL_PITCH)
+            
+            //if pitched up
+                if(pitch > Constants.LEVEL_PITCH)
                 {
                     currentState = AutoBalanceStates.PITCH_UP;
                 }
                 //if pitched down
                 else if (pitch < -Constants.LEVEL_PITCH){
                     currentState = AutoBalanceStates.PITCH_DOWN;
+                }else {
+                    drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
+
                 }
                 break;
             
             case PITCH_UP:
             //if level, stop
-            if (pitch < Constants.LEVEL_PITCH){
-                currentState = AutoBalanceStates.PITCH_DOWN;
-            }
-            else if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
-                currentState = AutoBalanceStates.STOP;
-            }
-            else{
+                if (pitch < Constants.LEVEL_PITCH){
+                    currentState = AutoBalanceStates.PITCH_DOWN;
+                }
+                else if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
+                    currentState = AutoBalanceStates.STOP;
+                }
+                else{
                     drivetrain.drive(new ChassisSpeeds(0.2 * (pitch / 100), 0, 0));
                 }
                 break;
