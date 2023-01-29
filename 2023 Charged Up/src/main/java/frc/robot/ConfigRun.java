@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
+
 public final class ConfigRun {
     // Treat like a static class.  No instantiation
     private ConfigRun(){throw new UnsupportedOperationException();}
@@ -37,6 +40,8 @@ public final class ConfigRun {
     public static final double MAX_SWERVE_DRIVE_CURRENT = 15.0; // Lower values will reduce acceleration
     public static final double MAX_SWERVE_STEER_CURRENT = 10.0; // Lower values will turn slower
 
+    public static final SupplyCurrentLimitConfiguration BEAST_MODE_CURRENT_LIMIT_CONFIGURATION = new SupplyCurrentLimitConfiguration(true, 30, 40, 5.0);
+    public static final SupplyCurrentLimitConfiguration NORMAL_MODE_CURRENT_LIMIT_CONFIGURATION = new SupplyCurrentLimitConfiguration(true, MAX_SWERVE_DRIVE_CURRENT, 40, 5.0);
     //
     // Speeds for autonomous ball collecting
     //

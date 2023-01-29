@@ -174,7 +174,7 @@ public class Robot extends LoggedRobot {
     double rotate;
 
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
+    SmartDashboard.putString("Swerve Mode", drive.getSwerveMode());
     gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values

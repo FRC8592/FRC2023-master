@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 
 import static frc.robot.Constants.*;
 
@@ -35,7 +37,10 @@ public class Drivetrain {
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
     
+    
     private FRCLogger logger;
+
+    public String swerveMode = "NORMAL";
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -220,7 +225,26 @@ public class Drivetrain {
     }
 
 
-    public void beastMode(){
-        
+    public void beastModeOn(){
+        swerveMode = "BEAST";
+        m_frontLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.BEAST_MODE_CURRENT_LIMIT_CONFIGURATION);
+        m_backLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.BEAST_MODE_CURRENT_LIMIT_CONFIGURATION);
+        m_frontRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.BEAST_MODE_CURRENT_LIMIT_CONFIGURATION);
+        m_backRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.BEAST_MODE_CURRENT_LIMIT_CONFIGURATION);
+        // SmartDashboard.putNumber("FRONT LEFT STEER VELOCITY", m_frontLeftModule.getSteerController().getSteerMotor().getSelectedSensorVelocity());
     }
+    public void beastModeOff(){
+        swerveMode = "NORMAL";
+        m_frontLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.NORMAL_MODE_CURRENT_LIMIT_CONFIGURATION);
+        m_backLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.NORMAL_MODE_CURRENT_LIMIT_CONFIGURATION);
+        m_frontRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.NORMAL_MODE_CURRENT_LIMIT_CONFIGURATION);
+        m_backRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(ConfigRun.NORMAL_MODE_CURRENT_LIMIT_CONFIGURATION);
+        // SmartDashboard.putNumber("FRONT LEFT STEER VELOCITY", m_frontLeftModule.getSteerController().getSteerMotor().getSelectedSensorVelocity());
+    }
+
+    public String getSwerveMode(){
+        return swerveMode;
+    }
+
+
 }
