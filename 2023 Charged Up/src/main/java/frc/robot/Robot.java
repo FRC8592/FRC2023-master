@@ -164,8 +164,6 @@ public class Robot extends TimedRobot {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }else if (driverController.getBButton()){
-      autoPark.balance(drive);
     }
     else{  
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
@@ -202,6 +200,10 @@ public class Robot extends TimedRobot {
       currentPiecePipeline = "CONE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
+    }
+
+    if (driverController.getBButton()){
+      autoPark.balance(drive);
     }
   }
 

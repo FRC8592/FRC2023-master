@@ -17,6 +17,7 @@ public class Autopark {
     
     public boolean balance(Drivetrain drivetrain){
         double pitch = drivetrain.getPitch();
+        System.out.println(currentState.toString() + pitch);
         switch (currentState){
             
             case DRIVE_FORWARD:
@@ -24,7 +25,6 @@ public class Autopark {
 
                 //check if pitch is within 1.5 degrees of 0 to confirm that the robot is in a level state
                 if (Math.abs(pitch) <= Constants.LEVEL_PITCH){
-                    System.out.println("DRIVE_FORWARD");
                     drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
                 }
                 //if pitched up
@@ -33,7 +33,7 @@ public class Autopark {
                     currentState = AutoBalanceStates.PITCH_UP;
                 }
                 //if pitched down
-                else{
+                else if (pitch < -Constants.LEVEL_PITCH){
                     currentState = AutoBalanceStates.PITCH_DOWN;
                 }
                 break;
@@ -47,7 +47,6 @@ public class Autopark {
                 currentState = AutoBalanceStates.STOP;
             }
             else{
-                    System.out.println("PITCH_UP" + 0.2 * (pitch / 100));
                     drivetrain.drive(new ChassisSpeeds(0.2 * (pitch / 100), 0, 0));
                 }
                 break;
@@ -63,14 +62,12 @@ public class Autopark {
                         currentState = AutoBalanceStates.STOP;
                     }
                     else{
-                        System.out.println("PITCH_DOWN");
                         drivetrain.drive(new ChassisSpeeds(-1.5, 0, 0));
                     }
                     break;
                     
                     
                 case STOP:
-                    System.out.println("STOP");
                     drivetrain.drive(new ChassisSpeeds(0, 0, 0));
                     break;  
                 }
