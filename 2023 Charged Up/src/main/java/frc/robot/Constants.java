@@ -64,13 +64,21 @@ public final class Constants {
     //
     // Constants and IDs for elevator hardware (NEEDS SETTING)
     //
-    public static final int ELEVATOR_MOTOR_ID   = 0;
-    public static final int ANGLE_MOTOR_ID      = 0;
-    public static final double ARM_ANGLE        = 60;
-    public static final double STOWED_HEIGHT    = 0;
-    public static final double LOW_HEIGHT       = 1;
-    public static final double MID_HEIGHT       = 2;
-    public static final double HIGH_HEIGHT      = 3;
+    public static final int ELEVATOR_MOTOR_ID        = 0;
+    public static final int ANGLE_MOTOR_ID           = 0;
+    public static final double ARM_ANGLE_OUT         = 30;
+    public static final double ARM_ANGLE_IN          = 90;
+    public static final double STOWED_HEIGHT_CONE    = 0;
+    public static final double LOW_HEIGHT_CONE       = 1;
+    public static final double MID_HEIGHT_CONE       = 2;
+    public static final double HIGH_HEIGHT_CONE      = 3;
+    public static final double STOWED_HEIGHT_CUBE    = 0;
+    public static final double LOW_HEIGHT_CUBE       = 1;
+    public static final double MID_HEIGHT_CUBE       = 2;
+    public static final double HIGH_HEIGHT_CUBE      = 3;
+    public static final double LIFT_GEARBOX_RATIO    = 1;
+    public static final double TILT_GEARBOX_RATIO    = 1.0 / 125.0;
+    public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
 
     //
     // IDs for claw pneumatics (NEEDS SETTING)
