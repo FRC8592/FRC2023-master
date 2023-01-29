@@ -1,7 +1,8 @@
 package frc.robot;
 
 import com.swervedrivespecialties.swervelib.SwerveModule;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.apriltag.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -99,63 +100,87 @@ public class FRCLogger {
                 double[] resultDegrees = new double[2];
                 resultDegrees[0] = Math.toDegrees(swerveModule.getSteerAngle());
                 resultDegrees[1] = swerveModule.getDriveVelocity();
-                double[] resultRadians = new double[2];
-                resultRadians[0] = swerveModule.getSteerAngle();
-                resultRadians[1] = swerveModule.getDriveVelocity();
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Degrees",
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name,
                         resultDegrees);
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Radians",
-                        resultRadians);
             }
             if (data instanceof SwerveModule[]) {
                 SwerveModule[] swerveModules = (SwerveModule[]) data;
                 double[] resultDegrees = new double[2 * swerveModules.length];
-                double[] resultRadians = new double[2 * swerveModules.length];
                 for (int i = 0; i < swerveModules.length; i++) {
                     resultDegrees[i * 2] = Math.toDegrees(swerveModules[i].getSteerAngle());
                     resultDegrees[i * 2 + 1] = swerveModules[i].getDriveVelocity();
-                    resultRadians[i * 2] = swerveModules[i].getSteerAngle();
-                    resultRadians[i * 2 + 1] = swerveModules[i].getDriveVelocity();
                 }
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Degrees",
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name,
                         resultDegrees);
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Radians",
-                        resultRadians);
             }
             if (data instanceof Pose2d) {
                 Pose2d pose = (Pose2d) data;
-                double[] resultMetersDegrees = new double[3];
-                double[] resultMetersRadians = new double[3];
-                double[] resultInchesDegrees = new double[3];
-                double[] resultInchesRadians = new double[3];
-                resultMetersDegrees[0] = pose.getX();
-                resultMetersDegrees[1] = pose.getY();
-                resultMetersDegrees[2] = pose.getRotation().getDegrees();
-                resultMetersRadians[0] = pose.getX();
-                resultMetersRadians[1] = pose.getY();
-                resultMetersRadians[2] = pose.getRotation().getRadians();
-                resultInchesDegrees[0] = pose.getX() * 39.3701;
-                resultInchesDegrees[1] = pose.getY() * 39.3701;
-                resultInchesDegrees[2] = pose.getRotation().getDegrees();
-                resultInchesRadians[0] = pose.getX() * 39.3701;
-                resultInchesRadians[1] = pose.getY() * 39.3701;
-                resultInchesRadians[2] = pose.getRotation().getRadians();
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Meters-Degrees",
-                        resultMetersDegrees);
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Meters-Radians",
-                        resultMetersRadians);
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Inches-Degrees",
-                        resultInchesDegrees);
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Inches-Radians",
-                        resultInchesRadians);
+                double[] result = new double[3];
+                result[0] = pose.getX() * 39.3701;
+                result[1] = pose.getY() * 39.3701;
+                result[2] = pose.getRotation().getDegrees();
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name,
+                        result);
             }
             if (data instanceof Rotation2d) {
                 Rotation2d rotation = (Rotation2d) data;
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "Degrees",
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Degrees",
                         rotation.getDegrees());
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "Radians",
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Radians",
                         rotation.getRadians());
             }
+
+            //2023 objects
+
+            if (data instanceof Pose3d) {
+                Pose3d pose = (Pose3d) data;
+                double[] result = new double[7];
+                double[] resultXYZ = new double[6];
+                result[0] = pose.getX();
+                result[1] = pose.getY();
+                result[2] = pose.getZ();
+                result[3] = pose.getRotation().getQuaternion().getW();
+                result[4] = pose.getRotation().getQuaternion().getX();
+                result[5] = pose.getRotation().getQuaternion().getY();
+                result[6] = pose.getRotation().getQuaternion().getZ();
+                resultXYZ[0] = pose.getX();
+                resultXYZ[1] = pose.getY();
+                resultXYZ[2] = pose.getZ();
+                resultXYZ[3] = pose.getRotation().getX();
+                resultXYZ[4] = pose.getRotation().getY();
+                resultXYZ[5] = pose.getRotation().getZ();
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Quaternion",
+                        result);
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/XYZ",
+                        resultXYZ);
+            }
+            if (data instanceof Rotation3d) {
+                Rotation3d rotation = (Rotation3d) data;
+                double[] resultQ = new double[4];
+                double[] resultXYZ = new double[3];
+                resultXYZ[0] = rotation.getX();
+                resultXYZ[1] = rotation.getY();
+                resultXYZ[2] = rotation.getZ();
+                resultQ[0] = rotation.getQuaternion().getW();
+                resultQ[1] = rotation.getQuaternion().getX();
+                resultQ[2] = rotation.getQuaternion().getY();
+                resultQ[3] = rotation.getQuaternion().getZ();
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Quaternion",
+                        resultQ);
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/XYZ",
+                        resultXYZ);
+            }
+            if (data instanceof Quaternion) {
+                Quaternion rotation = (Quaternion) data;
+                double[] resultQ = new double[4];
+                resultQ[0] = rotation.getW();
+                resultQ[1] = rotation.getX();
+                resultQ[2] = rotation.getY();
+                resultQ[3] = rotation.getZ();
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Quaternion",
+                        resultQ);
+            }
+            
         }
     }
 }
