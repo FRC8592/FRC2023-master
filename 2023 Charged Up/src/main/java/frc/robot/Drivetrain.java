@@ -158,6 +158,7 @@ public class Drivetrain {
         );
 
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
+
     }
 
     /**
@@ -213,6 +214,7 @@ public class Drivetrain {
             }
         );
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
+        logger.log(this, "Odometry", getCurrentPos());
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
 
@@ -246,5 +248,12 @@ public class Drivetrain {
         return swerveMode;
     }
 
-
+    public void updateOdometry(){
+        odometry.update(getGyroscopeRotation(), new SwerveModulePosition[] {
+            new SwerveModulePosition(m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition() / 2048 / 6.75 * Constants.WHEEL_DIAMETER * Math.PI, new Rotation2d(m_frontRightModule.getSteerAngle())),
+            new SwerveModulePosition(m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition() / 2048 / 6.75 * Constants.WHEEL_DIAMETER * Math.PI, new Rotation2d(m_frontLeftModule.getSteerAngle())),
+            new SwerveModulePosition(m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition() / 2048 / 6.75 * Constants.WHEEL_DIAMETER * Math.PI, new Rotation2d(m_backRightModule.getSteerAngle())),
+            new SwerveModulePosition(m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition() / 2048 / 6.75 * Constants.WHEEL_DIAMETER * Math.PI, new Rotation2d(m_backLeftModule.getSteerAngle())),
+        });
+    }
 }

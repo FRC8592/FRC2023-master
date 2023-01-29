@@ -227,6 +227,6 @@ public final class Constants {
     public static final int CUBE_PIPELINE = 1;
     public static final int CONE_PIPELINE = 0;
 
-
+    public static final double WHEEL_DIAMETER = 4.0;
 }
 
