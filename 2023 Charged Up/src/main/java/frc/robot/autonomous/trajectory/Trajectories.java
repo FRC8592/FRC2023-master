@@ -20,6 +20,9 @@ public enum Trajectories {
     TWOPIECE_PARK_A_2("output/output/2Piece_Park_A2.wpilib.json"),
     TWOPIECE_PARK_A_3("output/output/2Piece_Park_A3.wpilib.json"),
     TWOPIECE_PARK_A_4("output/output/2Piece_Park_A4.wpilib.json"),
+
+    TEST_1("output/output/Test1.wpilib.json"),
+    TEST_2("output/output/Test2.wpilib.json"),
     ;
 
     private String path;

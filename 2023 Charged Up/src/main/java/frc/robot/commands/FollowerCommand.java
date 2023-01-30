@@ -48,8 +48,10 @@ public class FollowerCommand extends Command {
         if (!Robot.isReal()) {
             simulateRobotPose(trajectory.trajectory().sample(time).poseMeters, speeds);
         }
+        
+        ChassisSpeeds newSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
 
-        drive.drive(speeds);
+        drive.drive(newSpeeds);
         
         return time >= trajectory.trajectory().getTotalTimeSeconds();
     }
