@@ -190,10 +190,15 @@ public class Drivetrain {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-        m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-        m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+        setDriveVelocity(metersPerSecondToTicks(states[0].speedMetersPerSecond), m_frontLeftModule);
+        setDriveVelocity(metersPerSecondToTicks(states[1].speedMetersPerSecond), m_frontRightModule);
+        setDriveVelocity(metersPerSecondToTicks(states[2].speedMetersPerSecond), m_backLeftModule);
+        setDriveVelocity(metersPerSecondToTicks(states[3].speedMetersPerSecond), m_backRightModule);
+
+        m_frontLeftModule.setSteerAngle(states[0].angle.getRadians());
+        m_frontRightModule.setSteerAngle(states[1].angle.getRadians());
+        m_backLeftModule.setSteerAngle(states[2].angle.getRadians());
+        m_backRightModule.setSteerAngle(states[3].angle.getRadians());
         
         this.odometry.update(
             getGyroscopeRotation(), 
@@ -216,8 +221,12 @@ public class Drivetrain {
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
     }
 
-    public void setDriveVelocity(double inputVelocity, double inputAngleVelocityInRadians, SwerveModule module){
+    public void setDriveVelocity(double inputVelocity, SwerveModule module){
         module.getDriveController().getDriveFalcon().set(ControlMode.Velocity, inputVelocity);
 
+    }
+
+    public double metersPerSecondToTicks(double input){
+        return input * Constants.METERS_PER_SECOND_TO_TICKS;
     }
 }

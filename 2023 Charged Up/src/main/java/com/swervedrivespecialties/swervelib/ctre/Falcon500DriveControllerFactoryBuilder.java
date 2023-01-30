@@ -12,12 +12,16 @@ import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
-
+    
     private static final int CAN_TIMEOUT_MS = 250;
     private static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
-
+    
     private double nominalVoltage = Double.NaN;
     private double currentLimit = Double.NaN;
+    
+    private double proportionalConstant = Double.NaN;
+    private double integralConstant = Double.NaN;
+    private double derivativeConstant = Double.NaN;
 
     public Falcon500DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
         this.nominalVoltage = nominalVoltage;
@@ -41,6 +45,19 @@ public final class Falcon500DriveControllerFactoryBuilder {
         return Double.isFinite(currentLimit);
     }
 
+    
+    public Falcon500DriveControllerFactoryBuilder withPidConstants(double proportional, double integral, double derivative) {
+        this.proportionalConstant = proportional;
+        this.integralConstant = integral;
+        this.derivativeConstant = derivative;
+        return this;
+    }
+
+    public boolean hasPidConstants() {
+        return Double.isFinite(proportionalConstant) && Double.isFinite(integralConstant) && Double.isFinite(derivativeConstant);
+    }
+
+
     private class FactoryImplementation implements DriveControllerFactory<ControllerImplementation, Integer> {
         @Override
         public ControllerImplementation create(Integer driveConfiguration, ModuleConfiguration moduleConfiguration) {
@@ -48,6 +65,12 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
             double sensorPositionCoefficient = Math.PI * moduleConfiguration.getWheelDiameter() * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
+
+            if (hasPidConstants()) {
+                motorConfiguration.slot0.kP = proportionalConstant;
+                motorConfiguration.slot0.kI = integralConstant;
+                motorConfiguration.slot0.kD = derivativeConstant;
+            }
 
             if (hasVoltageCompensation()) {
                 motorConfiguration.voltageCompSaturation = nominalVoltage;
@@ -70,6 +93,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
             motor.setInverted(moduleConfiguration.isDriveInverted() ? TalonFXInvertType.Clockwise : TalonFXInvertType.CounterClockwise);
             motor.setSensorPhase(true);
+            
 
             // Reduce CAN status frame rates
             CtreUtils.checkCtreError(

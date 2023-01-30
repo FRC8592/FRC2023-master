@@ -15,18 +15,19 @@ public final class Falcon500SteerControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
 
     // PID configuration
-    private double proportionalConstant = Double.NaN;
-    private double integralConstant = Double.NaN;
-    private double derivativeConstant = Double.NaN;
-
+    
     // Motion magic configuration
     private double velocityConstant = Double.NaN;
     private double accelerationConstant = Double.NaN;
     private double staticConstant = Double.NaN;
-
+    
     private double nominalVoltage = Double.NaN;
     private double currentLimit = Double.NaN;
-
+    
+    private double proportionalConstant = Double.NaN;
+    private double integralConstant = Double.NaN;
+    private double derivativeConstant = Double.NaN;
+    
     public Falcon500SteerControllerFactoryBuilder withPidConstants(double proportional, double integral, double derivative) {
         this.proportionalConstant = proportional;
         this.integralConstant = integral;
