@@ -13,7 +13,8 @@ public class AutonomousSelector {
     public Class<?>[] autos = {
         MidParkAuto.class,
         TopThreePieceAuto.class,
-        TopTwoPieceParkAuto.class
+        TopTwoPieceParkAuto.class,
+        WaypointAuto.class
     };
 
     public AutonomousSelector() {

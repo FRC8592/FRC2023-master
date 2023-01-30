@@ -33,6 +33,8 @@ public class Drivetrain {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
+    private final double kWheelCircumference = 4*Math.PI;
+    private final double kFalconTicksToMeters = 1.0 / 4096.0 / kWheelCircumference;
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -98,7 +100,7 @@ public class Drivetrain {
                     .withPosition(0, 0),
             // Motor configuration
             swerveMotorConfig,
-            // This can either be L!, L2, L3 or L4
+            // This can either be L1, L2, L3 or L4
             Mk4iSwerveModuleHelper.GearRatio.L2,
             // This is the ID of the drive motor
             FRONT_LEFT_MODULE_DRIVE_MOTOR,
@@ -150,14 +152,9 @@ public class Drivetrain {
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
     }
 
-    /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
-     * 'forwards' direction.
-     */
+    // Sets the yaw of the gyroscope to 0
     public void zeroGyroscope() {
-        // FIXME Remove if you are using a Pigeon
-        // m_pigeon.setFusedHeading(0.0);
-        m_navx.zeroYaw();   // We're using a NavX
+        m_navx.zeroYaw();
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -186,6 +183,20 @@ public class Drivetrain {
         zeroGyroscope();
     }
 
+    public void resetEncoder(){
+        m_frontLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_frontRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_backLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_backRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+    }
+
+    public void getSwervePositions() {
+        SmartDashboard.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Front Right Posiiton", m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Back Left Posiiton", m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Back Right Posiiton", m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+    }
+
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
@@ -210,9 +221,11 @@ public class Drivetrain {
         SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
         SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
 
+        getSwervePositions();
+        getCurrentPos();
     } 
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
-        return new SwerveModulePosition(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
+        return new SwerveModulePosition(mod.getDriveController().getDriveFalcon().getSelectedSensorPosition()/4096.0/kWheelCircumference, new Rotation2d(mod.getSteerAngle()));
     }
 }

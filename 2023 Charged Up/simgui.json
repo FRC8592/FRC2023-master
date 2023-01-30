@@ -1,0 +1,32 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Auton Configuration/Choose Autonomous": "String Chooser",
+      "/SmartDashboard/Auto choices": "String Chooser"
+    },
+    "windows": {
+      "/Shuffleboard/Auton Configuration/Choose Autonomous": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "Drivetrain": {
+          "open": true
+        },
+        "open": true
+      },
+      "SmartDashboard": {
+        "Auto": {
+          "open": true
+        },
+        "open": true
+      }
+    }
+  }
+}

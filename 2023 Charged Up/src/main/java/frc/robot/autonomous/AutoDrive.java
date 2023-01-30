@@ -6,7 +6,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import java.util.ArrayList;
 import java.lang.Math;
 
-public class AutoDrive2 {
+public class AutoDrive {
     double maxVelocity; 
     double maxTheta;
     double acceptanceRadius;
@@ -46,7 +46,7 @@ public class AutoDrive2 {
      * @param kITheta I for rotational direction
      * @param maxV Max velocity the robot will move
      */
-    public AutoDrive2(double kPX, double kDX, double kIX, 
+    public AutoDrive(double kPX, double kDX, double kIX, 
                       double kPY, double kDY, double kIY, 
                       double kPTheta, double kDTheta, double kITheta, 
                       double maxV, double maxTheta, double acceptanceRadius){
@@ -86,7 +86,8 @@ public class AutoDrive2 {
           velocityX = Math.max(Math.min(velocityX, maxVelocity), -maxVelocity);
           velocityY = Math.max(Math.min(velocityY, maxVelocity), -maxVelocity);
         }
-        if(Math.abs(robot.getRotation().getRadians() - goal.getRotation().getRadians()) < 0.04) {
+
+        if(Math.abs(robot.getRotation().getRadians() - goal.getRotation().getRadians()) > 0.04) { // Changed from less than to greater than
             omega = pidOmegaControl.calculate(robot.getRotation().getRadians(), goal.getRotation().getRadians());
             omega = Math.max(Math.min(omega, maxTheta), -maxTheta);
         }
@@ -132,5 +133,12 @@ public class AutoDrive2 {
     public void initWaypoints(){
         this.waypoints = new ArrayList<Pose2d>();
         this.nextWaypoint = true;
+    }
+
+    /**
+     * @return whether or not the sequence of waypoints finished
+     */
+    public boolean finishedAllWaypoints() {
+        return !nextWaypoint && waypoints.isEmpty();
     }
 }

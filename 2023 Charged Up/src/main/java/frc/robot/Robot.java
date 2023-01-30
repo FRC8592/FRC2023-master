@@ -4,32 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-
 import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
-import java.rmi.registry.LocateRegistry;
-
-import javax.swing.DropMode;
-
-import com.swervedrivespecialties.swervelib.DriveController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.autonomous.*;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -37,11 +20,6 @@ import frc.robot.autonomous.*;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
   public XboxController driverController;
   public XboxController shooterController;
   public Drivetrain drive;
@@ -52,12 +30,9 @@ public class Robot extends TimedRobot {
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   public static Field2d FIELD = new Field2d();
-  private AutoDrive2 autodrive;
 
   private AutonomousSelector selector;
   private BaseAuto selectedAutonomous;
-
-
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -65,23 +40,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    DriverStation.reportError("robotInit just ran", false);
+
     drive = new Drivetrain();
-
     ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    gameObjectVision = new Vision(
+      Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD
+    );
     
-     autodrive = new AutoDrive2(0.3, 0, 0, 0.3, 0, 0, 2.0, 0, 0, 1, 0.9, 0.1);
-
     selector = new AutonomousSelector();
+    drive.resetEncoder();
   }
 
   /**
@@ -106,42 +77,22 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
-
     selectedAutonomous = selector.getSelectedAutonomous();
     selectedAutonomous.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAutonomous.initialize();
+
     if (!isReal()) {
       selectedAutonomous.setInitialSimulationPose();
     }
-    // drive.resetPose(new Pose2d());
-    // drive.zeroGyroscope();
-    // autodrive.initWaypoints();
-    // autodrive.addWaypoint(new Pose2d(0, -2, new Rotation2d()));
+
+    drive.resetEncoder();
+    drive.resetPose(new Pose2d());
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
     selectedAutonomous.periodic();
-    // Pose2d pos = drive.getCurrentPos();
-    // Pose2d robotPos = new Pose2d(pos.getX() * 100, pos.getY() * 100, pos.getRotation());
-    // ChassisSpeeds speeds = autodrive.moveTo(new Pose2d(0, 2, new Rotation2d()), robotPos);
-    // double autoDriveX = robotPos.getX();
-    // double autoDriveY = robotPos.getY();
-    // SmartDashboard.putNumber("AutoDriveX", autoDriveX);
-    // SmartDashboard.putNumber("AutoDriveY", autoDriveY);
-
-
-
-    // ChassisSpeeds ChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getGyroscopeRotation());
-    // SmartDashboard.putNumber("CS X", ChassisSpeed.vxMetersPerSecond);
-    // SmartDashboard.putNumber("CS Y", ChassisSpeed.vyMetersPerSecond);
-    
-    // // ChassisSpeeds speeds = autodrive.moveToWayPoint(robotPos);
-    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getGyroscopeRotation()));
   }
 
   /** This function is called once when teleop is enabled. */
@@ -149,7 +100,6 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-    drive.zeroGyroscope();
   }
 
   /** This function is called periodically during operator control. */
@@ -215,7 +165,7 @@ public class Robot extends TimedRobot {
       //
       
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+          joystickDeadband(rotate), drive.getGyroscopeRotation()));
     } // Inverted due to Robot Directions being the
                                                                     // opposite of controller directions
     
@@ -243,7 +193,6 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    //                                                          // opposite of controller direct
   }
 
   /** This function is called once when test mode is enabled. */
