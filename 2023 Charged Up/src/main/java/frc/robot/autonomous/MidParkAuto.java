@@ -12,7 +12,8 @@ public class MidParkAuto extends BaseAuto {
     public void initialize() {
         queue = new CommandQueue(
             new ScoreCommand(Height.HIGH, 1.25),
-            new FollowerCommand(drive, Trajectories.MOBILITY_A.toTrajectory())
+            new FollowerCommand(drive, Trajectories.TEST_1.toTrajectory()),
+            new FollowerCommand(drive, Trajectories.TEST_2.toTrajectory())
         );
         queue.initialize();
     }
