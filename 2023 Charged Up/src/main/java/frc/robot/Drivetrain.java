@@ -209,11 +209,17 @@ public class Drivetrain {
                 getSMPosition(m_backRightModule)
             }
         );
-
+        //Steer Angles
         SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
         SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
         SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
         SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
+
+        //Motor Velocities
+        SmartDashboard.putNumber("Front Left Velocity", states[0].speedMetersPerSecond );
+        SmartDashboard.putNumber("Front Right Velocity", states[1].speedMetersPerSecond );
+        SmartDashboard.putNumber("Back Left Velocity", states[2].speedMetersPerSecond );
+        SmartDashboard.putNumber("Back Right Velocity", states[3].speedMetersPerSecond );
 
     } 
 
