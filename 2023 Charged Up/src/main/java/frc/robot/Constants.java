@@ -64,8 +64,8 @@ public final class Constants {
     //
     // Constants and IDs for elevator hardware (NEEDS SETTING)
     //
-    public static final int ELEVATOR_MOTOR_ID        = 0;
-    public static final int ANGLE_MOTOR_ID           = 0;
+    public static final int ELEVATOR_LIFT_MOTOR_ID   = 0;
+    public static final int ELEVATOR_TILT_MOTOR_ID   = 0;
     public static final double ARM_ANGLE_OUT         = 30;
     public static final double ARM_ANGLE_IN          = 90;
     public static final double STOWED_HEIGHT_CONE    = 0;

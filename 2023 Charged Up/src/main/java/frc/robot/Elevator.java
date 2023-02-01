@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.lang.reflect.Method;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -49,14 +47,9 @@ public class Elevator {
         CUBE
     }
 
-    // For all:
-    //  Put in brake mode
-    //  Hard cap drivetrain accel when extended past mid (extension point subject to change)
-    //      these two WIP in robot.java
-    // Bring claw to desired position
     public Elevator() {
-        elevatorLiftMotor = new CANSparkMax(Constants.ELEVATOR_MOTOR_ID, MotorType.kBrushless);
-        elevatorTiltMotor = new CANSparkMax(Constants.ANGLE_MOTOR_ID, MotorType.kBrushless);
+        elevatorLiftMotor = new CANSparkMax(Constants.ELEVATOR_LIFT_MOTOR_ID, MotorType.kBrushless);
+        elevatorTiltMotor = new CANSparkMax(Constants.ELEVATOR_TILT_MOTOR_ID, MotorType.kBrushless);
         
         liftEncoder = elevatorLiftMotor.getEncoder();
         tiltEncoder = elevatorTiltMotor.getEncoder();
