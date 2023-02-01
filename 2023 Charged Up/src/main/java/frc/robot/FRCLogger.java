@@ -85,7 +85,7 @@ public class FRCLogger {
             if (data.getClass().getSimpleName().equals("boolean[]"))
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (boolean[]) data);
             if (data.getClass().getSimpleName().equals("int[]"))
-                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (double[]) data); // double[] here because int[] isn't suposrted by AK
+                Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (double[]) data); // double[] here because int[] isn't suposrted by AK in 2023
             if (data.getClass().getSimpleName().equals("double[]"))
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (double[]) data);
             if (data.getClass().getSimpleName().equals("String[]"))
