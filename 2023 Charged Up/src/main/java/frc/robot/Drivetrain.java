@@ -45,11 +45,12 @@ public class Drivetrain {
     // Measure the drivetrain's maximum velocity (m/s) or calculate the theoretical maximum.
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-        SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-        SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6;
+    // 6380.0 / 60.0 *
+    //     SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
+    //     SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
 
-    // The maximum angular velocity of the robot in radians per second.\
+    // The maximum angular velocity of the robot in radians per second.
     //
     // This calculated value could be replaced with a measured value.
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
@@ -185,9 +186,11 @@ public class Drivetrain {
     public void resetPose(Pose2d pose){
         odometry.resetPosition(new Rotation2d(0), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, pose);
     }
-
+    
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
+        SmartDashboard.putNumber("Chassis Speeds X", chassisSpeeds.vxMetersPerSecond);
+        SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         setDriveVelocity(metersPerSecondToTicks(states[0].speedMetersPerSecond), m_frontLeftModule);
@@ -216,10 +219,17 @@ public class Drivetrain {
         SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
 
         //Motor Velocities
-        SmartDashboard.putNumber("Front Left Velocity", states[0].speedMetersPerSecond );
-        SmartDashboard.putNumber("Front Right Velocity", states[1].speedMetersPerSecond );
-        SmartDashboard.putNumber("Back Left Velocity", states[2].speedMetersPerSecond );
-        SmartDashboard.putNumber("Back Right Velocity", states[3].speedMetersPerSecond );
+        SmartDashboard.putNumber("Front Left Velocity", getModuleVelocity(m_frontLeftModule));
+        SmartDashboard.putNumber("Front Right Velocity", getModuleVelocity(m_frontRightModule));
+        SmartDashboard.putNumber("Back Left Velocity", getModuleVelocity(m_backLeftModule));
+        SmartDashboard.putNumber("Back Right Velocity", getModuleVelocity(m_backRightModule));
+
+        //What Velocities we're trying to set
+        SmartDashboard.putNumber("Front Left", metersPerSecondToTicks(states[0].speedMetersPerSecond));
+        SmartDashboard.putNumber("Front Right", metersPerSecondToTicks(states[1].speedMetersPerSecond));
+        SmartDashboard.putNumber("Back Left", metersPerSecondToTicks(states[2].speedMetersPerSecond));
+        SmartDashboard.putNumber("Back Right", metersPerSecondToTicks(states[3].speedMetersPerSecond));
+
 
     } 
 
@@ -234,5 +244,9 @@ public class Drivetrain {
 
     public double metersPerSecondToTicks(double input){
         return input * Constants.METERS_PER_SECOND_TO_TICKS;
+    }
+
+    public double getModuleVelocity(SwerveModule module){
+        return module.getDriveController().getDriveFalcon().getSelectedSensorVelocity();
     }
 }
