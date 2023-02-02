@@ -84,6 +84,7 @@ public class Robot extends LoggedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
+    logger = new FRCLogger();
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
     drive = new Drivetrain(logger);
@@ -91,8 +92,6 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
-    logger = new FRCLogger(true, "CustomLogs");
-    
 
   }
 
