@@ -35,6 +35,9 @@ public class Drivetrain {
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
 
+    private final double kWheelCircumference = 4*Math.PI;
+    private final double kFalconTicksToMeters = 1.0 / 4096.0 / kWheelCircumference;
+
     /**
      * The maximum voltage that will be delivered to the drive motors.
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
@@ -212,6 +215,10 @@ public class Drivetrain {
                 getSMPosition(m_backRightModule)
             }
         );
+
+        if (Robot.isReal()) {
+            Robot.FIELD.setRobotPose(getCurrentPos());
+        }
         //Steer Angles
         SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
         SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
@@ -233,8 +240,22 @@ public class Drivetrain {
 
     } 
 
+    public void resetEncoder(){
+        m_frontLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_frontRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_backLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_backRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+    }
+
+    public void getSwervePositions() {
+        SmartDashboard.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Front Right Posiiton", m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Back Left Posiiton", m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Back Right Posiiton", m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+    }
+
     private SwerveModulePosition getSMPosition(SwerveModule mod){
-        return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+        return new SwerveModulePosition(mod.getDriveController().getDriveFalcon().getSelectedSensorPosition()/4096.0/kWheelCircumference, new Rotation2d(mod.getSteerAngle()));
     }
 
     public void setDriveVelocity(double inputVelocity, SwerveModule module){
