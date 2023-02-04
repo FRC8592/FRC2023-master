@@ -204,13 +204,23 @@ public class Robot extends TimedRobot {
     //   ledStrips.setFullYellow();
     // }
 
-    if(shooterController.getAButtonPressed()) {
-      intake.intakeCube();
+    if(shooterController.getLeftTriggerAxis() > 0.05) {
+      intake.intakePiece(shooterController.getLeftTriggerAxis() * 0.8);
     }
 
-    if(shooterController.getBButtonPressed()) {
-      intake.intakeCone();
+    if(shooterController.getRightTriggerAxis() > 0.05) {
+      intake.outtakePiece(shooterController.getRightTriggerAxis() * 0.8);
     }
+
+    if(shooterController.getAButton()) {
+      intake.intakePiece(0.25);
+    }
+
+    if(shooterController.getBButton()) {
+      intake.outtakePiece(0.25);
+    }
+
+    // intake.BeamBroken();
 
     // // LeftTrigger = Line up elevator arm to 60 deg and then move to desired position
     // if(driverController.getLeftTriggerAxis() > 0.1 || shooterController.getLeftTriggerAxis() > 0.1) {

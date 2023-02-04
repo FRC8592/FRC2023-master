@@ -58,8 +58,8 @@ public final class Constants {
     //
     // CAN IDs for intake hardware (NEEDS SETTING)
     //
-    public static final int ROLLER_MOTOR    = 0;
-    public static final int BEAM_BREAK      = 0;
+    public static final int ROLLER_MOTOR    = 62;
+    public static final int BEAM_BREAK      = 1;
 
     //
     // Constants and IDs for elevator hardware (NEEDS SETTING)
