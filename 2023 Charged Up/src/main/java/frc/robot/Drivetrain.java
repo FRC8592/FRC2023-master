@@ -201,15 +201,21 @@ public class Drivetrain {
         SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-        setDriveVelocity(metersPerSecondToTicks(states[0].speedMetersPerSecond), m_frontLeftModule);
-        setDriveVelocity(metersPerSecondToTicks(states[1].speedMetersPerSecond), m_frontRightModule);
-        setDriveVelocity(metersPerSecondToTicks(states[2].speedMetersPerSecond), m_backLeftModule);
-        setDriveVelocity(metersPerSecondToTicks(states[3].speedMetersPerSecond), m_backRightModule);
+        // m_frontLeftModule.setModuleSteerAngle(states[0].angle.getRadians())
+        // m_frontRightModule.setModuleSteerAngle(states[1].angle.getRadians());
+        // m_backLeftModule.setModuleSteerAngle(states[2].angle.getRadians());
+        // m_backRightModule.setModuleSteerAngle(states[3].angle.getRadians());
 
-        m_frontLeftModule.setSteerAngle(states[0].angle.getRadians());
-        m_frontRightModule.setSteerAngle(states[1].angle.getRadians());
-        m_backLeftModule.setSteerAngle(states[2].angle.getRadians());
-        m_backRightModule.setSteerAngle(states[3].angle.getRadians());
+        // setDriveVelocity(metersPerSecondToTicks(states[0].speedMetersPerSecond), m_frontLeftModule);
+        // setDriveVelocity(metersPerSecondToTicks(states[1].speedMetersPerSecond), m_frontRightModule);
+        // setDriveVelocity(metersPerSecondToTicks(states[2].speedMetersPerSecond), m_backLeftModule);
+        // setDriveVelocity(metersPerSecondToTicks(states[3].speedMetersPerSecond), m_backRightModule);
+
+
+        setModule(m_frontLeftModule, states[0].angle.getRadians(), metersPerSecondToTicks(states[0].speedMetersPerSecond));
+        setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
+        setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
+        setModule(m_backRightModule, states[3].angle.getRadians(), metersPerSecondToTicks(states[3].speedMetersPerSecond));
         
         this.odometry.update(
             getGyroscopeRotation(), 
@@ -287,5 +293,16 @@ public class Drivetrain {
 
     public void teleopInitLogSwerve(){
         logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
+    }
+
+    public void setModule(SwerveModule module, double steerAngle, double velocityMetersPerSecond){
+        double velocityToApply;
+        if (module.setModuleSteerAngle(steerAngle)){
+            velocityToApply = -velocityMetersPerSecond;
+        }else{
+            velocityToApply = velocityMetersPerSecond;
+        }
+        SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
+        setDriveVelocity(velocityToApply, module);
     }
 }
