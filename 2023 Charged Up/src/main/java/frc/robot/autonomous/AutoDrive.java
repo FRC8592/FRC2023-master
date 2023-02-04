@@ -91,7 +91,7 @@ public class AutoDrive {
             omega = pidOmegaControl.calculate(robot.getRotation().getRadians(), goal.getRotation().getRadians());
             omega = Math.max(Math.min(omega, maxTheta), -maxTheta);
         }
-        ChassisSpeeds cs = new ChassisSpeeds(velocityX, velocityY, omega);
+        ChassisSpeeds cs = new ChassisSpeeds(velocityX, velocityY, 0);
         // return sf.smooth(cs);
         return cs;
     }

@@ -14,7 +14,7 @@ public class PrecisionTestingWaypointAuto extends BaseAuto {
                 .addWaypoint(new Pose2d(0,-2, Rotation2d.fromDegrees(0)))
                 .addWaypoint(new Pose2d(0,0, Rotation2d.fromDegrees(0)))
                 .addWaypoint(new Pose2d(-3,0, Rotation2d.fromDegrees(0)))
-                // .addWaypoint(new Pose2d(-1,-1, Rotation2d.fromDegrees(180)))
+                .addWaypoint(new Pose2d(0,0, Rotation2d.fromDegrees(0)))
                 // .addWaypoint(new Pose2d(-1,0, Rotation2d.fromDegrees(270)))
                 // .addWaypoint(new Pose2d(0,0, Rotation2d.fromDegrees(360)))
                 // .addSmoothingFilter(new SmoothingFilter(5, 5, 5))
