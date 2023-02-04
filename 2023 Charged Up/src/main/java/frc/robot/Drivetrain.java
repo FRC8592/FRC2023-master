@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
@@ -47,11 +48,12 @@ public class Drivetrain {
     // Measure the drivetrain's maximum velocity (m/s) or calculate the theoretical maximum.
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-        SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-        SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6;
+    // 6380.0 / 60.0 *
+    //     SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
+    //     SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
 
-    // The maximum angular velocity of the robot in radians per second.\
+    // The maximum angular velocity of the robot in radians per second.
     //
     // This calculated value could be replaced with a measured value.
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
@@ -135,7 +137,7 @@ public class Drivetrain {
             swerveMotorConfig,
             Mk4iSwerveModuleHelper.GearRatio.L2,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
-            BACK_LEFT_MODULE_STEER_MOTOR,
+            BACK_LEFT_MODULE_STEER_MOTOR, 
             BACK_LEFT_MODULE_STEER_ENCODER,
             BACK_LEFT_MODULE_STEER_OFFSET
         );
@@ -189,15 +191,23 @@ public class Drivetrain {
     public void resetPose(Pose2d pose){
         odometry.resetPosition(new Rotation2d(0), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, pose);
     }
-
+    
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
+        SmartDashboard.putNumber("Chassis Speeds X", chassisSpeeds.vxMetersPerSecond);
+        SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-        m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-        m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+        setDriveVelocity(metersPerSecondToTicks(states[0].speedMetersPerSecond), m_frontLeftModule);
+        setDriveVelocity(metersPerSecondToTicks(states[1].speedMetersPerSecond), m_frontRightModule);
+        setDriveVelocity(metersPerSecondToTicks(states[2].speedMetersPerSecond), m_backLeftModule);
+        setDriveVelocity(metersPerSecondToTicks(states[3].speedMetersPerSecond), m_backRightModule);
+
+        m_frontLeftModule.setSteerAngle(states[0].angle.getRadians());
+        m_frontRightModule.setSteerAngle(states[1].angle.getRadians());
+        m_backLeftModule.setSteerAngle(states[2].angle.getRadians());
+        m_backRightModule.setSteerAngle(states[3].angle.getRadians());
+        
         this.odometry.update(
             getGyroscopeRotation(), 
             new SwerveModulePosition[] {
@@ -213,6 +223,26 @@ public class Drivetrain {
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+    }
+
+    public void setDriveVelocity(double inputVelocity, SwerveModule module){
+        module.getDriveController().getDriveFalcon().set(ControlMode.Velocity, inputVelocity);
+
+    }
+
+    public double metersPerSecondToTicks(double input){
+        return input * Constants.METERS_PER_SECOND_TO_TICKS;
+    }
+
+    public double getModuleVelocity(SwerveModule module){
+        return module.getDriveController().getDriveFalcon().getSelectedSensorVelocity();
+    }
+
+    public void resetSteerAngles(){
+        m_frontLeftModule.getSteerController().resetAbsoluteAngle();
+        m_frontRightModule.getSteerController().resetAbsoluteAngle();
+        m_backLeftModule.getSteerController().resetAbsoluteAngle();
+        m_backRightModule.getSteerController().resetAbsoluteAngle();
     }
 
     public void teleopInitLogSwerve(){
