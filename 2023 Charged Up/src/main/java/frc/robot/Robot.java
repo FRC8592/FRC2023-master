@@ -196,9 +196,9 @@ public class Robot extends LoggedRobot {
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
     }
     else{  
-      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+      rotate = ((driverController.getRightX() * Math.abs(driverController.getRightX())) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
           * rotatePower; // Right joystick
-      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      translateX = ((driverController.getLeftY() * Math.abs(driverController.getLeftY())) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
                                                                                                                           // is
                                                                                                                           // forward
                                                                                                                           // Direction,
@@ -207,14 +207,14 @@ public class Robot extends LoggedRobot {
                                                                                                                           // Joystick
                                                                                                                           // is
                                                                                                                           // Y
-      translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+      translateY = ((driverController.getLeftX() * Math.abs(driverController.getLeftX())) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
       //
       // Normal teleop drive
       //
       
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+          joystickDeadband(rotate), drive.getGyroscopeRotation()));
     } // Inverted due to Robot Directions being the
                                                                     // opposite of controller directions
     
