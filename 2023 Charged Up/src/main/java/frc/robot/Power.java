@@ -36,7 +36,7 @@ public class Power {
         
         // Create the shuffleboard tab for power data
         powerTab = Shuffleboard.getTab("Power");
-
+        
     }
 
 
@@ -78,6 +78,6 @@ public class Power {
     // Turn the switchable 12v port off
     //
     public void relayOff() {
-        // revPDH.setSwitchableChannel(false);
+        revPDH.setSwitchableChannel(false);
     }
 }

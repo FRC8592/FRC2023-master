@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.AprilTags.ObservationNode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -23,8 +22,21 @@ import java.rmi.registry.LocateRegistry;
 
 import javax.swing.DropMode;
 
+import com.swervedrivespecialties.swervelib.DriveController;
+
+import org.littletonrobotics.junction.LoggedRobot;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.LogFileUtil;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,7 +44,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -46,21 +58,49 @@ public class Robot extends TimedRobot {
   public LED ledStrips;
   public AprilTags aprilTags;
 
+  public Vision gameObjectVision;
+  public String currentPiecePipeline;
+  public FRCLogger logger;
+
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
+    //AdvantageKit logging code
+    Logger.getInstance().recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+    if (isReal()) {
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
+    }
+    else {
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+    }
+    Logger.getInstance().start();
+    
+    
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-
+    
+    logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
     //drive = new Drivetrain();
     ledStrips = new LED();
     aprilTags = new AprilTags("limelight",0,0,0,0,0,0,0,0);
+    drive = new Drivetrain(logger);
+    ledStrips = new LED();
+    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
+    
 
   }
 
@@ -89,6 +129,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    drive.resetSteerAngles();
   }
 
   /** This function is called periodically during autonomous. */
@@ -110,33 +151,38 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
+    drive.zeroGyroscope();
+    drive.resetSteerAngles();
 
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    /*double rotatePower;
+    double rotatePower;
     double translatePower;
     double translateX;
     double translateY;
     double rotate;
 
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
+    gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
 
+    
     if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
     }
+
   
     if (driverController.getRightBumperPressed()){
-      slowModeToggle = ! slowModeToggle;
-    }
-    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-    
+       slowModeToggle = ! slowModeToggle;
+     }
+     fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+  
 
     if (fastMode) {
       rotatePower    = ConfigRun.ROTATE_POWER_FAST;
@@ -146,41 +192,64 @@ public class Robot extends TimedRobot {
       rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
-      
-    rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-        * rotatePower; // Right joystick
-    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                        // is
-                                                                                                                        // forward
-                                                                                                                        // Direction,
-                                                                                                                        // Forward
-                                                                                                                        // on
-                                                                                                                        // Joystick
-                                                                                                                        // is
-                                                                                                                        // Y
-    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
-    //
-    // Normal teleop drive
-    //
-    drive.beastMode(0);
-    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-    //     -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-                                                                 // opposite of controller directions
+    
+    if(driverController.getLeftBumper())
+    {
+      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      double turn = gameObjectVision.turnRobot(1.0);
+      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+
+    }
+    else if(shooterController.getRightBumper()){
+      double xspeed = gameObjectVision.turnRobot(0.5);
+      double yspeed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      double turn = 0;
+      drive.drive(new ChassisSpeeds(xspeed, yspeed, turn));
+    }
+    else{  
+      rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+          * rotatePower; // Right joystick
+      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+                                                                                                                          // is
+                                                                                                                          // forward
+                                                                                                                          // Direction,
+                                                                                                                          // Forward
+                                                                                                                          // on
+                                                                                                                          // Joystick
+                                                                                                                          // is
+                                                                                                                          // Y
+      translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+
+      //
+      // Normal teleop drive
+      //
+      
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+          joystickDeadband(rotate), drive.getGyroscopeRotation()));
+    } // Inverted due to Robot Directions being the
+                                                                    // opposite of controller directions
+    
     drive.getCurrentPos();
 
     if (shooterController.getXButtonPressed()){
-      ledStrips.setPurple();
+      currentPiecePipeline = "CUBE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      ledStrips.setFullPurple();
     }
-
+    
     if (shooterController.getYButtonPressed()){
-      ledStrips.setYellow();
+      currentPiecePipeline = "CONE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.setFullYellow();
     }
 
-    drive.getFalconEncoder();
-    */
+    if(shooterController.getAButtonPressed()){
+      currentPiecePipeline = "APRIL TAG";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.APRILTAGS2D_PIPELINE);
+    }
+  
   }
-
 
   /** This function is called once when the robot is disabled. */
   @Override
@@ -188,7 +257,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+    0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    //                                                          // opposite of controller direct
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
@@ -197,7 +270,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    SmartDashboard.putString("Pose 3d", aprilTags.getObservation().toString());
+    SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
+    SmartDashboard.putNumber("Yaw Number", drive.getYaw());
   }
 
   /** This function is called once when the robot is first started up. */
@@ -213,7 +287,7 @@ public class Robot extends TimedRobot {
     if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
       return 0;
     } else {
-      return inputJoystick;
+      return inputJoystick * 0.3;
     }
   }
 }

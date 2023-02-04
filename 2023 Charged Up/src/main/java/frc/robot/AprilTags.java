@@ -1,6 +1,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.Arrays;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTable;
@@ -13,12 +16,17 @@ public class AprilTags extends Vision{
     NetworkTableEntry ty;
     NetworkTableEntry ta;
     NetworkTableEntry botpose;
+    NetworkTableEntry ID;
+    public static FRCLogger logger;
+    NetworkTableEntry camerapose;
 
     //read values periodically
+    double tagID;
     double x;
     double y;
     double area;
-    double[] pose;
+    double[] megapose;
+    double[] limelightpose;
     
     
     
@@ -27,11 +35,17 @@ public class AprilTags extends Vision{
                     double rotationKP, double rotationKI, double rotationKD){
         
 
-        super(limelightName, lockError , closeError, cameraHeight, cameraAngle, targetHeight, rotationKP, rotationKI, rotationKD);
+        super(limelightName, lockError , closeError, cameraHeight, cameraAngle, targetHeight, rotationKP, rotationKI, rotationKD, logger);
         table = NetworkTableInstance.getDefault().getTable(limelightName);
         
         this.botpose = table.getEntry("botpose");
+        this.camerapose = table.getEntry("camerapose_targetspace");
+        this.ID = table.getEntry("tid");
+        
+        limelightpose = camerapose.getDoubleArray(new double[0]);
+        tagID  = ID.getDouble(0);
     }
+
 
 
     public ObservationNode getObservation(){
