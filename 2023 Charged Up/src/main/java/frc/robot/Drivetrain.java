@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
@@ -34,6 +35,8 @@ public class Drivetrain {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
+    
+    private FRCLogger logger;
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -78,7 +81,7 @@ public class Drivetrain {
     /**Initialize drivetrain
      * 
      */
-    public Drivetrain() {
+    public Drivetrain(FRCLogger logger) {
         Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -88,6 +91,8 @@ public class Drivetrain {
         swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
         swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_CURRENT);
         swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
+        
+        this.logger = logger;
 
         // Create motor objects
         //
@@ -212,28 +217,8 @@ public class Drivetrain {
                 getSMPosition(m_backRightModule)
             }
         );
-
-        
-
-        //Steer Angles
-        SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
-
-        //Motor Velocities
-        SmartDashboard.putNumber("Front Left Velocity", getModuleVelocity(m_frontLeftModule));
-        SmartDashboard.putNumber("Front Right Velocity", getModuleVelocity(m_frontRightModule));
-        SmartDashboard.putNumber("Back Left Velocity", getModuleVelocity(m_backLeftModule));
-        SmartDashboard.putNumber("Back Right Velocity", getModuleVelocity(m_backRightModule));
-
-        //What Velocities we're trying to set
-        SmartDashboard.putNumber("Front Left", metersPerSecondToTicks(states[0].speedMetersPerSecond));
-        SmartDashboard.putNumber("Front Right", metersPerSecondToTicks(states[1].speedMetersPerSecond));
-        SmartDashboard.putNumber("Back Left", metersPerSecondToTicks(states[2].speedMetersPerSecond));
-        SmartDashboard.putNumber("Back Right", metersPerSecondToTicks(states[3].speedMetersPerSecond));
-
-
+        logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
+        // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
@@ -258,5 +243,9 @@ public class Drivetrain {
         m_frontRightModule.getSteerController().resetAbsoluteAngle();
         m_backLeftModule.getSteerController().resetAbsoluteAngle();
         m_backRightModule.getSteerController().resetAbsoluteAngle();
+    }
+
+    public void teleopInitLogSwerve(){
+        logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
     }
 }
