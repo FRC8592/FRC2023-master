@@ -172,6 +172,11 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     selectedAuto.periodic();
+    SmartDashboard.putNumber("Pose X", drive.getCurrentPos().getX());
+    SmartDashboard.putNumber("Pose Y'", drive.getCurrentPos().getY());
+    SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
+    SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
+
   }
 
   /** This function is called once when teleop is enabled. */

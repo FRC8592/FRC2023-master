@@ -11,11 +11,11 @@ public class SimpleWaypointAuto extends BaseAuto {
     public void initialize() {
         queue = new CommandQueue(
             new WaypointCommand(drive)
-                .addWaypoint(new Pose2d(0,1, Rotation2d.fromDegrees(0)))
+                .addWaypoint(new Pose2d(0,4, Rotation2d.fromDegrees(-180)))
                 // .addWaypoint(new Pose2d(-1,-1, Rotation2d.fromDegrees(180)))
                 // .addWaypoint(new Pose2d(-1,0, Rotation2d.fromDegrees(270)))
                 // .addWaypoint(new Pose2d(0,0, Rotation2d.fromDegrees(360)))
-                // // .addSmoothingFilter(new SmoothingFilter(5, 5, 5))
+                // .addSmoothingFilter(new SmoothingFilter(5, 5, 5))
         );
 
         queue.initialize();

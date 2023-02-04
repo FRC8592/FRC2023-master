@@ -141,4 +141,8 @@ public class AutoDrive {
     public boolean finishedAllWaypoints() {
         return !nextWaypoint && waypoints.isEmpty();
     }
+
+    public Pose2d getLastWaypoint(){
+        return this.waypoints.get(this.waypoints.size() - 1);
+    }
 }

@@ -34,8 +34,8 @@ public class SmoothingFilter {
         double smoothedOmegas = 0;
         if(!desiredSpeed.equals(null)) {
             smoothedX = smoothX(desiredSpeed.vxMetersPerSecond);
-            smoothedY = smoothX(desiredSpeed.vyMetersPerSecond);
-            smoothedOmegas = smoothX(desiredSpeed.omegaRadiansPerSecond);
+            smoothedY = smoothY(desiredSpeed.vyMetersPerSecond);
+            smoothedOmegas = smoothOmega(desiredSpeed.omegaRadiansPerSecond);
         }
         index++;
         return new ChassisSpeeds(smoothedX, smoothedY, smoothedOmegas);
