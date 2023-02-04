@@ -212,6 +212,9 @@ public class Drivetrain {
                 getSMPosition(m_backRightModule)
             }
         );
+
+        
+
         //Steer Angles
         SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
         SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
@@ -248,5 +251,12 @@ public class Drivetrain {
 
     public double getModuleVelocity(SwerveModule module){
         return module.getDriveController().getDriveFalcon().getSelectedSensorVelocity();
+    }
+
+    public void resetSteerAngles(){
+        m_frontLeftModule.getSteerController().resetAbsoluteAngle();
+        m_frontRightModule.getSteerController().resetAbsoluteAngle();
+        m_backLeftModule.getSteerController().resetAbsoluteAngle();
+        m_backRightModule.getSteerController().resetAbsoluteAngle();
     }
 }

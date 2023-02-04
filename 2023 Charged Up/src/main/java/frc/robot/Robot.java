@@ -100,6 +100,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    drive.resetSteerAngles();
   }
 
   /** This function is called periodically during autonomous. */
@@ -122,6 +123,7 @@ public class Robot extends TimedRobot {
     fastMode     = true;
     slowModeToggle = false;
     drive.zeroGyroscope();
+    drive.resetSteerAngles();
 
   }
 
