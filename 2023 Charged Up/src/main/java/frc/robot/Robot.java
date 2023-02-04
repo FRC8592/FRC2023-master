@@ -93,10 +93,10 @@ public class Robot extends LoggedRobot {
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
     //drive = new Drivetrain();
-    ledStrips = new LED();
+    //ledStrips = new LED();
     aprilTags = new AprilTags("limelight",0,0,0,0,0,0,0,0);
     drive = new Drivetrain(logger);
-    ledStrips = new LED();
+    //ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
@@ -202,8 +202,8 @@ public class Robot extends LoggedRobot {
 
     }
     else if(shooterController.getRightBumper()){
-      double xspeed = gameObjectVision.turnRobot(0.5);
-      double yspeed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      double yspeed = gameObjectVision.turnRobot(0.25);
+      double xspeed = gameObjectVision.moveTowardsTarget(0.25, 0.25);
       double turn = 0;
       drive.drive(new ChassisSpeeds(xspeed, yspeed, turn));
     }
@@ -234,19 +234,19 @@ public class Robot extends LoggedRobot {
 
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      //ledStrips.setFullPurple();
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
+      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      //ledStrips.setFullYellow();
     }
 
     if(shooterController.getAButtonPressed()){
       currentPiecePipeline = "APRIL TAG";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.APRILTAGS2D_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vison").getEntry("pipeline").setNumber(Constants.APRILTAGS2D_PIPELINE);
     }
   
   }

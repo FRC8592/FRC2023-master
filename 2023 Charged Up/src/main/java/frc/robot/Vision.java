@@ -33,6 +33,7 @@ public class Vision {
   protected NetworkTableEntry ty;   // Angle error (y) from LimeLight camera
   protected NetworkTableEntry ta;   // Target area measurement from LimeLight camera
   protected NetworkTableEntry tv;   // Target valid indicator from Limelight camera
+  protected NetworkTableEntry pipeline;
   // Shared variables
   public boolean targetValid;     // Indicate when the Limelight camera has found a target
   public boolean targetLocked;    // Indicate when the turret is centered on the target
@@ -87,6 +88,7 @@ public class Vision {
     ty = table.getEntry("ty");
     ta = table.getEntry("ta");
     tv = table.getEntry("tv");
+    pipeline = table.getEntry("getpipe");
 
     previousCoordinates = new LinkedList<LimelightData>();
 
@@ -110,6 +112,9 @@ public class Vision {
     closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
     
     this.logger = logger;
+
+    if(table.getEntry("getpipe") == null ){
+    }
   }
 
 
@@ -130,12 +135,15 @@ public class Vision {
     double totalDx = 0;
     double totalDy = 0;
     int totalValid = 0;
+    double cameraPipeline;
 
     // Read the Limelight data from the Network Tables
     xError      = tx.getDouble(0.0);
     yError      = ty.getDouble(0.0);
     area        = ta.getDouble(0.0);
     targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
+    cameraPipeline = pipeline.getDouble(0.0);
+    
 
     logger.log(this, "NewestTargetValid", targetValid); //Logging up here instead of down
     //below because targetValid gets modified with the processed value in a few lines
@@ -200,6 +208,7 @@ public class Vision {
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     //SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
     //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
+    SmartDashboard.putNumber("Pipeline", cameraPipeline);
   }
 
 
