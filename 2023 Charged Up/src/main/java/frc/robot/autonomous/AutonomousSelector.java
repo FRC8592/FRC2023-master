@@ -14,7 +14,8 @@ public class AutonomousSelector {
         MidParkAuto.class,
         TopThreePieceAuto.class,
         TopTwoPieceParkAuto.class,
-        WaypointAuto.class
+        WaypointAuto.class,
+        SimpleWaypointAuto.class
     };
 
     public AutonomousSelector() {
