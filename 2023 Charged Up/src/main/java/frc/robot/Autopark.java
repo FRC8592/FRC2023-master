@@ -7,9 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Autopark {
 
     public enum AutoBalanceStates {
-        DRIVE_FORWARD, 
-        PITCH_UP,
-        PITCH_DOWN,
+        DRIVE_FORWARD,
+        FIX_TILT,
         STOP;
     }
     
@@ -17,62 +16,75 @@ public class Autopark {
     
     public boolean balance(Drivetrain drivetrain){
         double pitch = drivetrain.getPitch();
-        System.out.println(currentState.toString() + pitch);
+        // System.out.println(currentState.toString() + pitch);
+        
         switch (currentState){
             
             case DRIVE_FORWARD:
-            
-
-            
-            //if pitched up
-                if(pitch > Constants.LEVEL_PITCH)
-                {
-                    currentState = AutoBalanceStates.PITCH_UP;
+                //if pitched up
+                if(Math.abs(pitch) >= Constants.LEVEL_PITCH) {
+                    currentState = AutoBalanceStates.FIX_TILT; 
                 }
-                //if pitched down
-                else if (pitch < -Constants.LEVEL_PITCH){
-                    currentState = AutoBalanceStates.PITCH_DOWN;
-                }else {
+                else {
                     drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
-
+                    SmartDashboard.putNumber("Movement speed", 0.7);
                 }
                 break;
             
-            case PITCH_UP:
-            //if level, stop
-                if (pitch < Constants.LEVEL_PITCH){
-                    currentState = AutoBalanceStates.PITCH_DOWN;
-                }
-                else if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
-                    currentState = AutoBalanceStates.STOP;
+            case FIX_TILT:
+
+                if(Math.abs(pitch) <= Constants.LEVEL_PITCH) {
+                    currentState = AutoBalanceStates.STOP; 
                 }
                 else{
                     drivetrain.drive(new ChassisSpeeds(0.2 * (pitch / 100), 0, 0));
+                    SmartDashboard.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER);
                 }
                 break;
-                
-                
-                case PITCH_DOWN:
-                    
-                
-                // if (pitch > Constants.LEVEL_PITCH){
-                    //     currentState = AutoBalanceStates.PITCH_UP;
-                    // }
-                    if(Math.abs(pitch) <= Constants.LEVEL_PITCH){
-                        currentState = AutoBalanceStates.STOP;
-                    }
-                    else{
-                        drivetrain.drive(new ChassisSpeeds(-1.5, 0, 0));
-                    }
-                    break;
-                    
-                    
-                case STOP:
-                    drivetrain.drive(new ChassisSpeeds(0, 0, 0));
-                    break;  
+
+            case STOP:
+                if(Math.abs(pitch) >= Constants.LEVEL_PITCH) {
+                    currentState = AutoBalanceStates.FIX_TILT; 
                 }
+                drivetrain.drive(new ChassisSpeeds(0, 0, 0));
+                SmartDashboard.putNumber("Movement speed", 0.0);
+                break;  
+                }
+            
+            return  true;    
+
+            // case PITCH_UP:
+            // //if level, stop
+            //     // if (pitch < Constants.LEVEL_PITCH){
+            //     //     currentState = AutoBalanceStates.PITCH_DOWN;
+            //     // }
+            //     // else if(Math.abs(pitch) <=Constants.LEVEL_PITCH){
+            //     //     currentState = AutoBalanceStates.STOP;
+            //     // }
+
+            //     if(Math.abs(pitch) <= Constants.LEVEL_PITCH) {
+            //         currentState = AutoBalanceStates.STOP; 
+            //     }
+            //     else{
+            //         drivetrain.drive(new ChassisSpeeds(0.2 * (pitch / 100), 0, 0));
+            //     }
+            //     break;
                 
-                return  true;
+                
+            //     case PITCH_DOWN:
+                    
+                
+            //     // if (pitch > Constants.LEVEL_PITCH){
+            //         //     currentState = AutoBalanceStates.PITCH_UP;
+            //         // }
+            //         if(Math.abs(pitch) <= Constants.LEVEL_PITCH){
+            //             currentState = AutoBalanceStates.STOP;
+            //         }
+            //         else{
+            //             // drivetrain.drive(new ChassisSpeeds(-1.5, 0, 0));
+            //             drivetrain.drive(new ChassisSpeeds(0.2 * (pitch / 100), 0, 0));
+            //         }
+            //         break;
             }
             
             

@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     SmartDashboard.putNumber("pitch", drive.getPitch());
     SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
-    gameObjectVision.updateVision();
+    // gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -144,63 +144,63 @@ public class Robot extends TimedRobot {
       drive.zeroGyroscope();
     }
   
-    if (driverController.getRightBumperPressed()){
-      slowModeToggle = ! slowModeToggle;
-    }
-    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    // if (driverController.getRightBumperPressed()){
+    //   slowModeToggle = ! slowModeToggle;
+    // }
+    // fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
     
 
-    if (fastMode) {
-      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
-      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
-    }
-    else {
-      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
-      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
-    }
+    // if (fastMode) {
+    //   rotatePower    = ConfigRun.ROTATE_POWER_FAST;
+    //   translatePower = ConfigRun.TRANSLATE_POWER_FAST;
+    // }
+    // else {
+    //   rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
+    //   translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+    // }
     
-    if(driverController.getLeftBumper())
-    {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else{  
-      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                          // is
-                                                                                                                          // forward
-                                                                                                                          // Direction,
-                                                                                                                          // Forward
-                                                                                                                          // on
-                                                                                                                          // Joystick
-                                                                                                                          // is
-                                                                                                                          // Y
-      translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    // if(driverController.getLeftBumper())
+    // {
+    //   double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+    //   double turn = gameObjectVision.turnRobot(1.0);
+    //   drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+    // }
+    // else{  
+    //   rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+    //       * rotatePower; // Right joystick
+    //   translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+    //                                                                                                                       // is
+    //                                                                                                                       // forward
+    //                                                                                                                       // Direction,
+    //                                                                                                                       // Forward
+    //                                                                                                                       // on
+    //                                                                                                                       // Joystick
+    //                                                                                                                       // is
+    //                                                                                                                       // Y
+    //   translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
-      //
-      // Normal teleop drive
-      //
+    //   //
+    //   // Normal teleop drive
+    //   //
       
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    } // Inverted due to Robot Directions being the
-                                                                    // opposite of controller directions
+    //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+    //       -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+    // } // Inverted due to Robot Directions being the
+    //                                                                 // opposite of controller directions
     
-    drive.getCurrentPos();
+    // drive.getCurrentPos();
 
-    if (shooterController.getXButtonPressed()){
-      currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
-    }
+    // if (shooterController.getXButtonPressed()){
+    //   currentPiecePipeline = "CUBE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    //   ledStrips.setFullPurple();
+    // }
     
-    if (shooterController.getYButtonPressed()){
-      currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
-    }
+    // if (shooterController.getYButtonPressed()){
+    //   currentPiecePipeline = "CONE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    //   ledStrips.setFullYellow();
+    // }
 
     if (driverController.getBButton()){
       autoPark.balance(drive);
