@@ -1,7 +1,6 @@
 package frc.robot;
 
-
-import java.awt.Color;
+import frc.robot.Color;
 
 
 
@@ -13,6 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Parity;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 
+
 public class LED {
     
     private AddressableLED liftNEOPIXELS;
@@ -23,19 +23,22 @@ public class LED {
 
     final int LED_LENGTH = 45;
 
+    public void setColor(int i, Color color){
+        liftBuffer.setRGB(i, color.red, color.green, color.blue);
+    }
     public LED(){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
     }
-    
+
     public void setOrangeBlue(){
         for(int i = 0; i < LED_LENGTH; i++){
             if(i < LED_LENGTH/2){
-                liftBuffer.setRGB(i, 243, 50, 0);
+                setColor(i, Color.ORANGE);
             }else{
-                liftBuffer.setRGB(i, 0, 80, 133);
+                setColor(i, Color.BLUE);
             }
         }
         liftNEOPIXELS.setData(liftBuffer);
@@ -57,13 +60,13 @@ public class LED {
                 }
                 for(int i = 0; i < LED_LENGTH; i++){
                     if (Math.sin(1 * (double)(i + count))  > 0){
-                        liftBuffer.setRGB(i,243, 50, 0);
+                        setColor(i, Color.ORANGE);
                     }
                /*     else if(Math.sin((double)(i + count)) > -.5){
                         liftBuffer.setRGB(i, 0, 255, 0);
                     } */
                      else  {
-                        liftBuffer.setRGB(i, 0, 80, 133);
+                        setColor(i, Color.BLUE);
                     }
                 }
             }
@@ -73,22 +76,51 @@ public class LED {
         
     }
 
-    public void setPurple(){
+    public void setFullPurple(){
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            liftBuffer.setRGB(ledIndex, 138,43,226);
+            setColor(ledIndex, Color.PURPLE);
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");
     }
     
-    public void setYellow(){
+    public void setFullYellow(){
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            liftBuffer.setRGB(ledIndex, 255,255, 0);
+            setColor(ledIndex, Color.YELLOW);
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");
-
+        
+    }
+    
+    public void setHalfPurple(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            if (ledIndex % 2 == 0){
+                setColor(ledIndex, Color.PURPLE);
+            }
+            else{
+                setColor(ledIndex, Color.OFF);
+            }
+            
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+    
+    public void setHalfYellow(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            if (ledIndex % 2 == 0){
+                setColor(ledIndex, Color.YELLOW);
+            }
+            else{
+                setColor(ledIndex, Color.OFF);
+            }
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
     }
 }
