@@ -14,4 +14,6 @@ public interface SwerveModule {
     DriveController getDriveController();
 
     SteerController getSteerController();
+
+    boolean setModuleSteerAngle(double steerAngle);
 }
