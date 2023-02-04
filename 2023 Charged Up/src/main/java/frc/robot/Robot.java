@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ConfigRun.AutoOptions;
 import frc.robot.autonomous.AutoDrive;
@@ -30,9 +29,19 @@ import javax.swing.DropMode;
 
 import com.swervedrivespecialties.swervelib.DriveController;
 
+import org.littletonrobotics.junction.LoggedRobot;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.LogFileUtil;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -43,7 +52,12 @@ import edu.wpi.first.wpilibj.DriverStation;
  * build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
+  private static final String kDefaultAuto = "Default";
+  private static final String kCustomAuto = "My Auto";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  
   public XboxController driverController;
   public XboxController shooterController;
   public Drivetrain drive;
@@ -53,6 +67,7 @@ public class Robot extends TimedRobot {
 
   public Vision gameObjectVision;
   public String currentPiecePipeline;
+  public FRCLogger logger;
 
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
@@ -66,15 +81,35 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    //AdvantageKit logging code
+    Logger.getInstance().recordMetadata("ProjectName", "MyProject"); // Set a metadata value
+    if (isReal()) {
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
+    }
+    else {
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+    }
+    Logger.getInstance().start();
+    
+    
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("My Auto", kCustomAuto);
+    SmartDashboard.putData("Auto choices", m_chooser);
+    
+    logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    DriverStation.reportError("robotInit just ran", false);
-    drive = new Drivetrain();
-
+    drive = new Drivetrain(logger);
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-        Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE,
-        Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
+    
 
     selector = new AutonomousSelector();
 
@@ -127,6 +162,10 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
+    drive.resetSteerAngles();
   }
 
   /** This function is called periodically during autonomous. */
@@ -141,6 +180,7 @@ public class Robot extends TimedRobot {
     fastMode = true;
     slowModeToggle = false;
     drive.zeroGyroscope();
+    drive.resetSteerAngles();
 
   }
 

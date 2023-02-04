@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
@@ -34,6 +35,8 @@ public class Drivetrain {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
+    
+    private FRCLogger logger;
 
     private final double kWheelCircumference = 4*Math.PI;
     private final double kFalconTicksToMeters = 1.0 / 4096.0 / kWheelCircumference;
@@ -81,7 +84,7 @@ public class Drivetrain {
     /**Initialize drivetrain
      * 
      */
-    public Drivetrain() {
+    public Drivetrain(FRCLogger logger) {
         Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -91,6 +94,8 @@ public class Drivetrain {
         swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
         swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_CURRENT);
         swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
+        
+        this.logger = logger;
 
         // Create motor objects
         //
@@ -238,6 +243,8 @@ public class Drivetrain {
         SmartDashboard.putNumber("Back Right", metersPerSecondToTicks(states[3].speedMetersPerSecond));
 
 
+        logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
+        // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
 
     public void resetEncoder(){
@@ -269,5 +276,16 @@ public class Drivetrain {
 
     public double getModuleVelocity(SwerveModule module){
         return module.getDriveController().getDriveFalcon().getSelectedSensorVelocity();
+    }
+
+    public void resetSteerAngles(){
+        m_frontLeftModule.getSteerController().resetAbsoluteAngle();
+        m_frontRightModule.getSteerController().resetAbsoluteAngle();
+        m_backLeftModule.getSteerController().resetAbsoluteAngle();
+        m_backRightModule.getSteerController().resetAbsoluteAngle();
+    }
+
+    public void teleopInitLogSwerve(){
+        logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
     }
 }

@@ -10,4 +10,6 @@ public interface SteerController {
     double getStateAngle();
 
     TalonFX getSteerMotor();
+
+    double resetAbsoluteAngle();
 }
