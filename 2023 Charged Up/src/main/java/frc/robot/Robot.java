@@ -59,11 +59,8 @@ public class Robot extends LoggedRobot {
 
   public Vision gameObjectVision;
   public String currentPiecePipeline;
-<<<<<<< HEAD
   public Autopark autoPark;
-=======
   public FRCLogger logger;
->>>>>>> main
 
 
   /**
@@ -99,15 +96,11 @@ public class Robot extends LoggedRobot {
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-<<<<<<< HEAD
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-      //This is for Autopark
-      autoPark = new Autopark();
+     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
+     //This is for Autopark
+     autoPark = new Autopark();
       
     }
-=======
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
->>>>>>> main
     
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
@@ -155,13 +148,9 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-<<<<<<< HEAD
-    
-=======
     drive.zeroGyroscope();
     drive.teleopInitLogSwerve();
 
->>>>>>> main
   }
   
   /** This function is called periodically during operator control. */
@@ -172,18 +161,15 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
-<<<<<<< HEAD
     
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     SmartDashboard.putNumber("pitch", drive.getPitch());
     SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
     // gameObjectVision.updateVision();
-=======
 
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
->>>>>>> main
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -195,7 +181,6 @@ public class Robot extends LoggedRobot {
     }
 
   
-<<<<<<< HEAD
     // if (driverController.getRightBumperPressed()){
     //   slowModeToggle = ! slowModeToggle;
     // }
@@ -210,23 +195,6 @@ public class Robot extends LoggedRobot {
     //   rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
     //   translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     // }
-=======
-    if (driverController.getRightBumperPressed()){
-       slowModeToggle = ! slowModeToggle;
-     }
-     fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-  
-
-    if (fastMode) {
-      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
-      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
-    }
-    else {
-      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
-      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
-    }
-
->>>>>>> main
     
     // if(driverController.getLeftBumper())
     // {
@@ -283,12 +251,9 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-<<<<<<< HEAD
-=======
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
->>>>>>> main
   }
 
   /** This function is called once when test mode is enabled. */

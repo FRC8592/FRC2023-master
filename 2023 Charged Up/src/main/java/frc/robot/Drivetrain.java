@@ -170,7 +170,6 @@ public class Drivetrain {
         return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
-<<<<<<< HEAD
     public double getPitch(){
         return m_navx.getPitch();
     }
@@ -180,8 +179,6 @@ public class Drivetrain {
         return m_navx.getYaw();
     }
     
-=======
->>>>>>> main
     public boolean isGyroscopeRotating(){
         return m_navx.isRotating();
     }
