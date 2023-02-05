@@ -1,8 +1,11 @@
 package frc.robot;
 
+
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 public class Autopark {
 
@@ -12,32 +15,39 @@ public class Autopark {
         STOP;
     }
     
-    AutoBalanceStates currentState = AutoBalanceStates.DRIVE_FORWARD;
+    AutoBalanceStates currentState;
+    Timer timer;
+    public Autopark(){
+        currentState = AutoBalanceStates.DRIVE_FORWARD;
+        timer = new Timer();
+
+    }
     
     public boolean balance(Drivetrain drivetrain){
         double pitch = drivetrain.getPitch();
-        // System.out.println(currentState.toString() + pitch);
+        System.out.println(currentState.toString() + " " + pitch);
         
         switch (currentState){
             
             case DRIVE_FORWARD:
                 //if pitched up
-                if(Math.abs(pitch) >= Constants.LEVEL_PITCH) {
+                timer.start();
+                if(Math.abs(pitch) >= Constants.LEVEL_PITCH && timer.get() >= 2.0) {
                     currentState = AutoBalanceStates.FIX_TILT; 
                 }
                 else {
-                    drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
+                    drivetrain.drive(new ChassisSpeeds(1.0, 0, 0)); //the slower the better
                     SmartDashboard.putNumber("Movement speed", 0.7);
                 }
                 break;
             
             case FIX_TILT:
-
+                
                 if(Math.abs(pitch) <= Constants.LEVEL_PITCH) {
                     currentState = AutoBalanceStates.STOP; 
                 }
                 else{
-                    drivetrain.drive(new ChassisSpeeds(0.2 * (pitch / 100), 0, 0));
+                    drivetrain.drive(new ChassisSpeeds(pitch * Constants.PITCH_MULTIPLIER, 0, 0));
                     SmartDashboard.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER);
                 }
                 break;

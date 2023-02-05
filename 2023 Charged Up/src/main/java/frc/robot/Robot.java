@@ -69,7 +69,6 @@ public class Robot extends TimedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
       //This is for Autopark
-      autoPark = new Autopark();
       
     }
     
@@ -98,20 +97,23 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    autoPark = new Autopark();
   }
   
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-      // Put custom auto code here
-      break;
-      case kDefaultAuto:
-      default:
-      // Put default auto code here
-      break;
-    }
+    // switch (m_autoSelected) {
+    //   case kCustomAuto:
+    //   // Put custom auto code here
+    //   break;
+    //   case kDefaultAuto:
+    //   default:
+    //   // Put default auto code here
+    //   break;
+    // }
+    autoPark.balance(drive);
+
   }
   
   /** This function is called once when teleop is enabled. */
@@ -119,6 +121,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
+    autoPark = new Autopark();
+
     
   }
   
@@ -131,6 +135,7 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
     
+    // System.out.println(driverControler.getBButton());
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     SmartDashboard.putNumber("pitch", drive.getPitch());
     SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
@@ -143,68 +148,73 @@ public class Robot extends TimedRobot {
     if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
     }
+    
+    if (driverController.getRightBumperPressed()){
+      slowModeToggle = ! slowModeToggle;
+    }
+    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    
+    
+    if (fastMode) {
+      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
+      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
+    }
+    else {
+      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
+      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+    }
+    
+    if(driverController.getLeftBumper()){
+      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      double turn = gameObjectVision.turnRobot(1.0);
+      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+    }
+    else if (driverController.getBButton()){
+      autoPark.balance(drive);
+      // System.out.println("Pitch " + drive.getPitch());
+    }
+    else{
+      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+      * rotatePower; // Right joystick
+      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      // is
+      // forward
+      // Direction,
+                                                                                                                            // Forward
+                                                                                                                            // on
+                                                                                                                            // Joystick
+                                                                                                                            // is
+                                                                                                                            // Y
+        translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
   
-    // if (driverController.getRightBumperPressed()){
-    //   slowModeToggle = ! slowModeToggle;
-    // }
-    // fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-    
+        //
+        // Normal teleop drive
+        //
+        
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+            -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+      }
 
-    // if (fastMode) {
-    //   rotatePower    = ConfigRun.ROTATE_POWER_FAST;
-    //   translatePower = ConfigRun.TRANSLATE_POWER_FAST;
-    // }
-    // else {
-    //   rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
-    //   translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
-    // }
-    
-    // if(driverController.getLeftBumper())
-    // {
-    //   double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-    //   double turn = gameObjectVision.turnRobot(1.0);
-    //   drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    // }
-    // else{  
-    //   rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-    //       * rotatePower; // Right joystick
-    //   translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-    //                                                                                                                       // is
-    //                                                                                                                       // forward
-    //                                                                                                                       // Direction,
-    //                                                                                                                       // Forward
-    //                                                                                                                       // on
-    //                                                                                                                       // Joystick
-    //                                                                                                                       // is
-    //                                                                                                                       // Y
-    //   translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
-
-    //   //
-    //   // Normal teleop drive
-    //   //
       
-    //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-    //       -joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    // } // Inverted due to Robot Directions being the
-    //                                                                 // opposite of controller directions
+
+    //} // Inverted due to Robot Directions being the
+    //                                                                 opposite of controller directions
     
     // drive.getCurrentPos();
 
-    // if (shooterController.getXButtonPressed()){
-    //   currentPiecePipeline = "CUBE";
-    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-    //   ledStrips.setFullPurple();
-    // }
-    
-    // if (shooterController.getYButtonPressed()){
-    //   currentPiecePipeline = "CONE";
-    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-    //   ledStrips.setFullYellow();
-    // }
-
-    if (driverController.getBButton()){
-      autoPark.balance(drive);
+    if (shooterController.getXButtonPressed()){
+      currentPiecePipeline = "CUBE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      ledStrips.setFullPurple();
     }
+    
+    if (shooterController.getYButtonPressed()){
+      currentPiecePipeline = "CONE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.setFullYellow();
+    }
+
+    
   }
 
 
