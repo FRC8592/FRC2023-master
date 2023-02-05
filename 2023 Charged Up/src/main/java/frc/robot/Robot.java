@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot {
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   public Autopark autoPark;
+
 
 
   /**
@@ -134,6 +136,7 @@ public class Robot extends TimedRobot {
     double translateX;
     double translateY;
     double rotate;
+    double rotateToAngle;
     
     // System.out.println(driverControler.getBButton());
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
@@ -177,6 +180,7 @@ public class Robot extends TimedRobot {
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
       * rotatePower; // Right joystick
       translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      rotateToAngle = driverController.getPOV();
       // is
       // forward
       // Direction,
@@ -190,9 +194,14 @@ public class Robot extends TimedRobot {
         //
         // Normal teleop drive
         //
-        
-        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-            -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+        if (rotateToAngle != -1){
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+              drive.turnToAngle(rotateToAngle), drive.getGyroscopeRotation()));
+
+        }else {
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+              -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+        }
       }
 
       

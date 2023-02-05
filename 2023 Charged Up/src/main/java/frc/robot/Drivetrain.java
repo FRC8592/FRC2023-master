@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
+
 
 import static frc.robot.Constants.*;
 
@@ -34,6 +36,7 @@ public class Drivetrain {
     private final SwerveModule m_backRightModule;
     private SwerveModuleState[] states;   //possible hold the state of the swerve modules
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
+    private PIDController turnToPID = new PIDController(Constants.TURN_TO_kP, TURN_TO_kI, TURN_TO_kD);
 
 
     /**
@@ -225,5 +228,16 @@ public class Drivetrain {
     } 
     SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+    }
+
+    public double turnToAngle(double targetDegrees){
+        double yaw = getYaw() + 180;
+
+        // double targetDifference = yaw - targetDegrees;
+
+        SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
+        SmartDashboard.putNumber("TurnTo PID", turnToPID.calculate(yaw, targetDegrees));
+
+        return turnToPID.calculate(yaw, targetDegrees);
     }
 }
