@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.Logger;
@@ -25,8 +26,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.*;
 
+import edu.wpi.first.math.*;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 
 public class Drivetrain {
+
+    public static final double ODOMETRY_NOISE = 0.1;
+    public static final double VISION_NOISE = 0.1;
+
     /**
      * Swerve module controllers, intialized in the constructor
      */  
@@ -40,6 +47,8 @@ public class Drivetrain {
 
     private final double kWheelCircumference = 4*Math.PI;
     private final double kFalconTicksToMeters = 1.0 / 4096.0 / kWheelCircumference;
+
+    private SwerveDrivePoseEstimator poseEstimate;
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -158,6 +167,9 @@ public class Drivetrain {
         );
 
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
+
+        //SWERVE POS ESTIMATOR
+        this.poseEstimate = new SwerveDrivePoseEstimator(m_kinematics, getGyroscopeRotation(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()}, getCurrentPos(), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1, 0.1, 0.01));
     }
 
     /**
@@ -304,5 +316,14 @@ public class Drivetrain {
         }
         SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
         setDriveVelocity(velocityToApply, module);
+    }
+
+    
+    public void updatePose(Pose2d visionPose){
+        if(visionPose != null){
+            poseEstimate.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
+        }
+        poseEstimate.update(getGyroscopeRotation(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
+        poseEstimate.getEstimatedPosition();
     }
 }
