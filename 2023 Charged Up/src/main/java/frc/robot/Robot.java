@@ -159,10 +159,13 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
+    double turnToRotate;
 
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
+
+    SmartDashboard.putNumber("Yaw", drive.getYaw());
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -198,7 +201,11 @@ public class Robot extends LoggedRobot {
     else{  
       rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
           * rotatePower; // Right joystick
-      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; 
+
+      turnToRotate = driverController.getPOV();
+      
+      // X
                                                                                                                           // is
                                                                                                                           // forward
                                                                                                                           // Direction,
@@ -212,9 +219,14 @@ public class Robot extends LoggedRobot {
       //
       // Normal teleop drive
       //
-      
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          joystickDeadband(rotate), drive.getGyroscopeRotation()));
+
+      if (turnToRotate != -1){
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+            drive.turnToAngle(turnToRotate), drive.getGyroscopeRotation()));
+      }else{
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+            joystickDeadband(rotate), drive.getGyroscopeRotation()));
+      }
     } // Inverted due to Robot Directions being the
                                                                     // opposite of controller directions
     
@@ -252,8 +264,8 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
-    SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    // drive.turnToAngle(90);
+    // SmartDashboard.putNumber("DPAD", driverController.getPOV());
   }
 
   /** This function is called once when the robot is first started up. */

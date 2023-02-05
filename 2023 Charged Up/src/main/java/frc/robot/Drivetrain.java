@@ -22,6 +22,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
+
+
 
 import static frc.robot.Constants.*;
 
@@ -37,6 +40,8 @@ public class Drivetrain {
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
     
     private FRCLogger logger;
+    private PIDController turnToPID = new PIDController(Constants.TURN_TO_kP, TURN_TO_kI, TURN_TO_kD);
+
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -264,5 +269,16 @@ public class Drivetrain {
         }
         SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
         setDriveVelocity(velocityToApply, module);
+    }
+
+    public double turnToAngle(double targetDegrees){
+        double yaw = getYaw() + 180;
+
+        // double targetDifference = yaw - targetDegrees;
+
+        SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
+        SmartDashboard.putNumber("TurnTo PID", turnToPID.calculate(yaw, targetDegrees));
+
+        return turnToPID.calculate(yaw, targetDegrees);
     }
 }
