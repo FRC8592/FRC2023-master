@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Elevator.Piece;
 import frc.robot.Elevator.ScoreHeight;
 import frc.robot.Lift.Heights;
-import frc.robot.Lift.Pieces;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -187,21 +186,23 @@ public class Robot extends TimedRobot {
       ledStrips.setFullYellow();
     }
 
+    // ===========
     // TEST PLAN 1
+    // ===========
 
     lift.testPlan1(driverController.getLeftY());
 
+    // ===========
     // TEST PLAN 2
+    // ===========
 
-    // lift.testPlan2();
-
-    // // TEST PLAN 3
-
-    // if (driverController.getLeftBumper()) {
-    //   lift.setPieceMode(Pieces.CONE);
-    // } else if (driverController.getRightBumper()) {
-    //   lift.setPieceMode(Pieces.CUBE);
+    // if (driverController.getRightBumper()) {
+      // lift.testPlan2();
     // }
+
+    // ===========
+    // TEST PLAN 3
+    // ===========
 
     // if (driverController.getAButton()) {
     //   lift.testPlan3(Heights.INTAKE);
@@ -213,13 +214,9 @@ public class Robot extends TimedRobot {
     //   lift.testPlan3(Heights.STOWED);
     // }
 
-    // // TEST PLAN 4
-
-    // if (driverController.getLeftBumper()) {
-    //   lift.setPieceMode(Pieces.CONE);
-    // } else if (driverController.getRightBumper()) {
-    //   lift.setPieceMode(Pieces.CUBE);
-    // }
+    // ===========
+    // TEST PLAN 4
+    // ===========
 
     // if (driverController.getAButton()) {
     //   lift.testPlan3(Heights.INTAKE);
@@ -232,12 +229,8 @@ public class Robot extends TimedRobot {
     // }
 
     // ========================================
-
-    // if (shooterController.getLeftBumper()) {
-    //   elevator.setPiece(Piece.CUBE);
-    // } else if (shooterController.getRightBumper()) {
-    //   elevator.setPiece(Piece.CONE);
-    // }
+    // REAL CODE FOR ELEVATOR
+    // ========================================
 
     // if (shooterController.getAButton()) {
     //   elevator.liftTo(ScoreHeight.LOW);

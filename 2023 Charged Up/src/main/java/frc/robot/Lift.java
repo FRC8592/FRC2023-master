@@ -36,41 +36,26 @@ public class Lift {
 
     private final double kPulleyDiameterInches = 2.0; 
     private final double kMotorRotationsToHeightInches = Constants.LIFT_GEARBOX_RATIO * 2 * Math.PI * kPulleyDiameterInches;
-
-
-    private static final double kConeHangInches = 3; // The distance the cone hangs from the bottom of the intake
+    
+    private static final double kIntakeHeight = 6d; // Height to intake from
     private static final double kDropHeightInches = 6; // The height above the top of the node we want to drop from
 
     private Heights prevHeight = Heights.STOWED;
-    private Pieces piece = Pieces.CONE;
 
     public enum Heights {
-        STOWED(kConeHangInches + kDropHeightInches, false),
-        INTAKE(kConeHangInches + 5, false),
-        MID(kConeHangInches + kDropHeightInches + 35, true),
-        HIGH(kConeHangInches + kDropHeightInches + 46, true);
+        STOWED(kDropHeightInches),
+        INTAKE(kIntakeHeight + 5.0),
+        MID(kDropHeightInches + 35.0),
+        HIGH(kDropHeightInches + 46.0);
 
         double height;
-        boolean coneChange;
-        Heights(double height, boolean coneChange) {
+        Heights(double height) {
             this.height = height;
-            this.coneChange = coneChange;
         }
 
-        double getConeHeightInches() {
+        double getHeight() {
             return height;
         }
-
-        double getCubeHeightInches() {
-            return height - (coneChange ? kConeHangInches : 0);
-        }
-    }
-
-    public enum Pieces {
-        CONE,
-        CUBE;
-
-
     }
 
     public Lift() {
@@ -100,18 +85,19 @@ public class Lift {
         liftCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_UP, PID_UP_SLOT);
 
         // The actual stowed height is stored as the 'zero' for the lift
-        liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getCubeHeightInches()));
+        liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getHeight()));
         liftMotor.setIdleMode(IdleMode.kBrake);
 
         liftMotor.setSmartCurrentLimit(MAX_CURRENT);
 
         // Consider dividing the upper soft limit by the sin of the angle to get the actual upper max
-        liftMotor.setSoftLimit(SoftLimitDirection.kForward, (float)inchesToMotorRotations(Heights.HIGH.getConeHeightInches()));
-        liftMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)inchesToMotorRotations(Heights.STOWED.getCubeHeightInches()));
+        liftMotor.setSoftLimit(SoftLimitDirection.kForward, (float)inchesToMotorRotations(Heights.HIGH.getHeight()));
+        liftMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)inchesToMotorRotations(Heights.STOWED.getHeight()));
     }
 
+    // Resets encoders and potentially other sensors
     public void reset() {
-        liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getCubeHeightInches()));
+        liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getHeight()));
     }
 
     // Spin motor 10% of [Left Joystick Y Axis] value
@@ -120,39 +106,32 @@ public class Lift {
         SmartDashboard.putNumber("Elevator/Height Inches", getLinearHeightInches());
     }
 
-    // Goes to a height (5 inches)
+    // Goes to a height (5 inches) upon [Right Bumper] press
     public void testPlan2() {
         liftCtrl.setReference(inchesToMotorRotations(5d), ControlType.kSmartMotion);
     }
 
-    // Indicate whether the cone or cube is wanted and what height to lift to (BUT DO NOT LIFT)
+    // Indicate what height to lift to (BUT DO NOT LIFT)
     public void testPlan3(Heights height) {
         this.prevHeight = height;
-        SmartDashboard.putString("Elevator/Desired Game Piece", piece.name());
         SmartDashboard.putString("Elevator/Desired Height", height.name());
     }
 
     // Go to different heights (stowed, mid, high) and indicate whether the elevator should pivot
     public void testPlan4(Heights height) {
-        double desiredHeight = piece == Pieces.CONE ? height.getConeHeightInches() : height.getCubeHeightInches();
-
         SmartDashboard.putNumber("Elevator/Height Inches", getLinearHeightInches());
-        SmartDashboard.putNumber("Elevator/Desired Height Inches", desiredHeight);
+        SmartDashboard.putNumber("Elevator/Desired Height Inches", height.getHeight());
         SmartDashboard.putString("Elevator/Desired Height", height.name());
         SmartDashboard.putBoolean("Elevator/Should Pivot", height != Heights.STOWED);
 
         // If the desired height is higher than the previous height go to the up slot, otherwise go to down slot for PID
         if (height.ordinal() >= this.prevHeight.ordinal()) { 
-            liftCtrl.setReference(desiredHeight, ControlType.kSmartMotion, PID_UP_SLOT);
+            liftCtrl.setReference(height.getHeight(), ControlType.kSmartMotion, PID_UP_SLOT);
         } else {
-            liftCtrl.setReference(desiredHeight, ControlType.kSmartMotion, PID_DOWN_SLOT);
+            liftCtrl.setReference(height.getHeight(), ControlType.kSmartMotion, PID_DOWN_SLOT);
         }
 
         this.prevHeight = height;
-    }
-
-    public void setPieceMode(Pieces piece) {
-        this.piece = piece;
     }
 
     private double inchesToMotorRotations(double inches) {
