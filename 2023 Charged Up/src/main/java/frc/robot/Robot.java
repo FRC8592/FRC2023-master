@@ -61,6 +61,7 @@ public class Robot extends LoggedRobot {
   public String currentPiecePipeline;
   public FRCLogger logger;
   public PIDController turnPID;
+  public PIDController strafePID;
 
 
   /**
@@ -100,7 +101,7 @@ public class Robot extends LoggedRobot {
     
 
      turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-
+     strafePID = new PIDController(0.1, 0, 0);
   }
 
   /**
@@ -192,8 +193,13 @@ public class Robot extends LoggedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
 
+    if(driverController.getLeftTriggerAxis() >= 0.2){
+      //TODO: streighten the robot
+      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
+      drive.drive(new ChassisSpeeds(0, strafe, 0));
+    }
     
-    if(driverController.getLeftBumper())
+    else if(driverController.getLeftBumper())
     {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
@@ -235,6 +241,20 @@ public class Robot extends LoggedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
+    //TODO:don't know if the buttons are already in use
+    if (shooterController.getAButtonPressed()){
+      currentPiecePipeline = "APRILTAG";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      ledStrips.setFullOrange();
+    }
+
+    if (shooterController.getBButtonPressed()){
+      currentPiecePipeline = "RETROTAPE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      ledStrips.setFullBlue();
+    }
+
+
   }
 
   /** This function is called once when the robot is disabled. */
