@@ -165,19 +165,24 @@ public class Robot extends LoggedRobot {
     
     gameObjectVision.updateVision();
     
-    if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
-      if (currentPiecePipeline == "CUBE"){
-        ledStrips.setFull(Color.BLUE);
-      }else if (currentPiecePipeline == "CONE"){
-        ledStrips.setFull(Color.ORANGE);
-      }
-    }else {
-      if (currentPiecePipeline == "CUBE"){
-        ledStrips.setHalf(Color.BLUE);
-      }else if (currentPiecePipeline == "CONE"){
-        ledStrips.setHalf(Color.ORANGE);
-      }
+    // if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
+    //   if (currentPiecePipeline == "CUBE"){
+    //     ledStrips.setFull(Color.BLUE);
+    //   }else if (currentPiecePipeline == "CONE"){
+    //     ledStrips.setFull(Color.ORANGE);
+    //   }
+    // }else {
+    //   if (currentPiecePipeline == "CUBE"){
+    //     ledStrips.setHalf(Color.BLUE);
+    //   }else if (currentPiecePipeline == "CONE"){
+    //     ledStrips.setHalf(Color.ORANGE);
+    //   }
+    // }
+
+    if(/* gameObjectVision.isTargetLocked() && */ gameObjectVision.distanceToTarget() < 60 && gameObjectVision.distanceToTarget() >= 0) {
+      ledStrips.setProximity(gameObjectVision.distanceToTarget() * Constants.INCHES_TO_METERS);
     }
+
     //
     // Read gamepad controls for drivetrain and scale control values
     //

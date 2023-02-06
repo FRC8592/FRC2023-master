@@ -231,5 +231,8 @@ public final class Constants {
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
 
+
+    // Conversion constants
+    public static final double INCHES_TO_METERS = 1.0 / 39.37;
 }
 

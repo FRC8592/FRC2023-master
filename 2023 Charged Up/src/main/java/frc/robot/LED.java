@@ -107,4 +107,27 @@ public class LED {
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING");   
     }
+
+    /**
+     * Set more LEDs on depending on how close you are to a target
+     * 2m = max distance
+     * 0.5m = closest distance
+     * 
+     * @param distToTarget  the distance to the target (meters)
+     */
+    public void setProximity(double distToTarget) {
+        int numLEDs = (int)((2 - distToTarget) / 1.5 * LED_LENGTH);
+        Color color = Color.RED;
+        if(numLEDs > LED_LENGTH) {
+            numLEDs = LED_LENGTH;
+            color = Color.GREEN;
+        }
+
+        for (int ledIndex = 0; ledIndex < numLEDs; ledIndex++){
+            setColor(ledIndex, color);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING"); 
+    }
 }
