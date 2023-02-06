@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -60,6 +61,8 @@ public class Robot extends LoggedRobot {
   public String currentPiecePipeline;
   public FRCLogger logger;
 
+  public Autopark autoPark;
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -108,7 +111,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {}
-
+  
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
    * autonomous modes using the dashboard. The sendable chooser code works with the Java
@@ -124,33 +127,38 @@ public class Robot extends LoggedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    autoPark = new Autopark();
     drive.resetSteerAngles();
   }
-
+  
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
-  }
+    // switch (m_autoSelected) {
+    //   case kCustomAuto:
+    //   // Put custom auto code here
+    //   break;
+    //   case kDefaultAuto:
+    //   default:
+    //   // Put default auto code here
+    //   break;
+    // }
+    autoPark.balance(drive);
 
+  }
+  
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-    drive.zeroGyroscope();
+    autoPark = new Autopark();
+
+        drive.zeroGyroscope();
     drive.resetSteerAngles();
 
   }
-
+  
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
@@ -159,26 +167,29 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
-
+    
+    // System.out.println(driverControler.getBButton());
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
-    gameObjectVision.updateVision();
+    SmartDashboard.putNumber("pitch", drive.getPitch());
+    SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
+    // gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
+    
 
     ledStrips.upAndDown();
     if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
     }
-
+  
   
     if (driverController.getRightBumperPressed()){
-       slowModeToggle = ! slowModeToggle;
-     }
-     fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-  
-
+      slowModeToggle = ! slowModeToggle;
+    }
+    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    
+    
     if (fastMode) {
       rotatePower    = ConfigRun.ROTATE_POWER_FAST;
       translatePower = ConfigRun.TRANSLATE_POWER_FAST;
@@ -189,36 +200,43 @@ public class Robot extends LoggedRobot {
     }
 
     
-    if(driverController.getLeftBumper())
-    {
+    if(driverController.getLeftBumper()){
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
     }
-    else{  
-      rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                          // is
-                                                                                                                          // forward
-                                                                                                                          // Direction,
-                                                                                                                          // Forward
-                                                                                                                          // on
-                                                                                                                          // Joystick
-                                                                                                                          // is
-                                                                                                                          // Y
-      translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    else if (driverController.getBButton()){
+      autoPark.balance(drive);
+      // System.out.println("Pitch " + drive.getPitch());
+    }
+    else{
+      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+      * rotatePower; // Right joystick
+      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      // is
+      // forward
+      // Direction,
+                                                                                                                            // Forward
+                                                                                                                            // on
+                                                                                                                            // Joystick
+                                                                                                                            // is
+                                                                                                                            // Y
+        translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+  
+        //
+        // Normal teleop drive
+        //
+        
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+            -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+      }
 
-      //
-      // Normal teleop drive
-      //
       
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    } // Inverted due to Robot Directions being the
-                                                                    // opposite of controller directions
+
+    //} // Inverted due to Robot Directions being the
+    //                                                                 opposite of controller directions
     
-    drive.getCurrentPos();
+    // drive.getCurrentPos();
 
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
@@ -231,6 +249,8 @@ public class Robot extends LoggedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
+
+    
   }
 
   /** This function is called once when the robot is disabled. */
@@ -243,6 +263,7 @@ public class Robot extends LoggedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
+  
   }
 
   /** This function is called once when test mode is enabled. */
