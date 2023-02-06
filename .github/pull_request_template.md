@@ -1,9 +1,10 @@
-**Description Here: **
+**Description Here**:
 
 
-**Trello Card: **
+**Trello Card**:
 
 
-**Test Plan: **
+**Test Plan**:
 
-[ ] Tested 
+- [ ] Teleop Testing
+- [ ] Auto/Other Testing
