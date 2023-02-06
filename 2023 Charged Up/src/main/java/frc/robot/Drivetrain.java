@@ -154,6 +154,7 @@ public class Drivetrain {
         );
 
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
+        turnToPID.enableContinuousInput(-180, 180);
     }
 
 
@@ -231,13 +232,19 @@ public class Drivetrain {
     }
 
     public double turnToAngle(double targetDegrees){
-        double yaw = getYaw() + 180;
+        double yaw = getYaw();
+
+        if (targetDegrees > 180) {
+            targetDegrees -= 360;
+        }
 
         // double targetDifference = yaw - targetDegrees;
 
+        SmartDashboard.putNumber("Current Yaw", yaw);
+        SmartDashboard.putNumber("Target Degrees", targetDegrees);
         SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
         SmartDashboard.putNumber("TurnTo PID", turnToPID.calculate(yaw, targetDegrees));
-
-        return turnToPID.calculate(yaw, targetDegrees);
+        
+        return -turnToPID.calculate(yaw, targetDegrees);
     }
 }

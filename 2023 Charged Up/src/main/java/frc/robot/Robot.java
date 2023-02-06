@@ -82,7 +82,10 @@ public class Robot extends TimedRobot {
      * SmartDashboard integrated updating.
      */
     @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    SmartDashboard.putNumber("Yaw Value", drive.getYaw());
+    SmartDashboard.putNumber("Dpad Value", driverController.getPOV());
+  }
   
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -139,9 +142,9 @@ public class Robot extends TimedRobot {
     double rotateToAngle;
     
     // System.out.println(driverControler.getBButton());
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-    SmartDashboard.putNumber("pitch", drive.getPitch());
-    SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
+    // SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    // SmartDashboard.putNumber("pitch", drive.getPitch());
+    // SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
     // gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
@@ -195,17 +198,14 @@ public class Robot extends TimedRobot {
         // Normal teleop drive
         //
         if (rotateToAngle != -1){
-          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-              drive.turnToAngle(rotateToAngle), drive.getGyroscopeRotation()));
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+              drive.turnToAngle(rotateToAngle) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, drive.getGyroscopeRotation()));
 
         }else {
           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
               -joystickDeadband(rotate), drive.getGyroscopeRotation()));
         }
       }
-
-      
-
     //} // Inverted due to Robot Directions being the
     //                                                                 opposite of controller directions
     

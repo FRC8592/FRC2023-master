@@ -230,8 +230,8 @@ public final class Constants {
     public static final int CUBE_PIPELINE = 1;
     public static final int CONE_PIPELINE = 0;
 
-    public static final double TURN_TO_kP = 2.0/45.0;
+    public static final double TURN_TO_kP = 0.01;
     public static final double TURN_TO_kI = 0;
-    public static final double TURN_TO_kD = 0;
+    public static final double TURN_TO_kD = -0.15;
 
 }
