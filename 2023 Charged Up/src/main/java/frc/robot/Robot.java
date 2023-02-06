@@ -167,7 +167,7 @@ public class Robot extends LoggedRobot {
     // Read gamepad controls for drivetrain and scale control values
     //
 
-    
+    ledStrips.upAndDown();
     if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
     }
