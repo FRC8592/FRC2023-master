@@ -6,6 +6,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 
 import java.util.LinkedList;
@@ -70,6 +72,8 @@ public class Vision {
   private final double IN_TO_METERS = 0.0254;
   
   private FRCLogger logger;
+
+  private LimelightData limeLight;
   
 
   /**
@@ -347,4 +351,11 @@ public class Vision {
   public String getVisionName(){
     return this.limelightName;
   }
+
+  public Pose2d getPoseFromLimelight(){
+
+    double[] pose = LimelightHelpers.getBotpose(limelightName);
+    return new Pose2d(pose[0], pose[1], new Rotation2d(Math.toRadians(pose[5])));
+  }
+
 }
