@@ -318,7 +318,7 @@ public class Drivetrain {
         setDriveVelocity(velocityToApply, module);
     }
 
-    
+
     public void updatePose(Pose2d visionPose){
         if(visionPose != null){
             poseEstimate.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
@@ -326,4 +326,5 @@ public class Drivetrain {
         poseEstimate.update(getGyroscopeRotation(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
         poseEstimate.getEstimatedPosition();
     }
+
 }
