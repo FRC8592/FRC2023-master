@@ -195,8 +195,9 @@ public class Robot extends LoggedRobot {
 
     if(driverController.getLeftTriggerAxis() >= 0.2){
       //TODO: streighten the robot
-      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
+      double strafe = -gameObjectVision.turnRobot(0.0, strafePID, 0.5);
       drive.drive(new ChassisSpeeds(0, strafe, 0));
+      SmartDashboard.putBoolean("should strafe", true);
     }
     
     else if(driverController.getLeftBumper())
@@ -224,7 +225,7 @@ public class Robot extends LoggedRobot {
       //
       
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          joystickDeadband(rotate), drive.getGyroscopeRotation()));
+          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
     } // Inverted due to Robot Directions being the
                                                                     // opposite of controller directions
     
