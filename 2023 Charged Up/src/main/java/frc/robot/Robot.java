@@ -160,9 +160,24 @@ public class Robot extends LoggedRobot {
     double translateY;
     double rotate;
 
-    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    
+    
     gameObjectVision.updateVision();
+    
+    if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
+      if (currentPiecePipeline == "CUBE"){
+        ledStrips.setFull(Color.BLUE);
+      }else if (currentPiecePipeline == "CONE"){
+        ledStrips.setFull(Color.ORANGE);
+      }
+    }else {
+      if (currentPiecePipeline == "CUBE"){
+        ledStrips.setHalf(Color.BLUE);
+      }else if (currentPiecePipeline == "CONE"){
+        ledStrips.setHalf(Color.ORANGE);
+      }
+    }
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -189,16 +204,25 @@ public class Robot extends LoggedRobot {
     }
 
     
+    SmartDashboard.putNumber("targetDistance", gameObjectVision.distanceToTarget());
+
     if(driverController.getLeftBumper())
     {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else{  
-      rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+
+        double turn = gameObjectVision.turnRobot(1.0);
+        double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      if (gameObjectVision.targetLocked && gameObjectVision.distanceToTarget()<Constants.OBJECT_GRAB_DISTANCE && gameObjectVision.targetValid){
+        drive.drive(new ChassisSpeeds());
+      }
+      else{
+        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+      }
+    }  else{  
+        rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+        translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+
+      
                                                                                                                           // is
                                                                                                                           // forward
                                                                                                                           // Direction,
@@ -223,13 +247,13 @@ public class Robot extends LoggedRobot {
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
+      ledStrips.setFull(Color.PURPLE);
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
+      ledStrips.setFull(Color.YELLOW);
     }
   }
 
