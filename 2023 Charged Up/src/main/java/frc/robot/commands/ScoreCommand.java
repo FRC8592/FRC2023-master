@@ -33,7 +33,7 @@ public class ScoreCommand extends Command {
     }
 
     @Override
-    public void initialize(double pTime) {
+    public void initialize() {
         timer = new Timer();
         timer.reset();
         timer.start();

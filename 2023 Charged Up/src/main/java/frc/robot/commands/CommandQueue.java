@@ -1,25 +1,20 @@
-/**Represents a queue for commands of any type
- * 
- * 
- */
 package frc.robot.commands;
 
 import java.util.LinkedList;
 import java.util.Queue;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CommandQueue {
-
-    /**Queue interface for commands */
     private Queue<Command> queue;
 
     private Command[] commandArray;
     private Timer timer;
 
-    /**Creates linked list for Queue of commands and sets a new timer*/
+    /**
+     * @param commands list of commands (in order) to run for the queue
+     */
     public CommandQueue(Command ... commands) {
         queue = new LinkedList<Command>();
         for (Command command : commands) {
@@ -27,18 +22,21 @@ public class CommandQueue {
         }
 
         commandArray = commands;
-
         timer = new Timer();
     }
 
-    /**initializes next command */
+    /**
+     * Starts the queue
+     */
     public void initialize() {
         timer.reset();
         timer.start();
-        queue.peek().initialize(timer.get());
+        queue.peek().initialize();
     }
 
-    /**as long as queue is not empty execute next command and */
+    /**
+     * periodic loop ran as long as the queue is not empty
+     */
     public void run() {
         if (!isFinished()) {
             SmartDashboard.putString("Current Running Command", queue.peek().tag() == "" ? "DEFAULT COMMAND" : queue.peek().tag());
@@ -50,7 +48,7 @@ public class CommandQueue {
                 timer.reset();
                 timer.start();
                 if (queue.size() != 0) {
-                    queue.peek().initialize(timer.get());
+                    queue.peek().initialize();
                 } else {
                     SmartDashboard.putString("Current Running Command", "NO COMMAND");
                 }
@@ -58,12 +56,16 @@ public class CommandQueue {
         }
     }
 
-    /**is the queue empty */
+    /**
+     * @return if the queue has completed
+     */
     public boolean isFinished() {
         return queue.size() <= 0;
     }
 
-    /**returns start pose of 1st follower command*/
+    /**
+     * @return {@code Pose2d} element representing the starting position based on queued commands
+     */
     public Pose2d getStartPose() {
         for (Command command : commandArray) {
             if (command.getClass() == FollowerCommand.class) {

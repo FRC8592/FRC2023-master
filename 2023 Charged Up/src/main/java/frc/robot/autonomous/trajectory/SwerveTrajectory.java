@@ -12,6 +12,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
+/**
+ * Custom Trajectory generator class based on the WPILib {@code Trajectory} class
+ */
 public class SwerveTrajectory {
     private HolonomicDriveController mDrivePID;
     private PIDController mXPID, mYPID;
@@ -33,11 +36,20 @@ public class SwerveTrajectory {
         mTrajectory = trajectory;
     }
 
+    /**
+     * @param rotation ending rotation
+     * @return the same {@code SwerveTrajectory} object back but with the added {@code Rotation2d} for easy usage
+     */
     public SwerveTrajectory addRotation(Rotation2d rotation) {
         this.rotation = rotation;
         return this;
     }
 
+    /**
+     * @param pSeconds current time in current {@code SwerveTrajectory} (sec)
+     * @param robotPose current {@code Pose2d} of robot
+     * @return a {@code ChassisSpeeds} object for x, y, and omega speeds in imperial units (m/s and rad/s)
+     */
     public ChassisSpeeds sample(double pSeconds, Pose2d robotPose) {
         State state = mTrajectory.sample(pSeconds);
         ChassisSpeeds desired = mDrivePID.calculate(new Pose2d(), state, new Rotation2d());
@@ -55,14 +67,23 @@ public class SwerveTrajectory {
         return desired;
     }
 
+    /**
+     * @return underlying WPILib {@code Trajectory} object that the current {@code SwerveTrajectory} is based on
+     */
     public Trajectory trajectory() {
         return mTrajectory;
     }
 
+    /**
+     * @return ending {@code Rotation2d}
+     */
     public Rotation2d getEndingRotation() {
         return rotation;
     }
 
+    /**
+     * @return initial {@code Pose2d}
+     */
     public Pose2d getInitialPose() {
         return mTrajectory.getInitialPose();
     }

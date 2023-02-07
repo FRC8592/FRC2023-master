@@ -38,7 +38,7 @@ public class WaypointCommand extends Command {
     }
 
     @Override
-    public void initialize(double pTime) {
+    public void initialize() {
         autoDrive.initWaypoints();
         for (Pose2d pose : poses) {
             autoDrive.addWaypoint(pose);
