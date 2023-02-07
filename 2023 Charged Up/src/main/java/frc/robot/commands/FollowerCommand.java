@@ -36,7 +36,7 @@ public class FollowerCommand extends Command {
     }
 
     @Override
-    public void initialize(double pTime) {
+    public void initialize() {
         timer.reset();
         timer.start();
     }

@@ -14,9 +14,9 @@ public class JointCommand extends Command {
     }
 
     @Override
-    public void initialize(double pTime) {
+    public void initialize() {
         for (Command command : commands) {
-            command.initialize(pTime);
+            command.initialize();
         }
     }
 
