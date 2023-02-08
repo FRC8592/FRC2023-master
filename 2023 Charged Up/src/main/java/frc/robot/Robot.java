@@ -252,13 +252,13 @@ public class Robot extends LoggedRobot {
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFull(Color.PURPLE);
+      ledStrips.setFull(LED.Color.PURPLE);
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFull(Color.YELLOW);
+      ledStrips.setFull(LED.Color.YELLOW);
     }
   }
 

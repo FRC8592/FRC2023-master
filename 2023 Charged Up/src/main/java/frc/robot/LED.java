@@ -1,19 +1,39 @@
 package frc.robot;
 
-import frc.robot.Color;
-
-
-
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.SerialPort.Parity;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import java.lang.Math.*;
 
 
 public class LED {
+
+    public enum Color {
+        RED (128, 0, 0),
+        GREEN (0, 128, 0),
+        BLUE (0, 80, 133),
+        YELLOW (255, 255, 0),
+        PURPLE (138,43,226),
+        ORANGE (243, 50, 0),
+        OFF (0, 0, 0);
+    
+        public final int red;
+        public final int blue;
+        public final int green;
+    
+        Color(int red, int green, int blue){
+    
+            this.red = red;
+            this.green = green;
+            this.blue = blue;
+        }
+    
+    }
     
     private AddressableLED liftNEOPIXELS;
     private AddressableLEDBuffer liftBuffer;
@@ -130,4 +150,24 @@ public class LED {
         liftNEOPIXELS.start();
         System.out.println("LED METHOD RUNNING"); 
     }
+
+    // WIP method
+    
+    // private boolean first = true;
+    // /**
+    //  * Create a firelike effect on the LED strips
+    //  * 
+    //  * @param clrA bottom color of the "fire"
+    //  * @param clrB middle color of the "fire"
+    //  * @param clrC top color of the "fire"
+    //  */
+    // public void setFireToTheRobot(Color clrA, Color clrB, Color clrC) {
+    //     if(first) {
+    //         int numA = (int)(Math.random() * 12 + 1);
+    //         int numB = (int)(numA + Math.random() * 8 - Math.random() * 8);
+    //         int numC = (int)(numB + Math.random() * 5 - Math.random() * 5);
+    //     } else {
+            
+    //     }
+    // }
 }
