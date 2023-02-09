@@ -36,8 +36,8 @@ public class Autopark {
                     currentState = AutoBalanceStates.FIX_TILT; 
                 }
                 else {
-                    drivetrain.drive(new ChassisSpeeds(1.0, 0, 0)); //the slower the better
-                    SmartDashboard.putNumber("Movement speed", 1.0);
+                    drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
+                    SmartDashboard.putNumber("Movement speed", 0.7);
                 }
                 break;
             
