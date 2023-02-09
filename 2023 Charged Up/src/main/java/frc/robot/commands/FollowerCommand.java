@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -26,6 +27,12 @@ public class FollowerCommand extends Command {
         trajectory = pTraj;
         timer = new Timer();
         setTag(tag);
+    }
+
+    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot) {
+        drive = pDrive;
+        trajectory = pTraj.addRotation(pRot);
+        timer = new Timer();
     }
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, String tag) {

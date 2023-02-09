@@ -12,11 +12,17 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Auton Configuration/Choose Autonomous": "String Chooser",
+      "/Shuffleboard/Auton Configuration/Choose Delay": "String Chooser",
       "/SmartDashboard/Auto choices": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
       "/Shuffleboard/Auton Configuration/Choose Autonomous": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Auton Configuration/Choose Delay": {
         "window": {
           "visible": true
         }
@@ -32,6 +38,13 @@
         "window": {
           "visible": true
         }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
       }
     }
   }

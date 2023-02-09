@@ -53,11 +53,6 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
  * project.
  */
 public class Robot extends LoggedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
   public XboxController driverController;
   public XboxController shooterController;
   public Drivetrain drive;
@@ -98,10 +93,6 @@ public class Robot extends LoggedRobot {
     }
     Logger.getInstance().start();
     
-    
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
     
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
@@ -154,6 +145,9 @@ public class Robot extends LoggedRobot {
     selectedAuto = selector.getSelectedAutonomous();
     selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
+
+    double delay = SmartDashboard.getNumber("Autonomous Delay", 5d);
+    selectedAuto.addDelay(delay);
     
     if (!isReal()) {
       selectedAuto.setInitialSimulationPose();
@@ -164,9 +158,6 @@ public class Robot extends LoggedRobot {
     }
 
     SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
     drive.resetSteerAngles();
   }
 

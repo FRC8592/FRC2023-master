@@ -23,9 +23,9 @@ public class SwerveTrajectory {
     private Trajectory mTrajectory;
 
     public SwerveTrajectory(Trajectory trajectory) {
-        mXPID = new PIDController(0.05, 0, 0);
-        mYPID = new PIDController(0.05, 0, 0);
-        mTurnPID = new ProfiledPIDController(0.05, 0, 0, new Constraints(Math.PI/2, Math.PI/2));
+        mXPID = new PIDController(0.1, 0, 0);
+        mYPID = new PIDController(0.1, 0, 0);
+        mTurnPID = new ProfiledPIDController(0.05, 0, 0, new Constraints(Math.PI, Math.PI/2));
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);

@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AutonomousSelector {
 
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
-    private SendableChooser<Class<?>> chooser = new SendableChooser<>();
+    private SendableChooser<Class<?>> autonChooser = new SendableChooser<>();
+    private SendableChooser<Double> delayChooser = new SendableChooser<>();
 
     public Class<?>[] autos = {
         MidParkAuto.class,
@@ -20,19 +21,26 @@ public class AutonomousSelector {
     };
 
     public AutonomousSelector() {
-        chooser.setDefaultOption("DEFAULT", autos[0]);
+        autonChooser.setDefaultOption("DEFAULT", autos[0]);
         for (Class<?> auto : autos) {
-            chooser.addOption(auto.getSimpleName(), auto);
+            autonChooser.addOption(auto.getSimpleName(), auto);
         }
 
-        autonTab.add("Choose Autonomous", chooser)
+        autonTab.add("Choose Autonomous", autonChooser)
             .withPosition(3, 3)
             .withSize(4, 2);
+
+        delayChooser.setDefaultOption("DEFAULT", 0.0);
+        autonTab.add("Choose Delay", delayChooser)
+            .withPosition(3, 6)
+            .withSize(4, 2);
+
+        SmartDashboard.putNumber("Autonomous Delay", 0d);
     }
 
     public BaseAuto getSelectedAutonomous() {
         try {
-            BaseAuto selected = (BaseAuto) chooser.getSelected().getDeclaredConstructor().newInstance();
+            BaseAuto selected = (BaseAuto) autonChooser.getSelected().getDeclaredConstructor().newInstance();
             SmartDashboard.putString("SELECTED AUTONOMOUS", selected.getClass().getSimpleName());
             return selected;
         } catch (Exception e) {

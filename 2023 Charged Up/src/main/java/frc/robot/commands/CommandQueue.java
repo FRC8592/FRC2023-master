@@ -80,4 +80,25 @@ public class CommandQueue {
         }
         return new Pose2d();
     }
+
+    public Queue<Command> getQueue() {
+        return queue;
+    }
+
+    public CommandQueue addCommand(Command command) {
+        queue.add(command);
+        return this;
+    }
+
+    public CommandQueue addDelay(double seconds) {
+        DelayCommand delay = new DelayCommand(seconds);
+        queue.add(delay);
+        Command[] newArray = new Command[commandArray.length + 1];
+        newArray[0] = delay;
+        for (int i = 0; i < commandArray.length; i++) {
+            newArray[i+1] = commandArray[i];
+        }
+        queue = new CommandQueue(newArray).getQueue();
+        return this;
+    }
 }

@@ -3,6 +3,7 @@ package frc.robot.autonomous;
 import static frc.robot.autonomous.trajectory.Trajectories.*;
 
 import frc.robot.commands.CommandQueue;
+import frc.robot.commands.DelayCommand;
 import frc.robot.commands.FollowerCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.JointCommand;

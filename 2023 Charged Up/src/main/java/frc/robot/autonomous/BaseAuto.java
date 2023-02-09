@@ -1,6 +1,7 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
 import frc.robot.commands.CommandQueue;
@@ -31,6 +32,10 @@ public abstract class BaseAuto {
      */
     public Pose2d getStartPose() {
         return queue.getStartPose();
+    }
+
+    public void addDelay(double seconds) {
+        queue.addDelay(seconds);
     }
 
     public abstract void initialize();
