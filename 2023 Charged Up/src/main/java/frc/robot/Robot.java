@@ -208,6 +208,8 @@ public class Robot extends LoggedRobot {
     else if (driverController.getBButton()){
       autoPark.balance(drive);
       // System.out.println("Pitch " + drive.getPitch());
+    }else if (shooterController.getBButton()){
+      drive.setWheelLock();
     }
     else{
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
@@ -260,9 +262,9 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-    0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    //                                                          // opposite of controller direct
+    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+    // 0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    // //                                                          // opposite of controller direct
   
   }
 

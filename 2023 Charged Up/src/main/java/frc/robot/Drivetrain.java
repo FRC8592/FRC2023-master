@@ -275,4 +275,11 @@ public class Drivetrain {
         SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
         setDriveVelocity(velocityToApply, module);
     }
+
+    public void setWheelLock(){
+        m_frontLeftModule.setSteerAngle(0.785398);
+        m_frontRightModule.setSteerAngle(-0.785398);
+        m_backLeftModule.setSteerAngle(-0.785398);
+        m_backRightModule.setSteerAngle(0.785398);
+    }
 }
