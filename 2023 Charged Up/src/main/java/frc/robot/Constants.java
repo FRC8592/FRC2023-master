@@ -231,6 +231,7 @@ public final class Constants {
     public static final int CONE_PIPELINE = 0;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
+    public static final double WHEEL_LOCK_RADIANS = 0.785398;
 
 }
 

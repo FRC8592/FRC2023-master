@@ -277,9 +277,9 @@ public class Drivetrain {
     }
 
     public void setWheelLock(){
-        m_frontLeftModule.setSteerAngle(0.785398);
-        m_frontRightModule.setSteerAngle(-0.785398);
-        m_backLeftModule.setSteerAngle(-0.785398);
-        m_backRightModule.setSteerAngle(0.785398);
+        m_frontLeftModule.setSteerAngle(Constants.WHEEL_LOCK_RADIANS);
+        m_frontRightModule.setSteerAngle(-Constants.WHEEL_LOCK_RADIANS);
+        m_backLeftModule.setSteerAngle(-Constants.WHEEL_LOCK_RADIANS);
+        m_backRightModule.setSteerAngle(Constants.WHEEL_LOCK_RADIANS);
     }
 }
