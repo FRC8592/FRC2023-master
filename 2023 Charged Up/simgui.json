@@ -1,5 +1,10 @@
 {
   "HALProvider": {
+    "Addressable LEDs": {
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
       "navX-Sensor[0]": {
         "header": {
@@ -13,16 +18,12 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Auton Configuration/Choose Autonomous": "String Chooser",
       "/Shuffleboard/Auton Configuration/Choose Delay": "String Chooser",
+      "/Shuffleboard/Auton Configuration/Field": "Field2d",
       "/SmartDashboard/Auto choices": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
       "/Shuffleboard/Auton Configuration/Choose Autonomous": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/Shuffleboard/Auton Configuration/Choose Delay": {
         "window": {
           "visible": true
         }

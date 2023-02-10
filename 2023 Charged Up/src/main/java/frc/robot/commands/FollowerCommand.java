@@ -15,6 +15,7 @@ public class FollowerCommand extends Command {
     private Drivetrain drive;
     private SwerveTrajectory trajectory;
     private Timer timer;
+    private boolean lockWheels;
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj) {
         drive = pDrive;
@@ -39,6 +40,14 @@ public class FollowerCommand extends Command {
         drive = pDrive;
         trajectory = pTraj.addRotation(pRot);
         timer = new Timer();
+        setTag(tag);
+    }
+
+    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels, String tag) {
+        drive = pDrive;
+        trajectory = pTraj.addRotation(pRot);
+        timer = new Timer();
+        this.lockWheels = lockWheels;
         setTag(tag);
     }
 
@@ -80,6 +89,8 @@ public class FollowerCommand extends Command {
 
     @Override
     public void shutdown() {
-
+        if (lockWheels) {
+            drive.lockWheels();
+        }
     }
 }

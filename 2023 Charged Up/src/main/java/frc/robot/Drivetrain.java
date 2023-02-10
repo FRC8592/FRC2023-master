@@ -20,6 +20,7 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -304,5 +305,14 @@ public class Drivetrain {
         }
         SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
         setDriveVelocity(velocityToApply, module);
+    }
+
+    public void lockWheels() {
+        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(new ChassisSpeeds());
+        
+        setModule(m_frontLeftModule, states[0].angle.plus(Rotation2d.fromDegrees(45)).getRadians(), states[0].speedMetersPerSecond);
+        setModule(m_frontRightModule, states[1].angle.plus(Rotation2d.fromDegrees(-45)).getRadians(), states[1].speedMetersPerSecond);
+        setModule(m_backLeftModule, states[2].angle.plus(Rotation2d.fromDegrees(-45)).getRadians(), states[2].speedMetersPerSecond);
+        setModule(m_backRightModule, states[3].angle.plus(Rotation2d.fromDegrees(45)).getRadians(), states[3].speedMetersPerSecond);
     }
 }

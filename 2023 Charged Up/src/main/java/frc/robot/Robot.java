@@ -146,7 +146,7 @@ public class Robot extends LoggedRobot {
     selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
 
-    double delay = SmartDashboard.getNumber("Autonomous Delay", 5d);
+    double delay = SmartDashboard.getNumber("Autonomous Delay", 0d);
     selectedAuto.addDelay(delay);
     
     if (!isReal()) {
