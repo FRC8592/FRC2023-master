@@ -1,8 +1,5 @@
 package frc.robot.autonomous;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -19,9 +16,7 @@ public class AutonomousSelector {
         MidParkAuto.class,
         TopThreePieceAuto.class,
         TopTwoPieceParkAuto.class,
-        WaypointAuto.class,
-        SimpleWaypointAuto.class,
-        PrecisionTestingWaypointAuto.class
+        WaypointAuto.class
     };
 
     public AutonomousSelector() {

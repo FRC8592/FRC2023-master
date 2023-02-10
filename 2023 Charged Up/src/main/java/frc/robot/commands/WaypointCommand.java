@@ -18,16 +18,12 @@ import frc.robot.autonomous.SmoothingFilter;
 import frc.robot.autonomous.Waypoint;
 
 public class WaypointCommand extends Command {
+    // private final double ACCEPTANCE_RADIUS = 0.1;
+    // private List<Pose2d> poses;
+    // private SmoothingFilter filter;
+    // private AutoDrive autoDrive;
 
-    // FIRST ITERATION
-
-    private final double ACCEPTANCE_RADIUS = 0.1;
     private Drivetrain drive;
-    private List<Pose2d> poses;
-    private SmoothingFilter filter;
-    private AutoDrive autoDrive;
-
-    // SECOND ITERATION
 
     public enum SmoothingType {
         OFF(0),
@@ -58,14 +54,14 @@ public class WaypointCommand extends Command {
 
     private SmoothingFilter smoother;
 
-    public WaypointCommand(Drivetrain drive) {
-        poses = new ArrayList<>();
-        this.drive = drive;
-        autoDrive = new AutoDrive(2.0, 0, 0, 
-                                2.0, 0, 0, 
-                                0.5, 0.3, 0, 
-                                1, 0.9, ACCEPTANCE_RADIUS);
-    }
+    // public WaypointCommand(Drivetrain drive) {
+    //     poses = new ArrayList<>();
+    //     this.drive = drive;
+    //     autoDrive = new AutoDrive(2.0, 0, 0, 
+    //                             2.0, 0, 0, 
+    //                             0.5, 0.3, 0, 
+    //                             1, 0.9, ACCEPTANCE_RADIUS);
+    // }
 
     public WaypointCommand(Drivetrain drive, Pose2d startPose, SmoothingType type, Waypoint ... waypoints) {
         this.startPose = startPose;
@@ -86,15 +82,15 @@ public class WaypointCommand extends Command {
         smoother = new SmoothingFilter(size, size, size);
     }
 
-    public WaypointCommand addWaypoint(Pose2d pose) {
-        poses.add(pose);
-        return this;
-    }
+    // public WaypointCommand addWaypoint(Pose2d pose) {
+    //     poses.add(pose);
+    //     return this;
+    // }
 
-    public WaypointCommand addSmoothingFilter(SmoothingFilter sf) {
-        filter = sf;
-        return this;
-    }
+    // public WaypointCommand addSmoothingFilter(SmoothingFilter sf) {
+    //     filter = sf;
+    //     return this;
+    // }
 
     // @Override
     // public void initialize() {
@@ -120,7 +116,7 @@ public class WaypointCommand extends Command {
             }
 
             ChassisSpeeds speeds = drivePID.calculate(drive.getCurrentPos(), currentWaypoint.getEndingPose(), currentWaypoint.getEndingVelocity(), currentWaypoint.getEndingPose().getRotation());
-            drive.drive(speeds);
+            drive.drive(smoother.smooth(speeds));
         }
             
         return drivePID.atReference() && waypoints.size() == 0;
