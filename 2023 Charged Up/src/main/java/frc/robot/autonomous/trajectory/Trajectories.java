@@ -39,7 +39,7 @@ public enum Trajectories {
     /**
      * Moves from scoring grid to first piece [Step 1]
      * @auto {@code TopThreePieceAuto.java}
-     * @points {@code 21 points}
+     * @points {@code 19 points}
      * @alliance Blue
      * @start Top Start
      */
@@ -48,7 +48,7 @@ public enum Trajectories {
     /**
      * Moves from first game piece to scoring grid [Step 2]
      * @auto {@code TopThreePieceAuto.java}
-     * @points {@code 21 points}
+     * @points {@code 19 points}
      * @alliance Blue
      * @start Top Start
      */
@@ -57,7 +57,7 @@ public enum Trajectories {
     /**
      * Moves from scoring grid to second game piece [Step 3]
      * @auto {@code TopThreePieceAuto.java}
-     * @points {@code 21 points}
+     * @points {@code 19 points}
      * @alliance Blue
      * @start Top Start
      */
@@ -66,7 +66,7 @@ public enum Trajectories {
     /**
      * Moves from second game piece to scoring grid [Step 4]
      * @auto {@code TopThreePieceAuto.java}
-     * @points {@code 21 points}
+     * @points {@code 19 points}
      * @alliance Blue
      * @start Top Start
      */

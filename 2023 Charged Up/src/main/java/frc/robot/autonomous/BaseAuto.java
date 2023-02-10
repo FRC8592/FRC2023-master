@@ -9,7 +9,7 @@ public abstract class BaseAuto {
     protected Drivetrain drive;
     protected CommandQueue queue;
 
-    protected double scoreTime = 0.25; // Remove once actual intake/outtake on the robot
+    protected double scoreTime = 1; // Remove once actual intake/outtake on the robot
 
     /**
      * Add all running subsystems for use for all autonomous routines
