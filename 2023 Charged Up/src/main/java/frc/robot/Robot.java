@@ -275,11 +275,6 @@ public class Robot extends LoggedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
-
-    // if(/* gameObjectVision.isTargetLocked() && */ gameObjectVision.distanceToTarget() < 196.85 && gameObjectVision.distanceToTarget() >= 0.0) {
-    //   ledStrips.setProximity(gameObjectVision.distanceToTarget() * Constants.INCHES_TO_METERS);
-    // }
-    // SmartDashboard.putNumber("Distance to target", gameObjectVision.distanceToTarget() * Constants.INCHES_TO_METERS);
   }
 
   /** This function is called once when test mode is enabled. */

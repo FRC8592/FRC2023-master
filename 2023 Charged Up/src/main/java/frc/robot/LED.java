@@ -54,8 +54,6 @@ public class LED {
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
-        SmartDashboard.putBoolean("Proximity On", false);
-        SmartDashboard.putBoolean("Pct On", false);
     }
 
     public void setOrangeBlue(){
@@ -143,10 +141,7 @@ public class LED {
      * @param color the color of the LEDs that are on 
      */
     public void setPct(double pct, Color color) {
-        SmartDashboard.putBoolean("Pct On", true);
-        SmartDashboard.putNumber("Pct LEDs on", pct);
-        SmartDashboard.putString("Pct LED Color", color.name());
-
+        // loop through LEDs, and set the passed percentage as on
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
             if (pct != 0 && (double)ledIndex % (1.0 / (pct / 100.0)) < 1.0){
                 setColor(ledIndex, color);
@@ -159,26 +154,37 @@ public class LED {
         System.out.println("LED METHOD RUNNING");  
     }
 
+    /** 
+     * Turn the LEDs off
+     */
     public void turnOff() {
         setPct(100, Color.OFF);
     }
 
     /**
-     * Set more LEDs on depending on how close you are to a target
+     * Set more LEDs on depending on how close you are to a target, when target is "in range" (TBD) LEDs turn green
      * 5m = max distance
-     * 0.6m = closest distance
+     * 0.75m = closest distance ("in range")
      * 
      * @param distToTarget  the distance to the target (meters)
      */
     public void setProximity(double distToTarget) {
-        SmartDashboard.putBoolean("Proximity On", true);
-        int numLEDs = (int)((5 - distToTarget) / 4.25 * (LED_LENGTH / 2 - 0.5));
         Color color = Color.RED;
-        if(numLEDs >= LED_LENGTH / 2) {
+        // Formula to calculate how many LEDs to set in each strip
+        // max = max distance before LEDs start lighting up
+        // min = distance until piece is "in range"
+        double max = 5.0;
+        double min = 0.75;
+        double difference = max - min;
+        int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH / 2 - 0.5));
+        
+        //If distance is at or closer to the max distance, set the color of LEDs to green and cap amount to turn on
+        if (numLEDs >= LED_LENGTH / 2) {
             numLEDs = LED_LENGTH / 2;
             color = Color.GREEN;
         }
 
+        // loop through one side of the LEDs and set an amount of LEDs on depending on distance
         for (int ledIndex = 0; ledIndex < LED_LENGTH / 2; ledIndex++){
             if(ledIndex < numLEDs) {
                 setColor(ledIndex, color);
