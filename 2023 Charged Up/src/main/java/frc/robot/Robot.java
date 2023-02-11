@@ -25,6 +25,7 @@ import com.swervedrivespecialties.swervelib.DriveController;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -59,6 +60,8 @@ public class Robot extends LoggedRobot {
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   public FRCLogger logger;
+  public PIDController turnPID;
+  public PIDController strafePID;
 
 
   /**
@@ -94,9 +97,11 @@ public class Robot extends LoggedRobot {
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
+     Constants.BALL_TARGET_HEIGHT, logger);
     
 
+     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+     strafePID = new PIDController(0.1, 0, 0);
   }
 
   /**
@@ -188,11 +193,17 @@ public class Robot extends LoggedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
 
+    if(driverController.getLeftTriggerAxis() >= 0.2){
+      //TODO: streighten the robot
+      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
+      drive.drive(new ChassisSpeeds(0, strafe, 0));
+    }
     
-    if(driverController.getLeftBumper())
+    else if(driverController.getLeftBumper())
     {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = -gameObjectVision.turnRobot(0.5);
+
+      double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
       // SmartDashboard.putString("LOOKING FOR PIECE", driverController.getLeftBumperPressed());
     }
@@ -233,6 +244,20 @@ public class Robot extends LoggedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
+    //TODO:don't know if the buttons are already in use
+    if (shooterController.getAButtonPressed()){
+      currentPiecePipeline = "APRILTAG";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      ledStrips.setFullOrange();
+    }
+
+    if (shooterController.getBButtonPressed()){
+      currentPiecePipeline = "RETROTAPE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      ledStrips.setFullBlue();
+    }
+
+
   }
 
   /** This function is called once when the robot is disabled. */
