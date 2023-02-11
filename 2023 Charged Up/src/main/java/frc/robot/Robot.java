@@ -92,7 +92,7 @@ public class Robot extends LoggedRobot {
     shooterController = new XboxController(1);
     drive = new Drivetrain(logger);
     ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
     
@@ -192,21 +192,23 @@ public class Robot extends LoggedRobot {
     if(driverController.getLeftBumper())
     {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0);
+      double turn = -gameObjectVision.turnRobot(0.5);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+      // SmartDashboard.putString("LOOKING FOR PIECE", driverController.getLeftBumperPressed());
     }
     else{  
+      // X
+      // is
+      // forward
+      // Direction,
+      // Forward
+      // on
+      // Joystick
+      // is
+      // Y
       rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
           * rotatePower; // Right joystick
-      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                          // is
-                                                                                                                          // forward
-                                                                                                                          // Direction,
-                                                                                                                          // Forward
-                                                                                                                          // on
-                                                                                                                          // Joystick
-                                                                                                                          // is
-                                                                                                                          // Y
+      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
       translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
       //

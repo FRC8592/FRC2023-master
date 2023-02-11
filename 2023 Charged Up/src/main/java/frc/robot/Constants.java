@@ -117,6 +117,7 @@ public final class Constants {
     public static double BALL_ROTATE_KI        = 0.0;
     public static double BALL_ROTATE_KD        = 0.01;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
+    public static String LIMELIGHT_VISION       = "limelight-vision";
 
     public static double CLOSE_BALL_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
     public static double CLOSE_BALL_ROTATE_KI  = 0.0;
