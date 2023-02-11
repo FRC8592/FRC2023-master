@@ -48,9 +48,7 @@ public class Vision {
   private double lastAngle = 0;
   private double changeInAngleError = 0;
 
-  // PID controller for turning;
-  private PIDController turnPID;
-  private PIDController closeTurnPID;
+
   //constants for averaging limelight averages
   private int MIN_LOCKS = 3;
   private int STAT_SIZE = 5; 
@@ -77,7 +75,7 @@ public class Vision {
    */
   public Vision(String limelightName, double lockError, double closeError,
                 double cameraHeight, double cameraAngle, double targetHeight,
-                double rotationKP, double rotationKI, double rotationKD, FRCLogger logger) {
+                FRCLogger logger) {
 
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
@@ -104,8 +102,7 @@ public class Vision {
     this.targetHeight  = targetHeight;
 
     // Creat the PID controller for turning
-    turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
-    closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
+
     
     this.logger = logger;
   }
@@ -152,7 +149,7 @@ public class Vision {
       }
     }
 
-    processedDx = (totalDx/totalValid) - 1.0;
+    processedDx = (totalDx/totalValid);
     processedDy = totalDy/totalValid;
     targetValid = (totalValid >= MIN_LOCKS);
 
@@ -242,7 +239,7 @@ public class Vision {
    * 
    * @return The turn speed
    */
-  public double turnRobot(double visionSearchSpeed){
+  public double turnRobot(double visionSearchSpeed, PIDController turnPID, double limit){
 
     // Stop turning if we have locked onto the target within acceptable angular error
     if (targetValid && targetLocked) {
@@ -253,35 +250,8 @@ public class Vision {
     // Limit maximum speed
     else if (targetValid) {
       turnSpeed = turnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
-      turnSpeed = Math.max(turnSpeed, -8);
-      turnSpeed = Math.min(turnSpeed, 8);
-    }
-
-    // If no targetValid, spin in a circle to search
-    else {
-      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
-    }
-
-    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
-
-    logger.log(this, "Turn Speed", turnSpeed);
-
-    return turnSpeed;
-  }
-
-  public double closeTurnRobot(double visionSearchSpeed){
-
-    // Stop turning if we have locked onto the target within acceptable angular error
-    if (targetValid && targetLocked) {
-      turnSpeed = 0;
-    }
-
-    // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
-    // Limit maximum speed
-    else if (targetValid) {
-      turnSpeed = closeTurnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
-      turnSpeed = Math.max(turnSpeed, -8);
-      turnSpeed = Math.min(turnSpeed, 8);
+      turnSpeed = Math.max(turnSpeed, -limit);
+      turnSpeed = Math.min(turnSpeed, limit);
     }
 
     // If no targetValid, spin in a circle to search
