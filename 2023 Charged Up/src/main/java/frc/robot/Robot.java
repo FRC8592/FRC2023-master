@@ -101,7 +101,7 @@ public class Robot extends LoggedRobot {
     
 
      turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-     strafePID = new PIDController(0.1, 0, 0);
+     strafePID = new PIDController(-0.2, 0, 0);
   }
 
   /**
@@ -151,7 +151,7 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-    drive.zeroGyroscope();
+    // drive.zeroGyroscope();
     drive.resetSteerAngles();
 
   }
@@ -195,14 +195,14 @@ public class Robot extends LoggedRobot {
 
     if(driverController.getLeftTriggerAxis() >= 0.2){
       //TODO: streighten the robot
-      double strafe = -gameObjectVision.turnRobot(0.0, strafePID, 0.5);
+      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
       drive.drive(new ChassisSpeeds(0, strafe, 0));
     }
     
     else if(driverController.getLeftBumper())
     {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = -gameObjectVision.turnRobot(1.0, turnPID, 8.0);
+      double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
     }
     else{  
@@ -224,7 +224,7 @@ public class Robot extends LoggedRobot {
       // Normal teleop drive
       //
       
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
           joystickDeadband(rotate), drive.getGyroscopeRotation()));
     } // Inverted due to Robot Directions being the
                                                                     // opposite of controller directions
@@ -233,25 +233,25 @@ public class Robot extends LoggedRobot {
 
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
       ledStrips.setFullPurple();
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
     //TODO:don't know if the buttons are already in use
     if (shooterController.getAButtonPressed()){
       currentPiecePipeline = "APRILTAG";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
       ledStrips.setFullOrange();
     }
 
     if (shooterController.getBButtonPressed()){
       currentPiecePipeline = "RETROTAPE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
       ledStrips.setFullBlue();
     }
 
