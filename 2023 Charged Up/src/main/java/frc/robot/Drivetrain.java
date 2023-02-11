@@ -204,7 +204,8 @@ public class Drivetrain {
             }
         );
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
-        // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
+        logger.log(this, "Position (Pose2d)", odometry.getPoseMeters());
+        logger.log(this, "Position (SDO)", odometry);
     } 
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
