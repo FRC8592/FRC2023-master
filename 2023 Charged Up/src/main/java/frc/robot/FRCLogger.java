@@ -263,10 +263,12 @@ public class FRCLogger {
 
     public void enableLogging() {
         log = true;
+        System.out.println("FRCLogger: LOGGING ENABLED.");
     }
 
     public void disableLogging() {
         log = false;
+        System.out.println("FRCLogger: LOGGING ENABLED.");
     }
 
     public void setNewLogFolder(String s) {
