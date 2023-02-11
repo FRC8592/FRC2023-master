@@ -296,8 +296,4 @@ public class Drivetrain {
     public void setAutoCurrentLimit(){
         setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_AUTO_CURRENT);
     }
-
-    public void getCurrent(SwerveModule mod){
-        SmartDashboard.putNumber("FRONT LEFT CURRENT", mod.getDriveController().getDriveFalcon().getSupplyCurrent());
-    }
 }
