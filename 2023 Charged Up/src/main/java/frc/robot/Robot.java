@@ -132,6 +132,7 @@ public class Robot extends LoggedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     drive.resetSteerAngles();
+    drive.setAutoCurrentLimit();
   }
 
   /** This function is called periodically during autonomous. */
@@ -155,6 +156,7 @@ public class Robot extends LoggedRobot {
     slowModeToggle = false;
     // drive.zeroGyroscope();
     drive.resetSteerAngles();
+    drive.setTeleopCurrentLimit();
 
   }
 
