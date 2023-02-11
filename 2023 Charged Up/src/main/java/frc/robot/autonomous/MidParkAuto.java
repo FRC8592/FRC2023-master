@@ -1,7 +1,6 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.Autopark;
 import frc.robot.Robot;
 import frc.robot.autonomous.trajectory.Trajectories;
 import frc.robot.commands.AutobalanceCommand;

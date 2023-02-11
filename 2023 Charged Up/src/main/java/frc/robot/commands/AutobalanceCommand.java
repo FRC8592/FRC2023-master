@@ -1,5 +1,8 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Autopark;
 import frc.robot.Drivetrain;
@@ -9,6 +12,18 @@ public class AutobalanceCommand extends Command {
     private Drivetrain drive;
     private Autopark autopark;
     private Timer timer;
+    private double prevPitch = 0;
+    private double cyclesWithNoPitchChange = 0;
+
+    private Pose2d startPose;
+    
+    private boolean cyclesExceeded = false;
+    private boolean distanceExceeded = false;
+    
+    private final double kMinimumDeltaPitch = 5; // Degrees
+    private final double kMaximumDistance = 2; // Meters
+    private final double kMaximumTimeWithoutPitchChange = 2; // Seconds
+    private final double kMaximumCyclesWithoutPitchChange = kMaximumTimeWithoutPitchChange/0.02;
 
     public AutobalanceCommand(Drivetrain drive) {
         this.drive = drive;
@@ -25,12 +40,34 @@ public class AutobalanceCommand extends Command {
         timer = new Timer();
         timer.reset();
         timer.start();
+
+        startPose = drive.getCurrentPos();
     }
 
     @Override
     public boolean execute() {
         if (Robot.isReal()) {
-            return autopark.balance(drive);
+            double pitch = drive.getPitch();
+            double deltaPitch = Math.abs(pitch - prevPitch);
+            Pose2d currentPose = drive.getCurrentPos();
+            Transform2d deltaPose = currentPose.minus(startPose);
+
+            if (deltaPose.getX() >= kMaximumDistance || deltaPose.getY() >= kMaximumDistance) {
+                distanceExceeded = true;
+            }
+
+            if (deltaPitch >= kMinimumDeltaPitch) {
+                cyclesWithNoPitchChange++;
+            } else {
+                cyclesWithNoPitchChange = 0;
+            }
+
+            if (cyclesWithNoPitchChange >= kMaximumCyclesWithoutPitchChange*cyclesWithNoPitchChange) {
+                cyclesExceeded = true;
+            }
+
+            prevPitch = pitch;
+            return autopark.balance(drive) || cyclesExceeded || distanceExceeded;
         } else {
             return timer.get() >= 5d;
         }
