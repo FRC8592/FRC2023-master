@@ -37,8 +37,8 @@ public class Lift {
     private final double kPulleyDiameterInches = 2.0; 
     private final double kMotorRotationsToHeightInches = Constants.LIFT_GEARBOX_RATIO * 2 * Math.PI * kPulleyDiameterInches;
     
-    private static final double kIntakeHeight = 6d; // Height to intake from
-    private static final double kDropHeightInches = 6; // The height above the top of the node we want to drop from
+    private static final double kIntakeHeight = 0d; // Height to intake from
+    private static final double kDropHeightInches = 0; // The height above the top of the node we want to drop from
 
     private Heights prevHeight = Heights.STOWED;
 
@@ -102,7 +102,7 @@ public class Lift {
 
     // Spin motor 10% of [Left Joystick Y Axis] value
     public void testPlan1(double pct) {
-        liftMotor.set(pct/10);
+        liftMotor.set(pct/20);
         SmartDashboard.putNumber("Elevator/Height Inches", getLinearHeightInches());
     }
 
@@ -137,6 +137,8 @@ public class Lift {
     private double inchesToMotorRotations(double inches) {
         return inches/kMotorRotationsToHeightInches;
     }
+
+    // Gets the height of the elevator not accounting for tilt
 
     private double getLinearHeightInches() {
         return liftEncoder.getPosition()*kMotorRotationsToHeightInches;
