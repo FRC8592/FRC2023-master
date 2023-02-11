@@ -5,19 +5,15 @@ import frc.robot.Robot;
 import frc.robot.autonomous.trajectory.Trajectories;
 import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
-import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.ScoreCommand.Height;
 import frc.robot.commands.FollowerCommand;
 
-public class MidParkAuto extends BaseAuto {
-
+public class TestParkAuto extends BaseAuto {
     @Override
     public void initialize() {
+
         queue = new CommandQueue(
-            new ScoreCommand(Height.HIGH, scoreTime),
-            // new FollowerCommand(drive, Trajectories.PARK_B.toTrajectory(), Rotation2d.fromDegrees(180), "Move to Mid"),
-            new FollowerCommand(drive, Trajectories.PARK_TEST.toTrajectory(), Rotation2d.fromDegrees(180), "Move to Mid"),
-            new AutobalanceCommand(drive, "AUTO BALANCING")
+            new FollowerCommand(drive, Trajectories.PARK_B.toTrajectory(), Rotation2d.fromDegrees(180), "Move towards charging station")
+            // new AutobalanceCommand(drive, "AUTO BALANCE")
         );
         
         queue.initialize();

@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Autopark;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
@@ -21,7 +22,7 @@ public class AutobalanceCommand extends Command {
     private boolean distanceExceeded = false;
     
     private final double kMinimumDeltaPitch = 5; // Degrees
-    private final double kMaximumDistance = 2; // Meters
+    private final double kMaximumDistance = 3; // Meters
     private final double kMaximumTimeWithoutPitchChange = 2; // Seconds
     private final double kMaximumCyclesWithoutPitchChange = kMaximumTimeWithoutPitchChange/0.02;
 
@@ -66,8 +67,14 @@ public class AutobalanceCommand extends Command {
                 cyclesExceeded = true;
             }
 
+            boolean park = !autopark.balance(drive);
+
+            SmartDashboard.putBoolean("Distance Exceeded", distanceExceeded);
+            SmartDashboard.putBoolean("Cycles Exceeded", cyclesExceeded);
+            SmartDashboard.putBoolean("Park", park);
+
             prevPitch = pitch;
-            return autopark.balance(drive) || cyclesExceeded || distanceExceeded;
+            return park || /*cyclesExceeded || */ distanceExceeded;
         } else {
             return timer.get() >= 5d;
         }
