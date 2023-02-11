@@ -14,7 +14,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -102,7 +102,7 @@ public class Drivetrain {
         //
         // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
         // you MUST change it. If you do not, your code will crash on startup.
-        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
@@ -110,7 +110,7 @@ public class Drivetrain {
             // Motor configuration
             swerveMotorConfig,
             // This can either be L!, L2, L3 or L4
-            Mk4iSwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             // This is the ID of the drive motor
             FRONT_LEFT_MODULE_DRIVE_MOTOR,
             // This is the ID of the steer motor
@@ -122,36 +122,36 @@ public class Drivetrain {
         );
 
         // We will do the same for the other modules
-        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(2, 0),
             swerveMotorConfig,
-            Mk4iSwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             FRONT_RIGHT_MODULE_STEER_MOTOR,
             FRONT_RIGHT_MODULE_STEER_ENCODER,
             FRONT_RIGHT_MODULE_STEER_OFFSET
         );
 
-        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
             swerveMotorConfig,
-            Mk4iSwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR, 
             BACK_LEFT_MODULE_STEER_ENCODER,
             BACK_LEFT_MODULE_STEER_OFFSET
         );
 
-        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
             swerveMotorConfig,
-            Mk4iSwerveModuleHelper.GearRatio.L2,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
             BACK_RIGHT_MODULE_STEER_ENCODER,
@@ -175,6 +175,16 @@ public class Drivetrain {
         // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
         return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
+
+    public double getPitch(){
+        return m_navx.getPitch();
+    }
+
+
+    public double getAutoHeading() {
+        return m_navx.getYaw();
+    }
+    
 
     public boolean isGyroscopeRotating(){
         return m_navx.isRotating();
@@ -307,12 +317,15 @@ public class Drivetrain {
         setDriveVelocity(velocityToApply, module);
     }
 
-    public void lockWheels() {
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(new ChassisSpeeds());
-        
-        setModule(m_frontLeftModule, states[0].angle.plus(Rotation2d.fromDegrees(45)).getRadians(), states[0].speedMetersPerSecond);
-        setModule(m_frontRightModule, states[1].angle.plus(Rotation2d.fromDegrees(-45)).getRadians(), states[1].speedMetersPerSecond);
-        setModule(m_backLeftModule, states[2].angle.plus(Rotation2d.fromDegrees(-45)).getRadians(), states[2].speedMetersPerSecond);
-        setModule(m_backRightModule, states[3].angle.plus(Rotation2d.fromDegrees(45)).getRadians(), states[3].speedMetersPerSecond);
+    public void setWheelLock(){
+        // m_frontLeftModule.setSteerAngle(Constants.WHEEL_LOCK_RADIANS);
+        // m_frontRightModule.setSteerAngle(-Constants.WHEEL_LOCK_RADIANS);
+        // m_backLeftModule.setSteerAngle(-Constants.WHEEL_LOCK_RADIANS);
+        // m_backRightModule.setSteerAngle(Constants.WHEEL_LOCK_RADIANS);
+
+        setModule(m_frontLeftModule, Constants.WHEEL_LOCK_RADIANS, 0);
+        setModule(m_frontRightModule, -Constants.WHEEL_LOCK_RADIANS, 0);
+        setModule(m_backLeftModule, -Constants.WHEEL_LOCK_RADIANS, 0);
+        setModule(m_backRightModule, Constants.WHEEL_LOCK_RADIANS, 0);
     }
 }

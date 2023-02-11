@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -66,6 +67,7 @@ public class Robot extends LoggedRobot {
 
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
+  public Autopark autoPark;
 
   public static Field2d FIELD = new Field2d();
 
@@ -160,7 +162,7 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
     drive.resetSteerAngles();
   }
-
+  
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
@@ -171,17 +173,19 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
 
   }
-
+  
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
     fastMode = true;
     slowModeToggle = false;
-    drive.zeroGyroscope();
+    autoPark = new Autopark();
+
+        drive.zeroGyroscope();
     drive.resetSteerAngles();
 
   }
-
+  
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
@@ -195,19 +199,29 @@ public class Robot extends LoggedRobot {
     // drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
+    
+    // System.out.println(driverControler.getBButton());
+    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    SmartDashboard.putNumber("pitch", drive.getPitch());
+    SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
+    // gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
+    
 
+    ledStrips.upAndDown();
     if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
     }
-
-    if (driverController.getRightBumperPressed()) {
-      slowModeToggle = !slowModeToggle;
+  
+  
+    if (driverController.getRightBumperPressed()){
+      slowModeToggle = ! slowModeToggle;
     }
-    fastMode = !slowModeToggle; // && !controlPanel.getRawButton(7);
-
+    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    
+    
     if (fastMode) {
       rotatePower = ConfigRun.ROTATE_POWER_FAST;
       translatePower = ConfigRun.TRANSLATE_POWER_FAST;
@@ -216,24 +230,38 @@ public class Robot extends LoggedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
 
-    if (driverController.getLeftBumper()) {
+    
+    if(driverController.getLeftBumper()){
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
     }
-    else{  
-      rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-                                                                                                                          // is
-                                                                                                                          // forward
-                                                                                                                          // Direction,
-                                                                                                                          // Forward
-                                                                                                                          // on
-                                                                                                                          // Joystick
-                                                                                                                          // is
-                                                                                                                          // Y
-      translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    else if (driverController.getBButton()){
+      autoPark.balance(drive);
+      // System.out.println("Pitch " + drive.getPitch());
+    }else if (driverController.getAButton()){
+      drive.setWheelLock();
+    }else{
+      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+      * rotatePower; // Right joystick
+      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      // is
+      // forward
+      // Direction,
+                                                                                                                            // Forward
+                                                                                                                            // on
+                                                                                                                            // Joystick
+                                                                                                                            // is
+                                                                                                                            // Y
+        translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+  
+        //
+        // Normal teleop drive
+        //
+        
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+            -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+      }
 
       //
       // Normal teleop drive
@@ -259,6 +287,8 @@ public class Robot extends LoggedRobot {
           .setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
+
+    
   }
 
   /** This function is called once when the robot is disabled. */
