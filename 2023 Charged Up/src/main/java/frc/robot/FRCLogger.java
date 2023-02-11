@@ -132,15 +132,15 @@ public class FRCLogger {
                     path = filePath.getClass().getSimpleName();
                 }
             }
-            if (data.getClass().getSimpleName().equals("boolean")) {
+            if (data.getClass().getSimpleName().equals("boolean")||data.getClass().getSimpleName().equals("Boolean")) {
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (boolean) data);
                 return true;
             }
-            if (data.getClass().getSimpleName().equals("int")) {
+            if (data.getClass().getSimpleName().equals("int")||data.getClass().getSimpleName().equals("Integer")) {
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (int) data);
                 return true;
             }
-            if (data.getClass().getSimpleName().equals("double")) {
+            if (data.getClass().getSimpleName().equals("double")||data.getClass().getSimpleName().equals("Double")) {
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (double) data);
                 return true;
             }
@@ -148,7 +148,7 @@ public class FRCLogger {
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (String) data);
                 return true;
             }
-            if (data.getClass().getSimpleName().equals("boolean[]")) {
+            if (data.getClass().getSimpleName().equals("boolean[]")||data.getClass().getSimpleName().equals("Boolean[]")) {
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (boolean[]) data);
                 return true;
             }
@@ -160,7 +160,7 @@ public class FRCLogger {
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (double[]) data);
                 return true;
             }
-            if (data.getClass().getSimpleName().equals("double[]")) {
+            if (data.getClass().getSimpleName().equals("double[]")||data.getClass().getSimpleName().equals("Double[]")) {
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name, (double[]) data);
                 return true;
             }
