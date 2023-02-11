@@ -195,17 +195,15 @@ public class Robot extends LoggedRobot {
 
     if(driverController.getLeftTriggerAxis() >= 0.2){
       //TODO: streighten the robot
-      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
+      double strafe = -gameObjectVision.turnRobot(0.0, strafePID, 0.5);
       drive.drive(new ChassisSpeeds(0, strafe, 0));
     }
     
     else if(driverController.getLeftBumper())
     {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-
-      double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
+      double turn = -gameObjectVision.turnRobot(1.0, turnPID, 8.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-      // SmartDashboard.putString("LOOKING FOR PIECE", driverController.getLeftBumperPressed());
     }
     else{  
       // X
