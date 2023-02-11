@@ -223,6 +223,21 @@ public class Drivetrain {
                 getSMPosition(m_backRightModule)
             }
         );
+
+        double netCurrent = (m_frontLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent() 
+                          + m_frontLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent() 
+                          + m_backLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent() 
+                          + m_backRightModule.getDriveController().getDriveFalcon().getSupplyCurrent()) / 4;
+
+        double netVoltage = m_frontLeftModule.getDriveController().getDriveFalcon().getBusVoltage();
+
+        SmartDashboard.putNumber("Front Left Throttle Current", m_frontLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent());
+        SmartDashboard.putNumber("Front Right Throttle Current", m_frontLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent());
+        SmartDashboard.putNumber("Back Left Throttle Current", m_backLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent());
+        SmartDashboard.putNumber("Back Right Throttle Current", m_backRightModule.getDriveController().getDriveFalcon().getSupplyCurrent());
+
+        SmartDashboard.putNumber("Net Voltage", netVoltage);
+        SmartDashboard.putNumber("Net Current", netCurrent);
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
