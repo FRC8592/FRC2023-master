@@ -199,6 +199,27 @@ public class LED {
         System.out.println("LED METHOD RUNNING"); 
     }
 
+    public void setFire() {
+        int numRed = (int)(Math.random()*LED_LENGTH/4 + LED_LENGTH/4);
+        int numOrange = numRed + (int)(Math.random()*LED_LENGTH/4 + LED_LENGTH/4);
+        int numYellow = numOrange + (int)(Math.random()*LED_LENGTH/8 + LED_LENGTH/8);
+        for (int i = 0; i < LED_LENGTH; i++) {
+            if (i <= numRed) {
+                setColor(i, Color.RED);
+            } else if (i <= numOrange) {
+                setColor(i, Color.ORANGE);
+            } else if (i <= numYellow) {
+                setColor(i, Color.YELLOW);
+            } else {
+                setColor(i, Color.OFF);
+            }
+        }
+
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING"); 
+    }
+
     // WIP method
     
     // private boolean first = true;

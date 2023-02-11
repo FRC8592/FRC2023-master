@@ -61,6 +61,8 @@ public class Robot extends LoggedRobot {
   public String currentPiecePipeline;
   public FRCLogger logger;
 
+  private Timer timer = new Timer();
+
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -76,10 +78,12 @@ public class Robot extends LoggedRobot {
         new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
     }
     else {
+      if (isReal()) {
         setUseTiming(false); // Run as fast as possible
         String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
         Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
         Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+      }
     }
     Logger.getInstance().start();
     
@@ -267,7 +271,10 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    timer.reset();
+    timer.start();
+  }
 
   /** This function is called periodically when disabled. */
   @Override
@@ -275,6 +282,9 @@ public class Robot extends LoggedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
+
+    // ledStrips.upAndDown(Color.YELLOW, Color.GREEN);
+    ledStrips.setFire();
   }
 
   /** This function is called once when test mode is enabled. */
