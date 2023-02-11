@@ -208,10 +208,9 @@ public class Robot extends LoggedRobot {
     else if (driverController.getBButton()){
       autoPark.balance(drive);
       // System.out.println("Pitch " + drive.getPitch());
-    }else if (shooterController.getBButton()){
+    }else if (driverController.getAButton()){
       drive.setWheelLock();
-    }
-    else{
+    }else{
       rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
       * rotatePower; // Right joystick
       translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
@@ -265,6 +264,7 @@ public class Robot extends LoggedRobot {
     // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     // 0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     // //                                                          // opposite of controller direct
+    // drive.setWheelLock();
   
   }
 

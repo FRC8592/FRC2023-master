@@ -56,7 +56,8 @@ public class Autopark {
                 if(Math.abs(pitch) >= Constants.LEVEL_PITCH) {
                     currentState = AutoBalanceStates.FIX_TILT; 
                 }
-                drivetrain.drive(new ChassisSpeeds(0, 0, 0));
+                // drivetrain.drive(new ChassisSpeeds(0, 0, 0));
+                drivetrain.setWheelLock();
                 SmartDashboard.putNumber("Movement speed", 0.0);
                 break;  
                 }
