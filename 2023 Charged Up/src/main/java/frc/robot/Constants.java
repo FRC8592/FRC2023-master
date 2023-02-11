@@ -1,4 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
+ // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
@@ -18,7 +18,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 public final class Constants {
     // Treat like a static class.  No instantiation
     private Constants() {throw new UnsupportedOperationException();}
-
+    // public static final double JOYSTICK_SCALE_FACTOR = 0.5;
     /**
      * The left-to-right distance between the drivetrain wheels
      *
@@ -38,22 +38,22 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR    = 2; // Named Green in Electronics
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR    = 3;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER  = 10;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(91.8); //91.8
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(90.7);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR     = 8; // Named Black in Electronics
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR     = 9;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 13;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(245.7 - 180); //245.7
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(66.3);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR     = 6; // Named Orange in Electronics
     public static final int BACK_LEFT_MODULE_STEER_MOTOR     = 7;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER   = 12;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(136.9); //136.9
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(136.7);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR     = 4; // Named White in Electronics
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR     = 5;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 11;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(284); //284
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(285.0);
 
     //
     // CAN IDs for the ball collector and launching system
@@ -228,3 +228,4 @@ public final class Constants {
     public static final int CONE_PIPELINE = 0;
 
 }
+

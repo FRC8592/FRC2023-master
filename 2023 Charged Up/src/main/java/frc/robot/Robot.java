@@ -23,10 +23,13 @@ import javax.swing.DropMode;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
-import com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase;
+import com.swervedrivespecialties.swervelib.DriveController;
+
+import org.littletonrobotics.junction.LoggedRobot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -54,6 +57,7 @@ public class Robot extends LoggedRobot {
   private boolean fastMode;
   private boolean slowModeToggle;
   public LED ledStrips;
+
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   public FRCLogger logger;
@@ -155,22 +159,24 @@ public class Robot extends LoggedRobot {
     double translateY;
     double rotate;
 
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
+
     
     if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
       drive.zeroGyroscope();
     }
+
   
     if (driverController.getRightBumperPressed()){
-      slowModeToggle = ! slowModeToggle;
-    }
-    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-    
+       slowModeToggle = ! slowModeToggle;
+     }
+     fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+  
 
     if (fastMode) {
       rotatePower    = ConfigRun.ROTATE_POWER_FAST;
@@ -180,6 +186,7 @@ public class Robot extends LoggedRobot {
       rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
+
     
     if(driverController.getLeftBumper())
     {
@@ -225,14 +232,17 @@ public class Robot extends LoggedRobot {
     }
   }
 
-
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {}
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+    0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    //                                                          // opposite of controller direct
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
@@ -240,7 +250,10 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
+    SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
@@ -255,7 +268,7 @@ public class Robot extends LoggedRobot {
     if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
       return 0;
     } else {
-      return inputJoystick;
+      return inputJoystick * 0.3;
     }
   }
 }
