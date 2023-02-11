@@ -124,6 +124,9 @@ public enum Trajectories {
      * @start Middle Start
      */
      PARK_B("output/output/Park_B.wpilib.json"),
+
+
+     PARK_TEST("output/output/TestPark.wpilib.json"),
     ;
 
     private String path;

@@ -123,6 +123,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
+
   }
 
   /**
@@ -261,16 +262,7 @@ public class Robot extends LoggedRobot {
         
         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
             -joystickDeadband(rotate), drive.getGyroscopeRotation()));
-      }
-
-      //
-      // Normal teleop drive
-      //
-
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    } // Inverted due to Robot Directions being the
-      // opposite of controller directions
+    }
 
     drive.getCurrentPos();
 
@@ -287,8 +279,6 @@ public class Robot extends LoggedRobot {
           .setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
-
-    
   }
 
   /** This function is called once when the robot is disabled. */

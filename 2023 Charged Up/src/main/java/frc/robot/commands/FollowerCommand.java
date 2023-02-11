@@ -66,7 +66,7 @@ public class FollowerCommand extends Command {
             simulateRobotPose(trajectory.trajectory().sample(time).poseMeters, speeds);
         }
         
-        ChassisSpeeds newSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 0);
+        ChassisSpeeds newSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
 
         drive.drive(newSpeeds);
         
@@ -90,7 +90,7 @@ public class FollowerCommand extends Command {
     @Override
     public void shutdown() {
         if (lockWheels) {
-            drive.lockWheels();
+            drive.setWheelLock();
         }
     }
 }
