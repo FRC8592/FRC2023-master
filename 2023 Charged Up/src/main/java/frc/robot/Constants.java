@@ -55,6 +55,10 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 11;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(285.0);
 
+
+    public static final double LEVEL_PITCH = 3.0;
+    public static final double PITCH_MULTIPLIER = 1.0 / 40.0;
+    
     //
     // CAN IDs for the ball collector and launching system
     //
@@ -228,6 +232,6 @@ public final class Constants {
     public static final int CONE_PIPELINE = 0;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
-
+    public static final double WHEEL_LOCK_RADIANS = 0.785398;
 }
 
