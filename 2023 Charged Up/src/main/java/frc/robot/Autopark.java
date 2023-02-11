@@ -5,9 +5,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.math.controller.PIDController;
 
 public class Autopark {
+
+    private PIDController balancePID = new PIDController(Constants.BALANCE_kP, Constants.BALANCE_kI, Constants.BALANCE_kD);
 
     public enum AutoBalanceStates {
         DRIVE_FORWARD,
@@ -96,6 +98,10 @@ public class Autopark {
             //             drivetrain.drive(new ChassisSpeeds(0.2 * (pitch / 100), 0, 0));
             //         }
             //         break;
+            }
+
+            public double calculateBalanceVelocity(){
+                return 
             }
             
             

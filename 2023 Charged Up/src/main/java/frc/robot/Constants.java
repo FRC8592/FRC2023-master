@@ -58,6 +58,9 @@ public final class Constants {
 
     public static final double LEVEL_PITCH = 3.0;
     public static final double PITCH_MULTIPLIER = 1.0 / 40.0;
+    public static final double BALANCE_kP = 1.0 / 40.0;
+    public static final double BALANCE_kI = 0;
+    public static final double BALANCE_kD = -0.1;
     //
     // CAN IDs for the ball collector and launching system
     //
