@@ -90,7 +90,6 @@ public class Robot extends LoggedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
