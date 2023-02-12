@@ -58,10 +58,9 @@ public class Robot extends LoggedRobot {
   public LED ledStrips;
   public AprilTags aprilTags;
 
+  public FRCLogger logger;
   public Vision gameObjectVision;
   public String currentPiecePipeline;
-  public FRCLogger logger;
-
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -92,11 +91,9 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    //drive = new Drivetrain();
-    //ledStrips = new LED();
     aprilTags = new AprilTags("limelight",0,0,0,0,0,0,0,0);
     drive = new Drivetrain(logger);
-    //ledStrips = new LED();
+    ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
@@ -199,14 +196,22 @@ public class Robot extends LoggedRobot {
       double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       double turn = gameObjectVision.turnRobot(1.0);
       drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-
     }
+
     else if(shooterController.getRightBumper()){
       double yspeed = gameObjectVision.turnRobot(0.25);
       double xspeed = gameObjectVision.moveTowardsTarget(0.25, 0.25);
       double turn = 0;
+
+      if(gameObjectVision.distanceToTarget() > 14){
+
       drive.drive(new ChassisSpeeds(xspeed, yspeed, turn));
+
+      }else{
+        drive.drive(new ChassisSpeeds(0,0,0));
+      }
     }
+  
     else{  
       rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
           * rotatePower; // Right joystick
@@ -234,14 +239,14 @@ public class Robot extends LoggedRobot {
 
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      //ledStrips.setFullPurple();
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      ledStrips.setFullPurple();
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      //ledStrips.setFullYellow();
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.setFullYellow();
     }
 
     if(shooterController.getAButtonPressed()){
@@ -270,8 +275,11 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    aprilTags.updateVision();
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    SmartDashboard.putString("CamPose", aprilTags.getObservation(aprilTags.camerapose).toString());
+    SmartDashboard.putString("BotPose", aprilTags.getObservation(aprilTags.botpose).toString());
   }
 
   /** This function is called once when the robot is first started up. */

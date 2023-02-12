@@ -30,10 +30,10 @@ public class Drivetrain {
     /**
      * Swerve module controllers, intialized in the constructor
      */  
-    private final SwerveModule m_frontLeftModule;
-    private final SwerveModule m_frontRightModule;
-    private final SwerveModule m_backLeftModule;
-    private final SwerveModule m_backRightModule;
+    public final SwerveModule m_frontLeftModule;
+    public final SwerveModule m_frontRightModule;
+    public final SwerveModule m_backLeftModule;
+    public final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
     
     private FRCLogger logger;
@@ -60,7 +60,7 @@ public class Drivetrain {
         Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
     // Set up the kinematics module based on physical drivetrain characteristics
-    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
+    public final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
         // Front left
         new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
         // Front right
@@ -227,7 +227,7 @@ public class Drivetrain {
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
 
-    private SwerveModulePosition getSMPosition(SwerveModule mod){
+    public SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
     }
 

@@ -148,6 +148,9 @@ public class Vision {
     logger.log(this, "NewestTargetValid", targetValid); //Logging up here instead of down
     //below because targetValid gets modified with the processed value in a few lines
 
+    logger.log(this, "NewestTargetValid", targetValid); //Logging up here instead of down
+    //below because targetValid gets modified with the processed value in a few lines
+
     //generates average of limelight parameters
     previousCoordinates.add(new LimelightData(xError, yError, targetValid));
     if (previousCoordinates.size() > STAT_SIZE){

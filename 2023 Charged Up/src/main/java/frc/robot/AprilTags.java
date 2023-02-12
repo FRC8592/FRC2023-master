@@ -48,13 +48,13 @@ public class AprilTags extends Vision{
 
 
 
-    public ObservationNode getObservation(){
+    public ObservationNode getObservation(NetworkTableEntry typePose){
         Pose3d pose3d = new Pose3d();
         double[] pose;
         if(botpose.getDoubleArray(new double[0]) == null){
             return new ObservationNode(null, false);
         }else{
-            pose = this.botpose.getDoubleArray(new double[0]);
+            pose = typePose.getDoubleArray(new double[0]);
         }
 
         boolean valid = pose.length != 0;
@@ -91,6 +91,16 @@ public class AprilTags extends Vision{
             }
 
             return poseString;
+        }
+
+        public Pose3d getPose3d(){
+            if(this.valid){
+            return this.pose;
+
+            } else  {
+
+            return null;
+            }
         }
     }
 }
