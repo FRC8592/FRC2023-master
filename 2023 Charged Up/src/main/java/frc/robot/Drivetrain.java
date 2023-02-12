@@ -328,4 +328,8 @@ public class Drivetrain {
         setModule(m_backLeftModule, -Constants.WHEEL_LOCK_RADIANS, 0);
         setModule(m_backRightModule, Constants.WHEEL_LOCK_RADIANS, 0);
     }
+
+    public SwerveDriveKinematics getKinematics() {
+        return m_kinematics;
+    }
 }

@@ -4,8 +4,10 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.autonomous.blue.BlueCableCoverTestAuto;
 import frc.robot.autonomous.blue.BlueCableCoverThreePieceAuto;
 import frc.robot.autonomous.blue.BlueCableCoverTwoPieceParkAuto;
+import frc.robot.autonomous.blue.BlueCableCoverWaypointAuto;
 public class AutonomousSelector {
 
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
@@ -20,7 +22,9 @@ public class AutonomousSelector {
             // TestParkAuto.class,
             // CoordinateBasedAuto.class,
             BlueCableCoverThreePieceAuto.class,
-            BlueCableCoverTwoPieceParkAuto.class
+            BlueCableCoverTwoPieceParkAuto.class,
+            BlueCableCoverTestAuto.class,
+            BlueCableCoverWaypointAuto.class
     };
 
     public AutonomousSelector() {

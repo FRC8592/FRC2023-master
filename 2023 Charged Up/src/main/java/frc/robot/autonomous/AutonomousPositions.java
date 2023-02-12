@@ -25,8 +25,8 @@ public enum AutonomousPositions {
     GRID_H(1.664 + 0.6, 1.042),
     GRID_I(1.664 + 0.6, 0.384 + 0.5),
     
-    B_CABLE_COVER(5.292, 1.999),
-    B_MIDDLE(5.292, 2.682 + 0.2),
+    B_CABLE_COVER(5.292, 1.042), // Changed to parallel with Grid_H
+    B_MIDDLE(5.292 - 0.75, 2.682 - 0.2),
     B_LOADING_ZONE(5.292, 3.523),
 
     // Positions all mixed up for intermediary
@@ -38,6 +38,9 @@ public enum AutonomousPositions {
     GAME_PIECE_2(7.169 - 0.5, 3.398 + 0.4), // Same as GP3 in document
     GAME_PIECE_3(7.169 - 0.5, 2.138 + 0.3), // Same as GP2 in document
     GAME_PIECE_4(7.169 - 0.5, 0.964 + 0.4),
+
+    TEST_1(2.0, 1.0),
+    TEST_2(4.0, 1.0)
     ;
 
     private Translation2d translation;
@@ -61,11 +64,11 @@ public enum AutonomousPositions {
             config
         );
 
-        return new SwerveTrajectory(traj);
+        return new SwerveTrajectory(traj).addRotation(endRotation);
     }
 
     public static SwerveTrajectory joinTrajectories(SwerveTrajectory first, SwerveTrajectory second) {
         Trajectory newTraj = first.trajectory().concatenate(second.trajectory());
-        return new SwerveTrajectory(newTraj);
+        return new SwerveTrajectory(newTraj).addRotation(second.getEndingRotation());
     }
 }

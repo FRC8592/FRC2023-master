@@ -64,6 +64,7 @@ public class AutoDrive {
         pidVelocityControlX = new PIDController(kPX, kIX, kDX);
         pidVelocityControlY = new PIDController(kPY, kIY, kDY);
         pidOmegaControl = new PIDController(kPTheta, kITheta, kDTheta);
+        pidOmegaControl.enableContinuousInput(-180, 180);
         this.acceptanceRadius = acceptanceRadius;
         this.waypoints = new ArrayList<Pose2d>();
     }
