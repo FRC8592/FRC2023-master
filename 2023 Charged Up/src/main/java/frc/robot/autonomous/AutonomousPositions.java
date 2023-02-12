@@ -1,8 +1,14 @@
 package frc.robot.autonomous;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import frc.robot.autonomous.trajectory.SwerveTrajectory;
 
 // Adjustments made based on simulation results
 public enum AutonomousPositions {
@@ -45,5 +51,16 @@ public enum AutonomousPositions {
 
     public Pose2d getPose() {
         return new Pose2d(translation, new Rotation2d());
+    }
+
+    public SwerveTrajectory generateTrajectoryFromPoints(AutonomousPositions start, AutonomousPositions end, TrajectoryConfig config) {
+        Trajectory traj = TrajectoryGenerator.generateTrajectory(
+            start.getPose(), 
+            new ArrayList<>(), 
+            end.getPose(),
+            config
+        );
+
+        return new SwerveTrajectory(traj);
     }
 }

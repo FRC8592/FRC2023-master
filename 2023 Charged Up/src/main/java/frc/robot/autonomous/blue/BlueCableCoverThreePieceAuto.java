@@ -19,7 +19,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 import java.util.List;
 
 public class BlueCableCoverThreePieceAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(5, 3);
+    private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
     private Trajectory I5_TO_GP4 = TrajectoryGenerator.generateTrajectory(
         GRID_I.getPose(),
@@ -82,5 +82,4 @@ public class BlueCableCoverThreePieceAuto extends BaseAuto {
     public void periodic() {
         queue.run();
     }
-    
 }

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlueCableCoverTwoPieceParkAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(5, 3);
+    private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
     private Trajectory I5_TO_GP4 = TrajectoryGenerator.generateTrajectory(
         GRID_I.getPose(),
@@ -83,5 +83,4 @@ public class BlueCableCoverTwoPieceParkAuto extends BaseAuto {
     public void periodic() {
         queue.run();
     }
-    
 }
