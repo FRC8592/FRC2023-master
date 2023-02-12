@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
@@ -89,7 +90,7 @@ public class Drivetrain {
         // Create configuration object for motors.  We do this primarily for current limiting
         swerveMotorConfig = new Mk4ModuleConfiguration();
         swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
-        swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_CURRENT);
+        swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_TELEOP_CURRENT);
         swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
         
         this.logger = logger;
@@ -223,6 +224,8 @@ public class Drivetrain {
                 getSMPosition(m_backRightModule)
             }
         );
+
+
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
@@ -264,5 +267,20 @@ public class Drivetrain {
         }
         SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
         setDriveVelocity(velocityToApply, module);
+    }
+
+    private void setThrottleCurrentLimit(double currentLimit){
+
+        m_frontLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_frontRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_backLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_backRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+    }
+
+    public void setTeleopCurrentLimit(){
+        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_TELEOP_CURRENT);
+    }
+    public void setAutoCurrentLimit(){
+        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_AUTO_CURRENT);
     }
 }

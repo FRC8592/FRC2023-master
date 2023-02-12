@@ -62,6 +62,7 @@ public class Robot extends LoggedRobot {
   public FRCLogger logger;
   public PIDController turnPID;
   public PIDController strafePID;
+  // public Power power;
 
 
   /**
@@ -93,6 +94,7 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
+    // power = new Power();
     drive = new Drivetrain(logger);
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
@@ -130,6 +132,7 @@ public class Robot extends LoggedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     drive.resetSteerAngles();
+    drive.setAutoCurrentLimit();
   }
 
   /** This function is called periodically during autonomous. */
@@ -153,6 +156,7 @@ public class Robot extends LoggedRobot {
     slowModeToggle = false;
     // drive.zeroGyroscope();
     drive.resetSteerAngles();
+    drive.setTeleopCurrentLimit();
 
   }
 
@@ -168,6 +172,7 @@ public class Robot extends LoggedRobot {
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
+    // power.powerPeriodic();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
