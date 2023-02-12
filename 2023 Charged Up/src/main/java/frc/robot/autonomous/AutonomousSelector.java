@@ -1,22 +1,26 @@
 package frc.robot.autonomous;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.robot.autonomous.blue.BlueCableCoverThreePieceAuto;
+import frc.robot.autonomous.blue.BlueCableCoverTwoPieceParkAuto;
 public class AutonomousSelector {
 
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
     private SendableChooser<Class<?>> autonChooser = new SendableChooser<>();
-    ShuffleboardContainer container;
+    private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-        MidParkAuto.class,
-        TopThreePieceAuto.class,
-        TopTwoPieceParkAuto.class,
-        WaypointAuto.class
+            // MidParkAuto.class,
+            // TopThreePieceAuto.class,
+            // TopTwoPieceParkAuto.class,
+            // WaypointAuto.class,
+            // TestParkAuto.class,
+            // CoordinateBasedAuto.class,
+            BlueCableCoverThreePieceAuto.class,
+            BlueCableCoverTwoPieceParkAuto.class
     };
 
     public AutonomousSelector() {
@@ -26,21 +30,19 @@ public class AutonomousSelector {
         }
 
         autonTab.add("Choose Autonomous", autonChooser)
-            .withPosition(3, 3)
-            .withSize(4, 2)
-        ;
-        
-        // container = autonTab.getLayout("Auto Data", BuiltInLayouts.kGrid)
-        // .withSize(2, 4)
-        // .withPosition(0, 0);
+                .withPosition(3, 3)
+                .withSize(4, 2);
 
-        SmartDashboard.putNumber("Autonomous Delay", 0d);
+        delayEntry = Shuffleboard.getTab("Auton Configuration").add("Autonomous Delay", 0d).getEntry();
+    }
+
+    public double getDelay() {
+        return delayEntry.getDouble(0.0);
     }
 
     public BaseAuto getSelectedAutonomous() {
         try {
             BaseAuto selected = (BaseAuto) autonChooser.getSelected().getDeclaredConstructor().newInstance();
-            SmartDashboard.putString("SELECTED AUTONOMOUS", selected.getClass().getSimpleName());
             return selected;
         } catch (Exception e) {
             return null;

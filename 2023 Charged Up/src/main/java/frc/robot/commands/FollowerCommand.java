@@ -91,6 +91,8 @@ public class FollowerCommand extends Command {
     public void shutdown() {
         if (lockWheels) {
             drive.setWheelLock();
+        } else {
+            drive.drive(new ChassisSpeeds());
         }
     }
 }
