@@ -53,7 +53,7 @@ public enum AutonomousPositions {
         return new Pose2d(translation, new Rotation2d());
     }
 
-    public SwerveTrajectory generateTrajectoryFromPoints(AutonomousPositions start, AutonomousPositions end, TrajectoryConfig config) {
+    public static SwerveTrajectory generateTrajectoryFromPoints(AutonomousPositions start, AutonomousPositions end, Rotation2d endRotation, TrajectoryConfig config) {
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
             start.getPose(), 
             new ArrayList<>(), 
@@ -62,5 +62,10 @@ public enum AutonomousPositions {
         );
 
         return new SwerveTrajectory(traj);
+    }
+
+    public static SwerveTrajectory joinTrajectories(SwerveTrajectory first, SwerveTrajectory second) {
+        Trajectory newTraj = first.trajectory().concatenate(second.trajectory());
+        return new SwerveTrajectory(newTraj);
     }
 }
