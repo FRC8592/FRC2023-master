@@ -35,7 +35,10 @@ public class Drivetrain {
     public final SwerveModule m_backLeftModule;
     public final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
-    
+
+    private final double kWheelCircumference = 4*Math.PI;
+    private final double kFalconTicksToMeters = 1.0/ 4096 / kWheelCircumference;
+
     private FRCLogger logger;
 
     /**
@@ -228,7 +231,7 @@ public class Drivetrain {
     } 
 
     public SwerveModulePosition getSMPosition(SwerveModule mod){
-        return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+    return new SwerveModulePosition(mod.getDriveController().getDriveFalcon().getSelectedSensorPosition()/4096.0/kWheelCircumference, new Rotation2d(mod.getSteerAngle()));
     }
 
     public void setDriveVelocity(double inputVelocity, SwerveModule module){

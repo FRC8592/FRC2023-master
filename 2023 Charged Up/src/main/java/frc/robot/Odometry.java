@@ -23,9 +23,13 @@ public class Odometry {
             drivetrain.getSMPosition(drivetrain.m_backLeftModule),
             drivetrain.getSMPosition(drivetrain.m_backRightModule)
         }, drivetrain.getCurrentPos());
-        
+
 
       
+
+    }
+
+    public void update(){
 
     }
 }

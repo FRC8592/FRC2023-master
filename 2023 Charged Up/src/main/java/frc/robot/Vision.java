@@ -73,7 +73,6 @@ public class Vision {
   protected final double IN_TO_METERS = 0.0254;
   
   private FRCLogger logger;
-  
 
   /**
    * This constructor will intialize internal variables for the robot turret
@@ -151,6 +150,9 @@ public class Vision {
     logger.log(this, "NewestTargetValid", targetValid); //Logging up here instead of down
     //below because targetValid gets modified with the processed value in a few lines
 
+    logger.log(this, "NewestTargetValid", targetValid); //Logging up here instead of down
+    //below because targetValid gets modified with the processed value in a few lines
+
     //generates average of limelight parameters
     previousCoordinates.add(new LimelightData(xError, yError, targetValid));
     if (previousCoordinates.size() > STAT_SIZE){
@@ -165,7 +167,7 @@ public class Vision {
       }
     }
 
-    processedDx = (totalDx/totalValid) - 1.0;
+    processedDx = (totalDx/totalValid);
     processedDy = totalDy/totalValid;
     targetValid = (totalValid >= MIN_LOCKS);
 
@@ -256,7 +258,7 @@ public class Vision {
    * 
    * @return The turn speed
    */
-  public double turnRobot(double visionSearchSpeed){
+  public double turnRobot(double visionSearchSpeed, PIDController turnPID, double limit){
 
     // Stop turning if we have locked onto the target within acceptable angular error
     if (targetValid && targetLocked) {
@@ -267,8 +269,8 @@ public class Vision {
     // Limit maximum speed
     else if (targetValid) {
       turnSpeed = turnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
-      turnSpeed = Math.max(turnSpeed, -8);
-      turnSpeed = Math.min(turnSpeed, 8);
+      turnSpeed = Math.max(turnSpeed, -limit);
+      turnSpeed = Math.min(turnSpeed, limit);
     }
 
     // If no targetValid, spin in a circle to search
