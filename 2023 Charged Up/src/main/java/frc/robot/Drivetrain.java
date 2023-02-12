@@ -42,14 +42,14 @@ public class Drivetrain {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
-    
+    private Vision vision;
     private FRCLogger logger;
 
     private final double kWheelCircumference = 4*Math.PI;
     private final double kFalconTicksToMeters = 1.0 / 4096.0 / kWheelCircumference;
 
     private SwerveDrivePoseEstimator poseEstimate;
-
+    public boolean useVision;
     /**
      * The maximum voltage that will be delivered to the drive motors.
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
@@ -93,9 +93,9 @@ public class Drivetrain {
     /**Initialize drivetrain
      * 
      */
-    public Drivetrain(FRCLogger logger) {
+    public Drivetrain(FRCLogger logger, Vision vision) {
         Mk4ModuleConfiguration swerveMotorConfig;
-
+        this.vision = vision;
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
         // Create configuration object for motors.  We do this primarily for current limiting
@@ -196,7 +196,13 @@ public class Drivetrain {
     }
 
     public Pose2d getCurrentPos(){
-        Pose2d pos = odometry.getPoseMeters();
+        Pose2d pos;
+        if(this.useVision){
+           pos =  this.getPosEstimate();
+        } 
+        else {
+            pos = odometry.getPoseMeters();
+        }
         SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
         SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
         SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
@@ -228,7 +234,7 @@ public class Drivetrain {
         setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
         setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
         setModule(m_backRightModule, states[3].angle.getRadians(), metersPerSecondToTicks(states[3].speedMetersPerSecond));
-        
+        updatePose(vision.getPoseFromLimelight());
         this.odometry.update(
             getGyroscopeRotation(), 
             new SwerveModulePosition[] {
@@ -323,8 +329,14 @@ public class Drivetrain {
         if(visionPose != null){
             poseEstimate.addVisionMeasurement(visionPose, Timer.getFPGATimestamp());
         }
-        poseEstimate.update(getGyroscopeRotation(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
-        poseEstimate.getEstimatedPosition();
+        poseEstimate.update(getGyroscopeRotation(), new SwerveModulePosition[]  {getSMPosition(m_frontLeftModule), 
+        getSMPosition(m_frontRightModule),
+        getSMPosition(m_backLeftModule),
+        getSMPosition(m_backRightModule)});
+    }
+
+    public Pose2d getPosEstimate(){
+        return this.poseEstimate.getEstimatedPosition();
     }
 
 }

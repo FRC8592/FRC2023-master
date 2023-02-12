@@ -353,7 +353,9 @@ public class Vision {
   }
 
   public Pose2d getPoseFromLimelight(){
-
+    if(LimelightHelpers.getBotpose(limelightName) == null){
+      return null;
+    }
     double[] pose = LimelightHelpers.getBotpose(limelightName);
     return new Pose2d(pose[0], pose[1], new Rotation2d(Math.toRadians(pose[5])));
   }

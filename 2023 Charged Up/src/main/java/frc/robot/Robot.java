@@ -104,12 +104,14 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    drive = new Drivetrain(logger);
+   
     ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
-    
+     
+     drive = new Drivetrain(logger, gameObjectVision);
+
 
     selector = new AutonomousSelector();
 
@@ -176,7 +178,6 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putNumber("Pose Y'", drive.getCurrentPos().getY());
     SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
     SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
-
   }
 
   /** This function is called once when teleop is enabled. */
