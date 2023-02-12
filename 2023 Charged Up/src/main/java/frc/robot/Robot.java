@@ -15,12 +15,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-
-
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import java.nio.channels.Selector;
@@ -148,9 +147,7 @@ public class Robot extends LoggedRobot {
     selectedAuto = selector.getSelectedAutonomous();
     selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
-
-    double delay = SmartDashboard.getNumber("Autonomous Delay", 0d);
-    selectedAuto.addDelay(delay);
+    selectedAuto.addDelay(selector.getDelay());
     
     if (!isReal()) {
       selectedAuto.setInitialSimulationPose();
@@ -160,7 +157,7 @@ public class Robot extends LoggedRobot {
       drive.resetPose(selectedAuto.getStartPose());
     }
 
-    SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
+    // SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
     drive.resetSteerAngles();
   }
   
@@ -168,11 +165,12 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     selectedAuto.periodic();
-    SmartDashboard.putNumber("Pose X", drive.getCurrentPos().getX());
-    SmartDashboard.putNumber("Pose Y'", drive.getCurrentPos().getY());
-    SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
-    SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
+    // SmartDashboard.putNumber("Pose X", drive.getCurrentPos().getX());
+    // SmartDashboard.putNumber("Pose Y'", drive.getCurrentPos().getY());
+    // SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
+    // SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
 
+    ledStrips.upAndDown();
   }
   
   /** This function is called once when teleop is enabled. */
