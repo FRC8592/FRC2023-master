@@ -25,6 +25,7 @@ public final class Constants {
      * Should be measured from center to center.
      */
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.57785;
+    public static final double kWheelCircumference = 4 * Math.PI;
     /**
      * The front-to-back distance between the drivetrain wheels.
      *

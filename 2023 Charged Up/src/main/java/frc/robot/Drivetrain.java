@@ -231,7 +231,7 @@ public class Drivetrain {
     } 
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
-        return new SwerveModulePosition(mod.getDriveVelocity() / 50, new Rotation2d(mod.getSteerAngle()));
+        return new SwerveModulePosition(mod.getDriveController().getDriveFalcon().getSelectedSensorPosition()/4096.0/Constants.kWheelCircumference, new Rotation2d(mod.getSteerAngle()));
     }
 
     public void setDriveVelocity(double inputVelocity, SwerveModule module){
