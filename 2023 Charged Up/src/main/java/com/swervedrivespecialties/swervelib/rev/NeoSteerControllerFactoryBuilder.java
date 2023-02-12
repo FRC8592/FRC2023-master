@@ -135,9 +135,8 @@ public final class NeoSteerControllerFactoryBuilder {
             if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
                 if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
                     resetIteration = 0;
-                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-                    motorEncoder.setPosition(absoluteAngle);
-                    currentAngleRadians = absoluteAngle;
+
+                    currentAngleRadians = resetAbsoluteAngle();
                 }
             } else {
                 resetIteration = 0;
@@ -159,6 +158,13 @@ public final class NeoSteerControllerFactoryBuilder {
             this.referenceAngleRadians = referenceAngleRadians;
 
             controller.setReference(adjustedReferenceAngleRadians, CANSparkMax.ControlType.kPosition);
+        }
+
+        @Override
+        public double resetAbsoluteAngle(){
+            double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+            motorEncoder.setPosition(absoluteAngle);
+            return absoluteAngle;
         }
 
         @Override
