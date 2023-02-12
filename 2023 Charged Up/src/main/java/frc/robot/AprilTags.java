@@ -51,7 +51,7 @@ public class AprilTags extends Vision{
     public ObservationNode getObservation(NetworkTableEntry typePose){
         Pose3d pose3d = new Pose3d();
         double[] pose;
-        if(botpose.getDoubleArray(new double[0]) == null){
+        if(typePose.getDoubleArray(new double[0]) == null){
             return new ObservationNode(null, false);
         }else{
             pose = typePose.getDoubleArray(new double[0]);
