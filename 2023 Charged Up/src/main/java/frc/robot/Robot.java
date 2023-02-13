@@ -131,10 +131,8 @@ public class Robot extends LoggedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    if (!wasZeroed){
-      wasZeroed = true;
-      drive.zeroGyroscope();
-    }
+    wasZeroed = true;
+    drive.zeroGyroscope();
     drive.resetSteerAngles();
     drive.setAutoCurrentLimit();
   }
