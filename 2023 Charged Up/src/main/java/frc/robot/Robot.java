@@ -103,12 +103,8 @@ public class Robot extends LoggedRobot {
         Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
     }
     Logger.getInstance().start();
+    selector = new AutonomousSelector();
     
-    
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-
     logger = new FRCLogger();
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
