@@ -114,7 +114,10 @@ public class Robot extends LoggedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -183,7 +186,7 @@ public class Robot extends LoggedRobot {
     //
 
     
-    if (driverController.getXButtonPressed() && driverController.getBackButton()) {
+    if (driverController.getXButton() && driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
 
