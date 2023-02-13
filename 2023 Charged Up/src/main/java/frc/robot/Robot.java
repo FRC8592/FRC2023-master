@@ -62,6 +62,7 @@ public class Robot extends LoggedRobot {
   public FRCLogger logger;
   public PIDController turnPID;
   public PIDController strafePID;
+  public boolean wasZeroed = false;
   // public Power power;
 
 
@@ -130,6 +131,8 @@ public class Robot extends LoggedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    wasZeroed = true;
+    drive.zeroGyroscope();
     drive.resetSteerAngles();
     drive.setAutoCurrentLimit();
   }
@@ -153,7 +156,10 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-    // drive.zeroGyroscope();
+    if (!wasZeroed){
+      wasZeroed = true;
+      drive.zeroGyroscope();
+    }
     drive.resetSteerAngles();
     drive.setTeleopCurrentLimit();
 
@@ -168,7 +174,7 @@ public class Robot extends LoggedRobot {
     double translateY;
     double rotate;
 
-    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
     // power.powerPeriodic();
@@ -177,7 +183,7 @@ public class Robot extends LoggedRobot {
     //
 
     
-    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
+    if (driverController.getXButton() && driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
 
