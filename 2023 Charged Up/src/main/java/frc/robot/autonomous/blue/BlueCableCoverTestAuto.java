@@ -22,39 +22,55 @@ public class BlueCableCoverTestAuto extends BaseAuto {
     private TrajectoryConfig slowConfig = new TrajectoryConfig(2, 1);
     private TrajectoryConfig fastConfig = new TrajectoryConfig(3, 1);
 
-    private SwerveTrajectory I5_TO_Icc = generateTrajectoryFromPoints(
-        GRID_I, 
-        INTERMEDIARY_CABLE_COVER,
-        Rotation2d.fromDegrees(0), 
-        slowConfig.setStartVelocity(0).setEndVelocity(1).setReversed(false)
-    );
-
-    private SwerveTrajectory Icc_TO_GP4 = generateTrajectoryFromPoints(
-        INTERMEDIARY_CABLE_COVER,
-        GAME_PIECE_4,
-        Rotation2d.fromDegrees(0), 
-        fastConfig.setStartVelocity(1).setEndVelocity(0).setReversed(false)
-    );
-
-    private SwerveTrajectory GP4_TO_BM = generateTrajectoryFromPoints(
-        GAME_PIECE_4, 
-        B_MIDDLE, 
-        Rotation2d.fromDegrees(0), 
-        fastConfig.setStartVelocity(0).setEndVelocity(0).setReversed(true)
-    );
-
-    private SwerveTrajectory TEST_2_METERS = generateTrajectoryFromPoints(
-        TEST_1, 
-        TEST_2, 
-        Rotation2d.fromDegrees(0), 
-        slowConfig.setStartVelocity(0).setEndVelocity(0).setReversed(false)//.setKinematics(drive.getKinematics())
-    );
-
     @Override
     public void initialize() {
+        SwerveTrajectory I5_TO_Icc = generateTrajectoryFromPoints(
+            GRID_I, 
+            INTERMEDIARY_CABLE_COVER,
+            Rotation2d.fromDegrees(0), 
+            slowConfig
+            .setStartVelocity(0)
+            .setEndVelocity(1)
+            .setReversed(false)
+            .setKinematics(drive.getKinematics())
+        );
+
+        SwerveTrajectory Icc_TO_GP4 = generateTrajectoryFromPoints(
+            INTERMEDIARY_CABLE_COVER,
+            GAME_PIECE_4,
+            Rotation2d.fromDegrees(0), 
+            fastConfig
+            .setStartVelocity(1)
+            .setEndVelocity(0)
+            .setReversed(false)
+            .setKinematics(drive.getKinematics())
+        );
+
+        SwerveTrajectory GP4_TO_BM = generateTrajectoryFromPoints(
+            GAME_PIECE_4, 
+            B_MIDDLE, 
+            Rotation2d.fromDegrees(0), 
+            fastConfig
+            .setStartVelocity(0)
+            .setEndVelocity(0)
+            .setReversed(true)
+            .setKinematics(drive.getKinematics())
+        );
+
+        SwerveTrajectory TEST_2_METERS = generateTrajectoryFromPoints(
+            TEST_1, 
+            TEST_2, 
+            Rotation2d.fromDegrees(0), 
+            fastConfig
+                .setStartVelocity(0)
+                .setEndVelocity(0)
+                .setReversed(false)
+                .setKinematics(drive.getKinematics())
+        );
+
         queue = new CommandQueue(
             // new ScoreCommand(Height.HIGH),
-            // new FollowerCommand(drive, I5_TO_Icc)
+            // new FollowerCommand(drive, I5_TO_Icc),
             // new JointCommand(
             //     new FollowerCommand(drive, Icc_TO_GP4),
             //     new IntakeCommand(IntakeMode.OUT)
