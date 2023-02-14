@@ -1,4 +1,4 @@
-package frc.robot.autonomous.trajectory;
+package frc.robot.autonomous;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
@@ -25,7 +25,7 @@ public class SwerveTrajectory {
     public SwerveTrajectory(Trajectory trajectory) {
         mXPID = new PIDController(0.1, 0, 0);
         mYPID = new PIDController(0.1, 0, 0);
-        mTurnPID = new ProfiledPIDController(1, 0, 0, new Constraints(Math.PI, Math.PI/2)); // Probably should increase the P value or maybe even change constraints to degrees
+        mTurnPID = new ProfiledPIDController(0.1, 0, 0, new Constraints(Math.PI, Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
@@ -71,6 +71,14 @@ public class SwerveTrajectory {
         SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
 
         return desired;
+    }
+
+    public boolean isFinished(double time) {
+        if (Robot.isReal()) {
+            return mDrivePID.atReference() || time >= (mTrajectory.getTotalTimeSeconds() * 1.2);
+        } else {
+            return time >= mTrajectory.getTotalTimeSeconds();
+        }
     }
 
     /**

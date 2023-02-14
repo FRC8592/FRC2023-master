@@ -9,13 +9,15 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
-import frc.robot.autonomous.trajectory.SwerveTrajectory;
+import frc.robot.autonomous.SwerveTrajectory;
 
 public class FollowerCommand extends Command {
     private Drivetrain drive;
     private SwerveTrajectory trajectory;
     private Timer timer;
     private boolean lockWheels;
+
+    private Rotation2d endRotation;
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj) {
         drive = pDrive;
@@ -34,6 +36,8 @@ public class FollowerCommand extends Command {
         drive = pDrive;
         trajectory = pTraj.addRotation(pRot);
         timer = new Timer();
+
+        endRotation = pRot;
     }
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, String tag) {
@@ -41,6 +45,8 @@ public class FollowerCommand extends Command {
         trajectory = pTraj.addRotation(pRot);
         timer = new Timer();
         setTag(tag);
+
+        endRotation = pRot;
     }
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels, String tag) {
@@ -49,6 +55,8 @@ public class FollowerCommand extends Command {
         timer = new Timer();
         this.lockWheels = lockWheels;
         setTag(tag);
+
+        endRotation = pRot;
     }
 
     @Override
@@ -67,10 +75,10 @@ public class FollowerCommand extends Command {
         }
         
         ChassisSpeeds newSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
-
         drive.drive(newSpeeds);
         
-        return time >= trajectory.trajectory().getTotalTimeSeconds();
+        // return time >= trajectory.trajectory().getTotalTimeSeconds();
+        return trajectory.isFinished(time);
     }
 
     @Override

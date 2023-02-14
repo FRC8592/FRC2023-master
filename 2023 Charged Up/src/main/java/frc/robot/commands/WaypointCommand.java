@@ -1,22 +1,14 @@
 package frc.robot.commands;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-
-import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Drivetrain;
 import frc.robot.autonomous.AutoDrive;
 import frc.robot.autonomous.SmoothingFilter;
-import frc.robot.autonomous.Waypoint;
+// import frc.robot.autonomous.Waypoint;
 
 public class WaypointCommand extends Command {
     private final double ACCEPTANCE_RADIUS = 0.1;
@@ -93,13 +85,13 @@ public class WaypointCommand extends Command {
     //     smoother = new SmoothingFilter(size, size, size);
     // }
 
-    public WaypointCommand addWaypoint(Pose2d pose) {
-        poses.add(pose);
+    public WaypointCommand setStartingWaypoint(Pose2d startPose) {
+        drive.resetPose(startPose);
         return this;
     }
 
-    public WaypointCommand addSmoothingFilter(SmoothingFilter sf) {
-        filter = sf;
+    public WaypointCommand addWaypoint(Pose2d pose) {
+        poses.add(pose);
         return this;
     }
 
@@ -153,9 +145,8 @@ public class WaypointCommand extends Command {
         drive.drive(new ChassisSpeeds(0, 0, 0));
     }
 
-    // Distance formula: (sqrt((x2 - x1)^2 + (y2 - y1)^2))
-    private double getLinearDistance(Pose2d poseA, Pose2d poseB) {
-        return Math.sqrt(Math.pow(poseA.getX() - poseB.getX(), 2) + Math.pow(poseA.getY() - poseB.getY(), 2));
-    }
-    
+    // // Distance formula: (sqrt((x2 - x1)^2 + (y2 - y1)^2))
+    // private double getLinearDistance(Pose2d poseA, Pose2d poseB) {
+    //     return Math.sqrt(Math.pow(poseA.getX() - poseB.getX(), 2) + Math.pow(poseA.getY() - poseB.getY(), 2));
+    // }
 }

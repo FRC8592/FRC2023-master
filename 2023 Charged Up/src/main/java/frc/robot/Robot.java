@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ConfigRun.AutoOptions;
 import frc.robot.autonomous.AutoDrive;
 import frc.robot.autonomous.AutonomousSelector;
-import frc.robot.autonomous.BaseAuto;
+import frc.robot.autonomous.autons.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;

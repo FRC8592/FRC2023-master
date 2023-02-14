@@ -1,4 +1,4 @@
-package frc.robot.autonomous;
+package frc.robot.autonomous.autons;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Drivetrain;

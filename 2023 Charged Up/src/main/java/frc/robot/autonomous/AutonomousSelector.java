@@ -4,10 +4,12 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.autonomous.blue.BlueCableCoverTestAuto;
-import frc.robot.autonomous.blue.BlueCableCoverThreePieceAuto;
-import frc.robot.autonomous.blue.BlueCableCoverTwoPieceParkAuto;
-import frc.robot.autonomous.blue.BlueCableCoverWaypointAuto;
+import frc.robot.autonomous.autons.BaseAuto;
+import frc.robot.autonomous.autons.CableCoverThreePieceAuto;
+import frc.robot.autonomous.autons.CableCoverTwoPieceParkAuto;
+import frc.robot.autonomous.autons.LoadingZoneThreePieceAuto;
+import frc.robot.autonomous.autons.LoadingZoneTwoPieceParkAuto;
+import frc.robot.autonomous.autons.MiddlePreloadParkAuto;
 public class AutonomousSelector {
 
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
@@ -15,16 +17,11 @@ public class AutonomousSelector {
     private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-            // MidParkAuto.class,
-            // TopThreePieceAuto.class,
-            // TopTwoPieceParkAuto.class,
-            // WaypointAuto.class,
-            // TestParkAuto.class,
-            // CoordinateBasedAuto.class,
-            BlueCableCoverThreePieceAuto.class,
-            BlueCableCoverTwoPieceParkAuto.class,
-            BlueCableCoverTestAuto.class,
-            BlueCableCoverWaypointAuto.class
+        CableCoverTwoPieceParkAuto.class,
+        CableCoverThreePieceAuto.class,
+        LoadingZoneTwoPieceParkAuto.class,
+        LoadingZoneThreePieceAuto.class,
+        MiddlePreloadParkAuto.class,
     };
 
     public AutonomousSelector() {
