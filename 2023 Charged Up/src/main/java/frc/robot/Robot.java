@@ -130,7 +130,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    SmartDashboard.putBoolean("8=======D", wasZeroed);
   }
 
   /**
@@ -164,6 +164,8 @@ public class Robot extends LoggedRobot {
       drive.resetEncoder();
       drive.resetPose(selectedAuto.getStartPose());
     }
+
+    wasZeroed = true;
 
     // SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
     drive.resetSteerAngles();
@@ -310,6 +312,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    wasZeroed = false;
   }
 
   /** This function is called periodically when disabled. */
