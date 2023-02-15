@@ -14,8 +14,6 @@ public class WaypointTestingAuto extends BaseAuto {
                 .setStartingWaypoint(GRID_I.getPose())
                 .addWaypoint(INTERMEDIARY_LOADING_ZONE.getPose())
         );
-
-        queue.initialize();
     }
 
     @Override

@@ -10,6 +10,8 @@ import frc.robot.autonomous.autons.CableCoverTwoPieceParkAuto;
 import frc.robot.autonomous.autons.LoadingZoneThreePieceAuto;
 import frc.robot.autonomous.autons.LoadingZoneTwoPieceParkAuto;
 import frc.robot.autonomous.autons.MiddlePreloadParkAuto;
+import frc.robot.autonomous.autons.MoveOutCommunityAuto;
+import frc.robot.autonomous.autons.WaypointTestingAuto;
 public class AutonomousSelector {
 
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
@@ -22,10 +24,11 @@ public class AutonomousSelector {
         LoadingZoneTwoPieceParkAuto.class,
         LoadingZoneThreePieceAuto.class,
         MiddlePreloadParkAuto.class,
+        WaypointTestingAuto.class
     };
 
     public AutonomousSelector() {
-        autonChooser.setDefaultOption("DEFAULT", autos[0]);
+        autonChooser.setDefaultOption("DEFAULT", MoveOutCommunityAuto.class);
         for (Class<?> auto : autos) {
             autonChooser.addOption(auto.getSimpleName(), auto);
         }

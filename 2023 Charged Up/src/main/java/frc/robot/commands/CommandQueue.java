@@ -23,6 +23,9 @@ public class CommandQueue {
 
         commandArray = commands;
         timer = new Timer();
+        timer.reset();
+        timer.start();
+        queue.peek().initialize();
     }
 
     /**

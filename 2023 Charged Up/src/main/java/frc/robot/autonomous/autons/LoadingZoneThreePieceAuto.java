@@ -15,7 +15,7 @@ import frc.robot.commands.ScoreCommand.Height;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class LoadingZoneThreePieceAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(5, 5);
+    private TrajectoryConfig config = new TrajectoryConfig(5, 3);
 
     @Override
     public void initialize() {
@@ -85,40 +85,49 @@ public class LoadingZoneThreePieceAuto extends BaseAuto {
                 .setReversed(true)
         );
 
-        SwerveTrajectory A5_TO_C5 = generateTrajectoryFromPoints(
-            GRID_A, 
-            GRID_C,
-            Rotation2d.fromDegrees(0),
-            Rotation2d.fromDegrees(-90),
-            Rotation2d.fromDegrees(-90),
+        // SwerveTrajectory A5_TO_C5 = generateTrajectoryFromPoints(
+        //     GRID_A, 
+        //     GRID_C,
+        //     Rotation2d.fromDegrees(0),
+        //     Rotation2d.fromDegrees(-90),
+        //     Rotation2d.fromDegrees(-90),
+        //     config
+        //         .setStartVelocity(0)
+        //         .setEndVelocity(0)
+        //         .setKinematics(drive.getKinematics())
+        //         .setReversed(true)
+        // );
+
+        SwerveTrajectory Ilz_TO_C5 = generateTrajectoryFromPoints(
             config
-                .setStartVelocity(0)
+                .setStartVelocity(5)
                 .setEndVelocity(0)
                 .setKinematics(drive.getKinematics())
-                .setReversed(true)
+                .setReversed(true),
+            INTERMEDIARY_LOADING_ZONE,
+            COMMUNITY_LOADING_ZONE,
+            GRID_C
         );
 
         queue = new CommandQueue(
-            new ScoreCommand(Height.HIGH, 1.5),
-            new FollowerCommand(drive, A5_TO_Ilz),
+            new ScoreCommand(Height.HIGH, 1.5), // Score preload
+            new FollowerCommand(drive, A5_TO_Ilz), // Go and grab second game piece
             new JointCommand(
-                new FollowerCommand(drive, Ilz_TO_GP1),
+                new FollowerCommand(drive, Ilz_TO_GP1.addRotation(Rotation2d.fromDegrees(180))),
                 new IntakeCommand(IntakeMode.OUT)
             ),
-            new FollowerCommand(drive, GP1_TO_Ilz),
-            new JointCommand(
+            new FollowerCommand(drive, GP1_TO_Ilz), // Drive back to grid space A
                 new FollowerCommand(drive, Ilz_TO_A5),
-                new ScoreCommand(Height.MID)
-            ),
-            new FollowerCommand(drive, A5_TO_Ilz),
-                new FollowerCommand(drive, Ilz_TO_GP2),
-            new FollowerCommand(drive, GP2_TO_Ilz),
-                new FollowerCommand(drive, Ilz_TO_A5),
-                new FollowerCommand(drive, A5_TO_C5),
+            new ScoreCommand(Height.MID), // Score mid
+            new FollowerCommand(drive, A5_TO_Ilz), // Go and grab third game piece
+                new JointCommand(
+                    new FollowerCommand(drive, Ilz_TO_GP2),
+                    new IntakeCommand(IntakeMode.OUT)
+                ),
+            new FollowerCommand(drive, GP2_TO_Ilz), // Drive back to grid space C
+                new FollowerCommand(drive, Ilz_TO_C5.addRotation(Rotation2d.fromDegrees(180))),
             new AutobalanceCommand(drive)
         );
-
-        queue.initialize();
     }
 
     @Override
