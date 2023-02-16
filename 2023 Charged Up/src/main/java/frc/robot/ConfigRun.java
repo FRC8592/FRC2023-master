@@ -34,8 +34,7 @@ public final class ConfigRun {
     //
     // Maximum current provided to motors to help limit battery drain and harsh turning & acceleration
     //
-    public static final double MAX_SWERVE_DRIVE_TELEOP_CURRENT = 40.0; // Lower values will reduce acceleration
-    public static final double MAX_SWERVE_DRIVE_AUTO_CURRENT = 15.0; // Lower values will reduce acceleration
+    public static final double MAX_SWERVE_DRIVE_CURRENT = 15.0; // Lower values will reduce acceleration
     public static final double MAX_SWERVE_STEER_CURRENT = 10.0; // Lower values will turn slower
 
     //
