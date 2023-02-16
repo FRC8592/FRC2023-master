@@ -12,6 +12,8 @@ import frc.robot.autonomous.AutoDrive;
 import frc.robot.autonomous.AutonomousSelector;
 import frc.robot.autonomous.autons.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.LED.BlinkSpeed;
+import frc.robot.LED.Color;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -72,6 +74,7 @@ public class Robot extends LoggedRobot {
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
   public Autopark autoPark;
+  private Timer timer = new Timer();
 
   public static Field2d FIELD = new Field2d();
 
@@ -208,15 +211,29 @@ public class Robot extends LoggedRobot {
     double translateY;
     double rotate;
 
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
-    // gameObjectVision.updateVision();
+    // SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     
-    // System.out.println(driverControler.getBButton());
-    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-    SmartDashboard.putNumber("pitch", drive.getPitch());
-    SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
-    // gameObjectVision.updateVision();
+    gameObjectVision.updateVision();
+    
+    
+    // if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
+    //   if (currentPiecePipeline == "CUBE"){
+    //     ledStrips.setFull(Color.BLUE);
+    //   }else if (currentPiecePipeline == "CONE"){
+    //     ledStrips.setFull(Color.ORANGE);
+    //   }
+    // }else {
+    //   if (currentPiecePipeline == "CUBE"){
+    //     ledStrips.setHalf(Color.BLUE);
+    //   }else if (currentPiecePipeline == "CONE"){
+    //     ledStrips.setHalf(Color.ORANGE);
+    //   }
+    // }
+
+    // if(/* gameObjectVision.isTargetLocked() && */ gameObjectVision.distanceToTarget() < 60 && gameObjectVision.distanceToTarget() >= 0) {
+    //   ledStrips.setProximity(gameObjectVision.distanceToTarget() * Constants.INCHES_TO_METERS);
+    // }
+
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -248,76 +265,77 @@ public class Robot extends LoggedRobot {
       drive.drive(new ChassisSpeeds(0, strafe, 0));
     }
     
-    else if(driverController.getLeftBumper())
+    // SmartDashboard.putNumber("targetDistance", gameObjectVision.distanceToTarget());
+
+    if(driverController.getLeftBumper())
     {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else{  
-      // X
-      // is
-      // forward
-      // Direction,
-      // Forward
-      // on
-      // Joystick
-      // is
-      // Y
-      rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
+
+        double turn = gameObjectVision.turnRobot(1.0);
+        double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      if (gameObjectVision.targetLocked && gameObjectVision.distanceToTarget()<Constants.OBJECT_GRAB_DISTANCE && gameObjectVision.targetValid){
+        drive.drive(new ChassisSpeeds());
+      }
+      else{
+        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+      }
+    }  else{  
+        rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+        translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+
+      
+                                                                                                                          // is
+                                                                                                                          // forward
+                                                                                                                          // Direction,
+                                                                                                                          // Forward
+                                                                                                                          // on
+                                                                                                                          // Joystick
+                                                                                                                          // is
+                                                                                                                          // Y
       translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
       //
       // Normal teleop drive
       //
       
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
-          joystickDeadband(rotate), drive.getGyroscopeRotation()));
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
     } // Inverted due to Robot Directions being the
                                                                     // opposite of controller directions
     
     drive.getCurrentPos();
 
-    if (shooterController.getXButtonPressed()) {
-      currentPiecePipeline = "CUBE";
-      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
-    }
-
-    if (shooterController.getYButtonPressed()) {
-      currentPiecePipeline = "CONE";
-      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
-    }
-    //TODO:don't know if the buttons are already in use
-    if (shooterController.getAButtonPressed()){
-      currentPiecePipeline = "APRILTAG";
-      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      ledStrips.setFullOrange();
-    }
-
-    if (shooterController.getBButtonPressed()){
-      currentPiecePipeline = "RETROTAPE";
-      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      ledStrips.setFullBlue();
-    }
+    // if (shooterController.getXButtonPressed()){
+    //   currentPiecePipeline = "CUBE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    //   ledStrips.setPct(100, LED.Color.PURPLE);
+    // }
+    
+    // if (shooterController.getYButtonPressed()){
+    //   currentPiecePipeline = "CONE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    //   ledStrips.setPct(100, LED.Color.YELLOW);
+    // }
 
 
+    // ledStrips.checkVoltage();
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    timer.reset();
+    timer.start();
   }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-        0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    // // opposite of controller direct
+    0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    //                                                          // opposite of controller direct
+
+    ledStrips.setFire(Color.CYAN, Color.BLUE, Color.PURPLE);
   }
 
   /** This function is called once when test mode is enabled. */
@@ -330,6 +348,7 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    
   }
 
   /** This function is called once when the robot is first started up. */

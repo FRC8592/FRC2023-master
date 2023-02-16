@@ -111,16 +111,18 @@ public final class Constants {
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     // Vision constants for the ball camera
-    public static double BALL_LOCK_ERROR       = 3.0;
-    public static double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
+    public static final double BALL_LOCK_ERROR       = 3.0;
+    public static final double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 35.75;
-    public static double BALL_CAMERA_ANGLE     = 30.0;
+    public static double BALL_CAMERA_ANGLE     = -30.0;
     public static double BALL_TARGET_HEIGHT    = 4.75;
     public static double BALL_ROTATE_KP        = 0.1; //0.15;           // Proportional constant for turret rotate speed
     public static double BALL_ROTATE_KI        = 0.0;
     public static double BALL_ROTATE_KD        = 0.01;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
+
+    public static final double OBJECT_GRAB_DISTANCE      = 36.0;
 
     public static double CLOSE_BALL_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
     public static double CLOSE_BALL_ROTATE_KI  = 0.0;
@@ -221,6 +223,9 @@ public final class Constants {
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 
+    // LED Constants
+    public static final double MINIMUM_VOLTAGE = 9.0;
+
 
     //Constants for our starting position in autonomous
     public static final double POSITION_ERROR = 20; //error for checking what position we are in at the start of the match in degrees
@@ -234,4 +239,7 @@ public final class Constants {
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;
 
+
+    // Conversion constants
+    public static final double INCHES_TO_METERS = 1.0 / 39.37;
 }
