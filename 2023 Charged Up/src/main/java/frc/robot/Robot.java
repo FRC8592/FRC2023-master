@@ -182,7 +182,7 @@ public class Robot extends LoggedRobot {
     // SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
     // SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
 
-    ledStrips.upAndDown();
+    ledStrips.upAndDown(Color.WHITE, Color.PURPLE);
   }
   
   /** This function is called once when teleop is enabled. */
@@ -213,7 +213,7 @@ public class Robot extends LoggedRobot {
 
     // SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     
-    gameObjectVision.updateVision();
+    // gameObjectVision.updateVision();
     
     
     // if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
@@ -270,13 +270,13 @@ public class Robot extends LoggedRobot {
     if(driverController.getLeftBumper())
     {
 
-        double turn = gameObjectVision.turnRobot(1.0);
+        // double turn = gameObjectVision.turnRobot(1.0);
         double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
       if (gameObjectVision.targetLocked && gameObjectVision.distanceToTarget()<Constants.OBJECT_GRAB_DISTANCE && gameObjectVision.targetValid){
         drive.drive(new ChassisSpeeds());
       }
       else{
-        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+        // drive.drive(new ChassisSpeeds(speed, 0.0, turn));
       }
     }  else{  
         rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
