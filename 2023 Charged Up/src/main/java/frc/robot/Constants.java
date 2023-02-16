@@ -219,6 +219,9 @@ public final class Constants {
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 
+    // LED Constants
+    public static final double MINIMUM_VOLTAGE = 9.0;
+
 
     //Constants for our starting position in autonomous
     public static final double POSITION_ERROR = 20; //error for checking what position we are in at the start of the match in degrees

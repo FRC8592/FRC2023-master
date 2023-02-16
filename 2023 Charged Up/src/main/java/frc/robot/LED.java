@@ -1,25 +1,38 @@
 package frc.robot;
 
+import java.awt.Color;
+
+import javax.xml.validation.SchemaFactory;
+
+import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PWM;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.SerialPort.Parity;
-import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.lang.Math.*;
 
 
 public class LED {
+    
+    private AddressableLED liftNEOPIXELS;
+    private AddressableLEDBuffer liftBuffer;
+    private Timer timer;
+    private Timer blinkSpeedTimer;
+    private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
 
+    private int count = 0;
+    private double brightnessMultiplier = 1;
+
+    final int LED_LENGTH = 43;
+
+    /**
+     * Premade color presets
+     */
     public enum Color {
-        RED (128, 0, 0),
-        GREEN (0, 128, 0),
-        BLUE (0, 80, 133),
-        YELLOW (255, 255, 0),
+        RED (200, 0, 0),
+        GREEN (0, 255, 0),
+        CYAN (0, 200, 255),
+        BLUE (0, 0, 255),
+        YELLOW (255, 128, 0),
         PURPLE (138,43,226),
         ORANGE (243, 50, 0),
         WHITE (255, 255, 255),
@@ -37,36 +50,78 @@ public class LED {
         }
     
     }
-    
-    private AddressableLED liftNEOPIXELS;
-    private AddressableLEDBuffer liftBuffer;
-    private Timer timer;
 
-    private int count = 0;
+    /**
+     * Blink speed presets
+     */
+    public enum BlinkSpeed {
+        SLOW (2.0),
+        NORMAL (1.0),
+        SOLID (0.0);
 
-    final int LED_LENGTH = 43;
+        public final double speed;
 
-    public void setColor(int i, Color color){
-        liftBuffer.setRGB(i, color.red, color.green, color.blue);
+        BlinkSpeed(double speed) {
+            this.speed = speed;
+        }
     }
+
     public LED(){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
+        blinkSpeedTimer = new Timer();
     }
 
-    public void setOrangeBlue(){
-        for(int i = 0; i < LED_LENGTH; i++){
-            if(i < LED_LENGTH/2){
-                setColor(i, Color.ORANGE);
-            }else{
-                setColor(i, Color.BLUE);
+    /**
+     * Set the current leds to a certain color
+     * 
+     * @param i         index of the led light to set
+     * @param color     color to set the light
+     */
+    public void setColor(int i, Color color){
+        blinkSpeedTimer.start();
+        SmartDashboard.putNumber("blinkspeedtimer", blinkSpeedTimer.get());
+        if(blinkSpeedTimer.hasElapsed(blinkSpeed.speed / 2.0)) {
+            SmartDashboard.putBoolean("blinking", true);
+            liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));   
+            
+            if (blinkSpeedTimer.hasElapsed(blinkSpeed.speed)) {
+                blinkSpeedTimer.reset();
+            }
+        } else {
+            SmartDashboard.putBoolean("blinking", false);
+            liftBuffer.setRGB(i, 0, 0, 0);  
+        }
+    }
+
+    /**
+     * Set a percentage of the LEDs on, automatically spaces out lights
+     * 
+     * @param pct   the percentage of LEDs to turn on (0 - 100)
+     * @param color the color of the LEDs that are on 
+     */
+    public void setPct(double pct, Color color) {
+        // loop through LEDs, and set the passed percentage as on
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            if (pct != 0 && (double)ledIndex % (1.0 / (pct / 100.0)) < 1.0){
+                setColor(ledIndex, color);
+            }else {
+                setColor(ledIndex, Color.OFF);
             }
         }
         liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+        liftNEOPIXELS.start(); 
+    }
+
+    /**
+     * Set the pulsing state of the robot
+     * 
+     * @param speed     blink speed of the robot
+     */
+    public void setPulseState(BlinkSpeed speed) {
+        blinkSpeed = speed;
     }
 
     /**
@@ -98,60 +153,7 @@ public class LED {
             }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
         
-    }
-
-    // public void setFull(Color color){
-    //     for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-    //         setColor(ledIndex, color);
-    //     }
-    //     liftNEOPIXELS.setData(liftBuffer);
-    //     liftNEOPIXELS.start();
-    //     System.out.println("LED METHOD RUNNING");   
-        
-    // }
-    
-    // public void setHalf(Color color){
-    //     for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-    //         if (ledIndex % 2 == 0){
-    //             setColor(ledIndex, color);
-    //         }else {
-    //             setColor(ledIndex, Color.OFF);
-    //         }
-    //     }
-    //     liftNEOPIXELS.setData(liftBuffer);
-    //     liftNEOPIXELS.start();
-    //     System.out.println("LED METHOD RUNNING");   
-    // }
-
-    // public void setOff(){
-    //     for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-    //         setColor(ledIndex, Color.OFF);
-    //     }
-    //     liftNEOPIXELS.setData(liftBuffer);
-    //     liftNEOPIXELS.start();
-    //     System.out.println("LED METHOD RUNNING");   
-    // }
-
-    /**
-     * Set a percentage of the LEDs on, automatically spaces out lights
-     * 
-     * @param pct   the percentage of LEDs to turn on (0 - 100)
-     * @param color the color of the LEDs that are on 
-     */
-    public void setPct(double pct, Color color) {
-        // loop through LEDs, and set the passed percentage as on
-        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            if (pct != 0 && (double)ledIndex % (1.0 / (pct / 100.0)) < 1.0){
-                setColor(ledIndex, color);
-            }else {
-                setColor(ledIndex, Color.OFF);
-            }
-        }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");  
     }
 
     /** 
@@ -162,7 +164,7 @@ public class LED {
     }
 
     /**
-     * Set more LEDs on depending on how close you are to a target, when target is "in range" (TBD) LEDs turn green
+     * Set more LEDs on depending on how close you are to a target, when target is "in range" LEDs turn green
      * 5m = max distance
      * 0.75m = closest distance ("in range")
      * 
@@ -191,52 +193,126 @@ public class LED {
                 setColor((LED_LENGTH - 1) - ledIndex, color);
             } else {
                 setColor(ledIndex, Color.OFF);
-                setColor(LED_LENGTH - 1 - ledIndex, Color.OFF);
+                setColor((LED_LENGTH - 1) - ledIndex, Color.OFF);
             }
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING"); 
     }
 
-    public void setFire() {
-        int numRed = (int)(Math.random()*LED_LENGTH/4 + LED_LENGTH/4);
-        int numOrange = numRed + (int)(Math.random()*LED_LENGTH/4 + LED_LENGTH/4);
-        int numYellow = numOrange + (int)(Math.random()*LED_LENGTH/8 + LED_LENGTH/8);
-        for (int i = 0; i < LED_LENGTH; i++) {
-            if (i <= numRed) {
-                setColor(i, Color.RED);
-            } else if (i <= numOrange) {
-                setColor(i, Color.ORANGE);
-            } else if (i <= numYellow) {
-                setColor(i, Color.YELLOW);
+    /**
+     * Sets the brightness level for LEDS
+     * 
+     * @param pct percent of brightness (0 - 100)
+     */
+    public void setBrightness(double pct) {
+        brightnessMultiplier = pct / 100.0;
+    }
+
+    /**
+     * Check the voltage of the robot, and if lower than a certain value for a certain time, blink a slow red
+     */
+    // private double voltages[] = new double[10];
+    // int counter = 0, sum = 0, avg;
+    public void checkVoltage() {
+        // SmartDashboard.putNumber("avg volt", avg);
+        double voltage = RoboRioDataJNI.getVInVoltage();
+        SmartDashboard.putNumber("voltage", voltage);
+        // voltages[counter] = voltage;
+        // sum += voltage;
+        // counter = (counter + 1) % voltages.length;
+
+        // if (counter == voltages.length - 1) {
+        //     avg = sum / counter;
+        //     sum = 0;
+        // }
+
+        // if(avg != 0.0 && avg < Constants.MINIMUM_VOLTAGE) {
+        //     setPulseState(BlinkSpeed.SLOW);
+        //     setPct(100, Color.RED);
+        //     SmartDashboard.putString("blink status", blinkSpeed.name());
+        // }
+        if (voltage < 9.0) {
+            SmartDashboard.putBoolean("this joint ran", true);
+            setPulseState(BlinkSpeed.SLOW);
+            setPct(100, Color.RED);
+        } else {
+            SmartDashboard.putBoolean("this joint ran", false);
+        }
+    }
+
+    private boolean first = true;
+    private double valY = 0, valO = 0, valR = 0; 
+    private double numYellow, numOrange, numRed, total, prevTotal = 0, difference;
+    private Timer resetTimer = new Timer();
+
+    public void setFire(Color colorA, Color colorB, Color colorC) {
+        blinkSpeed = BlinkSpeed.SOLID;
+        SmartDashboard.putNumber("Num Yellow", numYellow);
+        SmartDashboard.putNumber("Num Orange", numOrange);
+        SmartDashboard.putNumber("Num Red", numRed);
+
+        SmartDashboard.putNumber("sin val", Math.sin(valY));
+        resetTimer.start();
+        if (first) {
+            first = false;
+            numYellow = (Math.random() * 5); //6
+            numOrange = Math.abs(numYellow + (Math.random() * 7 - 3)); //6 + 5 = 11
+            numRed = Math.abs(numOrange + (Math.random() * 7 - 5)); // 11 + 5 = 16
+        } else {
+            valY = (valY + Math.random() * 1.0) % (2 * Math.PI);
+            valO = (valO + Math.random() * 2.0) % (2 * Math.PI);
+            valR = (valR + Math.random() * 2.5) % (2 * Math.PI);
+            numYellow +=  3.0 * Math.sin(valY);
+            numOrange += 3.0 * Math.sin(valO);
+            numRed += 3.5 * Math.sin(valR);
+        }
+
+        if (resetTimer.get() > 5) {
+            first = true;
+            resetTimer.reset();
+        }
+
+        numYellow = Math.min(5, Math.max(3, numYellow));
+        numOrange = Math.min(9, Math.max(4, numOrange));
+        numRed = Math.min(11, Math.max(5, numRed));
+
+        total = numYellow +  numOrange + numRed;
+        difference = total - prevTotal;
+        prevTotal = total;
+        if(difference > 2) {
+            numRed -= difference / 4.0;
+            numOrange -= difference / 3.0;
+            numYellow -= difference / 2.0;
+        }
+
+        for(int i = 0; i < LED_LENGTH / 2; i++) {
+            if(i < (int)Math.abs(numYellow)) {
+
+                setColor(i, colorA);
+                setColor((LED_LENGTH - 1) - i, colorA);
+            } else if (i < (int)Math.abs(numYellow) + (int)Math.abs(numOrange)) {
+
+                setColor(i, colorB);
+                setColor((LED_LENGTH - 1) - i, colorB);
+            } else if (i < (int)Math.abs(numYellow) + (int)Math.abs(numOrange) + (int)Math.abs(numRed)) {
+
+                setColor(i, colorC);
+                setColor((LED_LENGTH - 1) - i, colorC);
             } else {
                 setColor(i, Color.OFF);
+                setColor((LED_LENGTH - 1) - i, Color.OFF);
             }
         }
 
+        // if(ledIndex < numLEDs) {
+        //     setColor(ledIndex, color);
+        //     setColor((LED_LENGTH - 1) - ledIndex, color);
+        // } else {
+        //     setColor(ledIndex, Color.OFF);
+        //     setColor(LED_LENGTH - 1 - ledIndex, Color.OFF);
+        // }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING"); 
     }
-
-    // WIP method
-    
-    // private boolean first = true;
-    // /**
-    //  * Create a firelike effect on the LED strips
-    //  * 
-    //  * @param clrA bottom color of the "fire"
-    //  * @param clrB middle color of the "fire"
-    //  * @param clrC top color of the "fire"
-    //  */
-    // public void setFireToTheRobot(Color clrA, Color clrB, Color clrC) {
-    //     if(first) {
-    //         int numA = (int)(Math.random() * 12 + 1);
-    //         int numB = (int)(numA + Math.random() * 8 - Math.random() * 8);
-    //         int numC = (int)(numB + Math.random() * 5 - Math.random() * 5);
-    //     } else {
-            
-    //     }
-    // }
 }
