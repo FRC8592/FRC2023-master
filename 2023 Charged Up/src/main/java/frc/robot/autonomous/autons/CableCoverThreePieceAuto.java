@@ -86,17 +86,28 @@ public class CableCoverThreePieceAuto extends BaseAuto {
                 .setReversed(true)
         );
 
-        SwerveTrajectory I5_TO_G5 = generateTrajectoryFromPoints(
-            GRID_I, 
-            GRID_G,
-            Rotation2d.fromDegrees(0),
-            Rotation2d.fromDegrees(90),
-            Rotation2d.fromDegrees(90),
-            fastConfig
-                .setStartVelocity(0)
+        // SwerveTrajectory I5_TO_G5 = generateTrajectoryFromPoints(
+        //     GRID_I, 
+        //     GRID_G,
+        //     Rotation2d.fromDegrees(0),
+        //     Rotation2d.fromDegrees(90),
+        //     Rotation2d.fromDegrees(90),
+        //     fastConfig
+        //         .setStartVelocity(0)
+        //         .setEndVelocity(0)
+        //         .setKinematics(drive.getKinematics())
+        //         .setReversed(true)
+        // );
+
+        SwerveTrajectory Icc_TO_G5 = generateTrajectoryFromPoints(
+            slowConfig
+                .setStartVelocity(2)
                 .setEndVelocity(0)
                 .setKinematics(drive.getKinematics())
-                .setReversed(true)
+                .setReversed(true),
+            INTERMEDIARY_CABLE_COVER,
+            COMMUNITY_CABLE_COVER,
+            GRID_G
         );
 
         queue = new CommandQueue(
@@ -114,12 +125,9 @@ public class CableCoverThreePieceAuto extends BaseAuto {
             new FollowerCommand(drive, I5_TO_Icc),
                 new FollowerCommand(drive, Icc_TO_GP3),
             new FollowerCommand(drive, GP3_TO_Icc),
-                new FollowerCommand(drive, Icc_TO_I5),
-                new FollowerCommand(drive, I5_TO_G5),
+                new FollowerCommand(drive, Icc_TO_G5.addRotation(Rotation2d.fromDegrees(180))),
             new AutobalanceCommand(drive)
         );
-
-        queue.initialize();
     }
 
     @Override

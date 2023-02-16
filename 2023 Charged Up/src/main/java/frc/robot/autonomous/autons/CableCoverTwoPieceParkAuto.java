@@ -96,8 +96,6 @@ public class CableCoverTwoPieceParkAuto extends BaseAuto {
                 new FollowerCommand(drive, Icc_TO_BM),
             new AutobalanceCommand(drive)
         );
-
-        queue.initialize();
     }
 
     @Override

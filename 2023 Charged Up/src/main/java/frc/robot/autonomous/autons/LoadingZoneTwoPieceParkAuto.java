@@ -93,8 +93,6 @@ public class LoadingZoneTwoPieceParkAuto extends BaseAuto {
                 new FollowerCommand(drive, Ilz_TO_BM),
             new AutobalanceCommand(drive)
         );
-
-        queue.initialize();
     }
 
     @Override
