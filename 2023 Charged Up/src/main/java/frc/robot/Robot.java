@@ -106,9 +106,9 @@ public class Robot extends LoggedRobot {
     // power = new Power();
     drive = new Drivetrain(logger);
     ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
-     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, logger);
+    // gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
+    //  Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+    //  Constants.BALL_TARGET_HEIGHT, logger);
     
 
     selector = new AutonomousSelector();
@@ -210,7 +210,7 @@ public class Robot extends LoggedRobot {
 
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
-    gameObjectVision.updateVision();
+    // gameObjectVision.updateVision();
     
     // System.out.println(driverControler.getBButton());
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
@@ -282,25 +282,25 @@ public class Robot extends LoggedRobot {
 
     if (shooterController.getXButtonPressed()) {
       currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
       ledStrips.setFullPurple();
     }
 
     if (shooterController.getYButtonPressed()) {
       currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
     //TODO:don't know if the buttons are already in use
     if (shooterController.getAButtonPressed()){
       currentPiecePipeline = "APRILTAG";
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
       ledStrips.setFullOrange();
     }
 
     if (shooterController.getBButtonPressed()){
       currentPiecePipeline = "RETROTAPE";
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      // NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
       ledStrips.setFullBlue();
     }
 
