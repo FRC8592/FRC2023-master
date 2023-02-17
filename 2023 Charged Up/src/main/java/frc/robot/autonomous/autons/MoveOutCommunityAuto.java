@@ -1,6 +1,5 @@
 package frc.robot.autonomous.autons;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.commands.CommandQueue;

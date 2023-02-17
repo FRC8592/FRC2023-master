@@ -6,7 +6,6 @@ import java.util.List;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -72,6 +71,10 @@ public enum AutonomousPositions {
 
     public Pose2d translate(double dx, double dy) {
         return new Pose2d(getPose().getX() + dx, getPose().getY() + dy, getPose().getRotation());
+    }
+
+    public Pose2d rotate(Rotation2d newRotation) {
+        return new Pose2d(getTranslation(), getPose().getRotation().plus(newRotation));
     }
 
     public Pose2d translate(double dx, double dy, Rotation2d newRotation) {
@@ -220,6 +223,8 @@ public enum AutonomousPositions {
                 ), 
                 config
             );
+
+            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config);//.addRotation(Rotation2d.fromDegrees(180));
         } else {
             Pose2d startPose = poses[0];
             Pose2d endPose = poses[poses.length - 1];
@@ -235,9 +240,10 @@ public enum AutonomousPositions {
                 endPose, 
                 config
             );
+
+            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config);
         }
 
-        return new SwerveTrajectory(traj);
     }
 
     // MAKE SURE TO ADD RED ONCE RED FINISHES

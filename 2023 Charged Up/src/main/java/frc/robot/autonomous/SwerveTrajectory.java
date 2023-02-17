@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,6 +22,7 @@ public class SwerveTrajectory {
     private ProfiledPIDController mTurnPID;
     private Rotation2d rotation;
     private Trajectory mTrajectory;
+    private TrajectoryConfig config = new TrajectoryConfig(0, 0).setEndVelocity(0).setStartVelocity(0);
 
     public SwerveTrajectory(Trajectory trajectory) {
         mXPID = new PIDController(0.1, 0, -0.0002);
@@ -33,6 +35,8 @@ public class SwerveTrajectory {
         mTurnPID.setTolerance(0.001, 0.1);
         mTurnPID.enableContinuousInput(-Math.PI, Math.PI); // Might need to change to degrees
 
+        mDrivePID.setTolerance(new Pose2d(0.1, 0.1, Rotation2d.fromDegrees(1)));
+
         rotation = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation();
         mTrajectory = trajectory;
     }
@@ -44,6 +48,15 @@ public class SwerveTrajectory {
     public SwerveTrajectory addRotation(Rotation2d rotation) {
         this.rotation = rotation;
         return this;
+    }
+
+    public SwerveTrajectory setTrajectoryConfiguration(TrajectoryConfig config) {
+        this.config = config;
+        return this;
+    }
+
+    public double getConfiguredEndingVelocity() {
+        return config.getEndVelocity();
     }
 
     /**
@@ -66,17 +79,22 @@ public class SwerveTrajectory {
             SmartDashboard.putNumber("Current Heading", robotPose.getRotation().getDegrees());
         }
 
-        SmartDashboard.putNumber("Desired Turn", desired.omegaRadiansPerSecond);
+        SmartDashboard.putNumber("Desired X", desired.vxMetersPerSecond);
+        SmartDashboard.putNumber("Desired Y", desired.vyMetersPerSecond);
+        SmartDashboard.putNumber("Desired Omega", desired.omegaRadiansPerSecond);
         SmartDashboard.putNumber("Ending Turn", rotation.getDegrees());
         SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("TOTAL FRICKING TIME", trajectory().getTotalTimeSeconds());
 
         return desired;
     }
 
     public boolean isFinished(double time) {
         if (Robot.isReal()) {
-            return mDrivePID.atReference() || time >= (mTrajectory.getTotalTimeSeconds());
+            return mDrivePID.atReference();// || time >= (mTrajectory.getTotalTimeSeconds());
         } else {
+            SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
+            // return mDrivePID.atReference();
             return time >= mTrajectory.getTotalTimeSeconds();
         }
     }

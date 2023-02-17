@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,7 +15,6 @@ public class FollowerCommand extends Command {
     private SwerveTrajectory trajectory;
     private Timer timer;
     private boolean lockWheels;
-
     private Rotation2d endRotation;
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj) {
@@ -44,6 +42,16 @@ public class FollowerCommand extends Command {
         drive = pDrive;
         trajectory = pTraj.addRotation(pRot);
         timer = new Timer();
+        setTag(tag);
+
+        endRotation = pRot;
+    }
+
+    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels) {
+        drive = pDrive;
+        trajectory = pTraj.addRotation(pRot);
+        timer = new Timer();
+        this.lockWheels = lockWheels;
         setTag(tag);
 
         endRotation = pRot;
@@ -97,10 +105,10 @@ public class FollowerCommand extends Command {
 
     @Override
     public void shutdown() {
-        if (lockWheels) {
-            drive.setWheelLock();
-        } else {
-            drive.drive(new ChassisSpeeds());
-        }
+        // if (lockWheels) {
+        //     drive.setWheelLock();
+        // } else {
+        //     drive.drive(new ChassisSpeeds());
+        // }
     }
 }
