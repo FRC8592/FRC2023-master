@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LED.BlinkSpeed;
 import frc.robot.LED.Color;
+import frc.robot.LED.LEDMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -169,6 +170,7 @@ public class Robot extends LoggedRobot {
     // SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     
     gameObjectVision.updateVision();
+    ledStrips.updatePeriodic();
     
     
     // if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
@@ -268,7 +270,6 @@ public class Robot extends LoggedRobot {
     // }
 
 
-    // ledStrips.checkVoltage();
   }
 
   /** This function is called once when the robot is disabled. */

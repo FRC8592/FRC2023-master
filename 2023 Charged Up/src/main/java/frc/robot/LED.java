@@ -18,9 +18,14 @@ public class LED {
     private Timer timer;
     private Timer blinkSpeedTimer;
     private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
+    private LEDMode mode = LEDMode.OFF;
+    private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+    Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
 
     private int count = 0;
     private double brightnessMultiplier = 1;
+    private boolean lowVolts = false;
 
     final int LED_LENGTH = 43;
 
@@ -34,8 +39,9 @@ public class LED {
         BLUE (0, 0, 255),
         YELLOW (255, 128, 0),
         PURPLE (138, 0,226),
-        ORANGE (243, 50, 0),
+        ORANGE (243, 100, 0),
         WHITE (255, 255, 255),
+        BROWN (74, 23, 0),
         OFF (0, 0, 0);
     
         public final int red;
@@ -55,8 +61,8 @@ public class LED {
      * Blink speed presets
      */
     public enum BlinkSpeed {
-        SLOW (2.0),
-        NORMAL (1.0),
+        SLOW (1.0),
+        NORMAL (0.5),
         SOLID (0.0);
 
         public final double speed;
@@ -64,6 +70,15 @@ public class LED {
         BlinkSpeed(double speed) {
             this.speed = speed;
         }
+    }
+
+    public enum LEDMode {
+        CONE,
+        CUBE,
+        TARGETLOCK,
+        STOPPLACING,
+        ATTENTION,
+        OFF;
     }
 
     public LED(){
@@ -74,20 +89,86 @@ public class LED {
         blinkSpeedTimer = new Timer();
     }
 
+    public void updatePeriodic() {
+        if (RoboRioDataJNI.getVInVoltage() < 9.0 || lowVolts) {
+            lowVolts = true;
+            lowVoltage();
+        } else {
+            switch (mode) {
+                case CONE:
+                    blinkSpeed = BlinkSpeed.SOLID;
+                    upAndDown(Color.PURPLE, Color.OFF);
+                    break;
+                case CUBE:
+                    blinkSpeed = BlinkSpeed.SOLID;
+                    upAndDown(Color.YELLOW, Color.OFF);
+                    break;
+                case TARGETLOCK:
+                    blinkSpeed = BlinkSpeed.SOLID;
+                    vision.updateVision();
+                    if (!vision.isTargetLocked()) {
+                        setPct(50, Color.ORANGE);
+                    } else if (vision.distanceToTarget() < 196.85 && vision.distanceToTarget() >= 0.0) {
+                        setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
+                    }
+                    break;
+                case STOPPLACING:
+                    blinkSpeed = BlinkSpeed.SOLID;
+                    upAndDown(Color.WHITE, Color.OFF);
+                    break;
+                case ATTENTION:
+                    blinkSpeed = BlinkSpeed.SOLID;
+                    upAndDown(Color.ORANGE, Color.BLUE);
+                    break;
+                case OFF:
+                    blinkSpeed = BlinkSpeed.SOLID;
+                    turnOff();
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Set a preset state of the LEDs
+     * 
+     * @param mode      mode to set the LEDs to
+     */
+    public void setState(LEDMode mode) {
+        this.mode = mode;
+    }
+    
+    /**
+     * Set the pulsing state of the robot
+     * 
+     * @param speed     blink speed of the robot
+     */
+    public void setPulseState(BlinkSpeed speed) {
+        blinkSpeed = speed;
+    }
+
+    /**
+     * Sets the brightness level for LEDS
+     * 
+     * @param pct percent of brightness (0 - 100)
+     */
+    public void setBrightness(double pct) {
+        brightnessMultiplier = pct / 100.0;
+    }
+
     /**
      * Set the current leds to a certain color
      * 
      * @param i         index of the led light to set
      * @param color     color to set the light
      */
-    public void setColor(int i, Color color){
+    private void setColor(int i, Color color){
         blinkSpeedTimer.start();
         SmartDashboard.putNumber("blinkspeedtimer", blinkSpeedTimer.get());
-        if(blinkSpeedTimer.hasElapsed(blinkSpeed.speed / 2.0)) {
+        if(blinkSpeedTimer.hasElapsed(blinkSpeed.speed)) {
             SmartDashboard.putBoolean("blinking", true);
             liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));   
             
-            if (blinkSpeedTimer.hasElapsed(blinkSpeed.speed)) {
+            if (blinkSpeedTimer.hasElapsed(blinkSpeed.speed * 2.0)) {
                 blinkSpeedTimer.reset();
             }
         } else {
@@ -102,7 +183,7 @@ public class LED {
      * @param pct   the percentage of LEDs to turn on (0 - 100)
      * @param color the color of the LEDs that are on 
      */
-    public void setPct(double pct, Color color) {
+    private void setPct(double pct, Color color) {
         // loop through LEDs, and set the passed percentage as on
         for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
             if (pct != 0 && (double)ledIndex % (1.0 / (pct / 100.0)) < 1.0){
@@ -116,21 +197,12 @@ public class LED {
     }
 
     /**
-     * Set the pulsing state of the robot
-     * 
-     * @param speed     blink speed of the robot
-     */
-    public void setPulseState(BlinkSpeed speed) {
-        blinkSpeed = speed;
-    }
-
-    /**
      * Run two colors up and down the LED strip
      * 
      * @param colorA    first color
      * @param colorB    second color
      */
-    public void upAndDown(Color colorA, Color colorB){
+    private void upAndDown(Color colorA, Color colorB){
         timer.start();
             if(timer.get() >= .05){
                 
@@ -159,7 +231,7 @@ public class LED {
     /** 
      * Turn the LEDs off
      */
-    public void turnOff() {
+    private void turnOff() {
         setPct(100, Color.OFF);
     }
 
@@ -170,7 +242,7 @@ public class LED {
      * 
      * @param distToTarget  the distance to the target (meters)
      */
-    public void setProximity(double distToTarget) {
+    private void setProximity(double distToTarget) {
         Color color = Color.RED;
         // Formula to calculate how many LEDs to set in each strip
         // max = max distance before LEDs start lighting up
@@ -201,51 +273,20 @@ public class LED {
     }
 
     /**
-     * Sets the brightness level for LEDS
-     * 
-     * @param pct percent of brightness (0 - 100)
-     */
-    public void setBrightness(double pct) {
-        brightnessMultiplier = pct / 100.0;
-    }
-
-    /**
      * Check the voltage of the robot, and if lower than a certain value for a certain time, blink a slow red
      */
     // private double voltages[] = new double[10];
     // int counter = 0, sum = 0, avg;
-    public void checkVoltage() {
-        // SmartDashboard.putNumber("avg volt", avg);
-        double voltage = RoboRioDataJNI.getVInVoltage();
-        SmartDashboard.putNumber("voltage", voltage);
-        // voltages[counter] = voltage;
-        // sum += voltage;
-        // counter = (counter + 1) % voltages.length;
-
-        // if (counter == voltages.length - 1) {
-        //     avg = sum / counter;
-        //     sum = 0;
-        // }
-
-        // if(avg != 0.0 && avg < Constants.MINIMUM_VOLTAGE) {
-        //     setPulseState(BlinkSpeed.SLOW);
-        //     setPct(100, Color.RED);
-        //     SmartDashboard.putString("blink status", blinkSpeed.name());
-        // }
-        if (voltage < 9.0) {
-            SmartDashboard.putBoolean("this joint ran", true);
-            setPulseState(BlinkSpeed.SLOW);
-            setPct(100, Color.RED);
-        } else {
-            SmartDashboard.putBoolean("this joint ran", false);
-        }
+    private void lowVoltage() {
+        setPulseState(BlinkSpeed.SLOW);
+        setPct(100, Color.RED);
     }
 
     private boolean first = true;
     private double valY = 0, valO = 0, valR = 0; 
     private double numYellow, numOrange, numRed;
 
-    public void setFire(Color colorA, Color colorB, Color colorC) {
+    private void setFire(Color colorA, Color colorB, Color colorC) {
         blinkSpeed = BlinkSpeed.SOLID;
         SmartDashboard.putNumber("Num Yellow", numYellow);
         SmartDashboard.putNumber("Num Orange", numOrange);
