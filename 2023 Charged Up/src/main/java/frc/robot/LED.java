@@ -30,10 +30,10 @@ public class LED {
     public enum Color {
         RED (200, 0, 0),
         GREEN (0, 255, 0),
-        CYAN (0, 200, 255),
+        CYAN (0, 160, 255),
         BLUE (0, 0, 255),
         YELLOW (255, 128, 0),
-        PURPLE (138,43,226),
+        PURPLE (138, 0,226),
         ORANGE (243, 50, 0),
         WHITE (255, 255, 255),
         OFF (0, 0, 0);
@@ -243,8 +243,7 @@ public class LED {
 
     private boolean first = true;
     private double valY = 0, valO = 0, valR = 0; 
-    private double numYellow, numOrange, numRed, total, prevTotal = 0, difference;
-    private Timer resetTimer = new Timer();
+    private double numYellow, numOrange, numRed;
 
     public void setFire(Color colorA, Color colorB, Color colorC) {
         blinkSpeed = BlinkSpeed.SOLID;
@@ -253,38 +252,47 @@ public class LED {
         SmartDashboard.putNumber("Num Red", numRed);
 
         SmartDashboard.putNumber("sin val", Math.sin(valY));
-        resetTimer.start();
         if (first) {
             first = false;
             numYellow = (Math.random() * 5); //6
             numOrange = Math.abs(numYellow + (Math.random() * 7 - 3)); //6 + 5 = 11
             numRed = Math.abs(numOrange + (Math.random() * 7 - 5)); // 11 + 5 = 16
         } else {
-            valY = (valY + Math.random() * 1.0) % (2 * Math.PI);
+            valY = (valY + Math.random() * 1.5) % (2 * Math.PI);
             valO = (valO + Math.random() * 2.0) % (2 * Math.PI);
             valR = (valR + Math.random() * 2.5) % (2 * Math.PI);
-            numYellow +=  3.0 * Math.sin(valY);
-            numOrange += 3.0 * Math.sin(valO);
-            numRed += 3.5 * Math.sin(valR);
+            numYellow +=  1.5 * Math.sin(valY);
+            numOrange += 2.0 * Math.sin(valO);
+            numRed += 2.5 * Math.sin(valR);
         }
 
-        if (resetTimer.get() > 5) {
-            first = true;
-            resetTimer.reset();
-        }
-
-        numYellow = Math.min(5, Math.max(3, numYellow));
+        numYellow = Math.min(7, Math.max(3, numYellow));
         numOrange = Math.min(9, Math.max(4, numOrange));
         numRed = Math.min(11, Math.max(5, numRed));
 
-        total = numYellow +  numOrange + numRed;
-        difference = total - prevTotal;
-        prevTotal = total;
-        if(difference > 2) {
-            numRed -= difference / 4.0;
-            numOrange -= difference / 3.0;
-            numYellow -= difference / 2.0;
-        }
+        // total = numRed;
+        // difference = total - prevTotalR;
+        // prevTotalR = total;
+        // if(Math.abs(difference) > 1.5) {
+        //     numRed += 1.5 * (difference) / Math.abs(difference);
+        // }
+        // SmartDashboard.putNumber("change red", (difference) / Math.abs(difference));
+
+        // total = numOrange;
+        // difference = total - prevTotalO;
+        // prevTotalO = total;
+        // if(Math.abs(difference) > 1.5) {
+        //     numOrange += 1.5 * (difference) / Math.abs(difference);
+        // }
+        // SmartDashboard.putNumber("change orange", (difference) / Math.abs(difference));
+
+        // total = numYellow;
+        // difference = total - prevTotalY;
+        // prevTotalY = total;
+        // if(Math.abs(difference) > 1.5) {
+        //     numYellow += 1.5 * (difference) / Math.abs(difference);
+        // }
+        // SmartDashboard.putNumber("change yellow", (difference) / Math.abs(difference));
 
         for(int i = 0; i < LED_LENGTH / 2; i++) {
             if(i < (int)Math.abs(numYellow)) {

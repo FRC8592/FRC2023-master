@@ -285,7 +285,6 @@ public class Robot extends LoggedRobot {
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
 
-    ledStrips.setFire(Color.CYAN, Color.BLUE, Color.PURPLE);
   }
 
   /** This function is called once when test mode is enabled. */
