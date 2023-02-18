@@ -12,8 +12,8 @@ import frc.robot.autonomous.AutoDrive;
 import frc.robot.autonomous.AutonomousSelector;
 import frc.robot.autonomous.autons.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.Lift.Heights;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   public FRCLogger logger;
+  private Lift lift;
 
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
@@ -102,6 +103,8 @@ public class Robot extends LoggedRobot {
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    lift = new Lift();
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
     
 
@@ -180,6 +183,7 @@ public class Robot extends LoggedRobot {
     slowModeToggle = false;
     autoPark = new Autopark();
 
+    lift.reset();
         drive.zeroGyroscope();
     drive.resetSteerAngles();
 
@@ -198,6 +202,8 @@ public class Robot extends LoggedRobot {
     // drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
+    lift.writeToSmartDashboard();
+
     
     // System.out.println(driverControler.getBButton());
     //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
@@ -277,7 +283,54 @@ public class Robot extends LoggedRobot {
           .setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
-  }
+
+    // ===========
+    // TEST PLAN 1
+    // ===========
+
+    lift.testPlan1Lift(driverController.getLeftY());
+
+    // ===========
+    // TEST PLAN 2
+    // ===========
+
+    // if (driverController.getRightBumper()) {
+      // lift.testPlan2();
+    // }
+
+    // ===========
+    // TEST PLAN 3
+    // ===========
+
+    // if (driverController.getAButton()) {
+    //   lift.testPlan3Lift(Heights.INTAKE);
+    // } else if (driverController.getBButton()) {
+    //   lift.testPlan3Lift(Heights.MID);
+    // } else if (driverController.getYButton()) {
+    //   lift.testPlan3Lift(Heights.HIGH);
+    // } else {
+    //   lift.testPlan3Lift(Heights.STOWED);
+    // }
+
+    // ========================================
+    // REAL CODE FOR ELEVATOR
+    // ========================================
+
+    // elevator.periodic();
+    // 
+    // if (shooterController.getAButton()) {
+    //   lift.setHeight(Heights.STOWED);
+    // } else if (shooterController.getBButton()) {
+    //   lift.setHeight(Heights.INTAKE);
+    // } else if (shooterController.getXButton()) {
+    //   lift.setHeight(Heights.MID);
+    // } else if (shooterController.getYButton()) {
+    //   lift.setHeight(Heights.HIGH);
+    // } else {
+    //   lift.hold(true);
+    // }
+  } 
+
 
   /** This function is called once when the robot is disabled. */
   @Override

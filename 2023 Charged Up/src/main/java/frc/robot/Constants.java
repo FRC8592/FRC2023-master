@@ -59,6 +59,39 @@ public final class Constants {
     public static final double LEVEL_PITCH = 3.0;
     public static final double PITCH_MULTIPLIER = 1.0 / 40.0;
     //
+    // CAN IDs for intake hardware (NEEDS SETTING)
+    //
+    public static final int ROLLER_MOTOR    = 0;
+    public static final int BEAM_BREAK      = 0;
+
+    //
+    // Constants and IDs for elevator hardware (NEEDS SETTING)
+    //
+    public static final int ELEVATOR_LIFT_MOTOR_ID   = 16;
+    public static final int ELEVATOR_TILT_MOTOR_ID   = 15;
+    public static final double ARM_ANGLE_OUT         = 30;
+    public static final double ARM_ANGLE_IN          = 90;
+    public static final double STOWED_HEIGHT_CONE    = 0;
+    public static final double LOW_HEIGHT_CONE       = 1;
+    public static final double MID_HEIGHT_CONE       = 2;
+    public static final double HIGH_HEIGHT_CONE      = 3;
+    public static final double STOWED_HEIGHT_CUBE    = 0;
+    public static final double LOW_HEIGHT_CUBE       = 1;
+    public static final double MID_HEIGHT_CUBE       = 2;
+    public static final double HIGH_HEIGHT_CUBE      = 3;
+    public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
+    public static final double TILT_GEARBOX_RATIO    = 1.0 / 125.0;
+    public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
+
+    //
+    // IDs for claw pneumatics (NEEDS SETTING)
+    //
+    public static final int PNEUMATIC_MODULE_ID = 14;
+    public static final int CLAW_PNEUMATIC_CHANNEL = 15;
+    public static final int MIN_COMPRESSOR_PSI = 60;
+    public static final int MAX_COMPRESSOR_PSI = 100;
+
+    //
     // CAN IDs for the ball collector and launching system
     //
     public static final int newFlywheelLeft      = 22;
