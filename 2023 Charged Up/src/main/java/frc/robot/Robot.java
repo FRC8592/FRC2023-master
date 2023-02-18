@@ -6,8 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Elevator.Piece;
-import frc.robot.Elevator.ScoreHeight;
 import frc.robot.Lift.Heights;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.XboxController;
@@ -21,11 +19,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
   public XboxController driverController;
   public XboxController shooterController;
   public Drivetrain drive;
@@ -34,7 +27,6 @@ public class Robot extends TimedRobot {
   public LED ledStrips;
   public Vision gameObjectVision;
   public String currentPiecePipeline;
-  // public Elevator elevator;
   private Lift lift;
 
   /**
@@ -43,10 +35,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
-
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
     drive = new Drivetrain();
@@ -54,7 +42,6 @@ public class Robot extends TimedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-    // elevator = new Elevator();
     lift = new Lift();
   }
 
@@ -80,23 +67,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+
   }
 
   /** This function is called once when teleop is enabled. */
@@ -105,7 +82,7 @@ public class Robot extends TimedRobot {
     fastMode     = true;
     slowModeToggle = false;
 
-    // elevator.reset();
+    lift.reset();
   }
 
   /** This function is called periodically during operator control. */
@@ -120,6 +97,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
+    lift.writeToSmartDashboard();
+
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -190,7 +169,7 @@ public class Robot extends TimedRobot {
     // TEST PLAN 1
     // ===========
 
-    lift.testPlan1(driverController.getLeftY());
+    lift.testPlan1Lift(driverController.getLeftY());
 
     // ===========
     // TEST PLAN 2
@@ -205,41 +184,31 @@ public class Robot extends TimedRobot {
     // ===========
 
     // if (driverController.getAButton()) {
-    //   lift.testPlan3(Heights.INTAKE);
+    //   lift.testPlan3Lift(Heights.INTAKE);
     // } else if (driverController.getBButton()) {
-    //   lift.testPlan3(Heights.MID);
+    //   lift.testPlan3Lift(Heights.MID);
     // } else if (driverController.getYButton()) {
-    //   lift.testPlan3(Heights.HIGH);
+    //   lift.testPlan3Lift(Heights.HIGH);
     // } else {
-    //   lift.testPlan3(Heights.STOWED);
-    // }
-
-    // ===========
-    // TEST PLAN 4
-    // ===========
-
-    // if (driverController.getAButton()) {
-    //   lift.testPlan3(Heights.INTAKE);
-    // } else if (driverController.getBButton()) {
-    //   lift.testPlan3(Heights.MID);
-    // } else if (driverController.getYButton()) {
-    //   lift.testPlan3(Heights.HIGH);
-    // } else {
-    //   lift.testPlan3(Heights.STOWED);
+    //   lift.testPlan3Lift(Heights.STOWED);
     // }
 
     // ========================================
     // REAL CODE FOR ELEVATOR
     // ========================================
 
+    // elevator.periodic();
+    // 
     // if (shooterController.getAButton()) {
-    //   elevator.liftTo(ScoreHeight.LOW);
+    //   lift.setHeight(Heights.STOWED);
+    // } else if (shooterController.getBButton()) {
+    //   lift.setHeight(Heights.INTAKE);
     // } else if (shooterController.getXButton()) {
-    //   elevator.liftTo(ScoreHeight.MID);
+    //   lift.setHeight(Heights.MID);
     // } else if (shooterController.getYButton()) {
-    //   elevator.liftTo(ScoreHeight.HIGH);
+    //   lift.setHeight(Heights.HIGH);
     // } else {
-    //   elevator.liftTo(ScoreHeight.STOWED);
+    //   lift.hold(true);
     // }
   } 
 
