@@ -33,7 +33,7 @@ public class Power {
     public Power() {
         // Create new Rev Power Distribution object
        // revPDH = new PowerDistribution(Constants.PDH_CAN, PowerDistribution.ModuleType.kRev);
-        
+
         // Create the shuffleboard tab for power data
         powerTab = Shuffleboard.getTab("Power");
 

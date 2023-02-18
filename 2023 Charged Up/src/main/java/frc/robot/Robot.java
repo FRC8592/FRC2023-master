@@ -74,9 +74,9 @@ public class Robot extends LoggedRobot {
   public PIDController turnPID;
   public PIDController strafePID;
   public boolean wasZeroed = false;
-  // public Power power;
   public static Field2d FIELD = new Field2d();
   private AutoDrive2 autodrive;
+  public Power power;
 
   private AutonomousSelector selector;
   private BaseAuto selectedAutonomous;
@@ -108,7 +108,7 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger();
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    // power = new Power();
+    power = new Power();
     drive = new Drivetrain(logger);
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
