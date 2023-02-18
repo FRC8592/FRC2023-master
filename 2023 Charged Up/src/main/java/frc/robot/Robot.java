@@ -62,6 +62,8 @@ public class Robot extends LoggedRobot {
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   public FRCLogger logger;
+  public PowerDistribution powerDist;
+  public Power power;
 
   private Timer timer = new Timer();
 
@@ -77,7 +79,7 @@ public class Robot extends LoggedRobot {
     if (isReal()) {
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
+        powerDist = new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
     }
     else {
       if (isReal()) {
@@ -93,15 +95,15 @@ public class Robot extends LoggedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    
+    power = new Power();
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
     drive = new Drivetrain(logger);
-    ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
+     ledStrips = new LED(powerDist, gameObjectVision);
     
 
   }
@@ -257,17 +259,15 @@ public class Robot extends LoggedRobot {
     
     drive.getCurrentPos();
 
-    // if (shooterController.getXButtonPressed()){
-    //   currentPiecePipeline = "CUBE";
-    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-    //   ledStrips.setPct(100, LED.Color.PURPLE);
-    // }
+    if (shooterController.getXButtonPressed()){
+      currentPiecePipeline = "CUBE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    }
     
-    // if (shooterController.getYButtonPressed()){
-    //   currentPiecePipeline = "CONE";
-    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-    //   ledStrips.setPct(100, LED.Color.YELLOW);
-    // }
+    if (shooterController.getYButtonPressed()){
+      currentPiecePipeline = "CONE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    }
 
 
   }
@@ -286,6 +286,31 @@ public class Robot extends LoggedRobot {
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
 
+    if (shooterController.getXButtonPressed()){
+      currentPiecePipeline = "CUBE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    }
+    
+    if (shooterController.getYButtonPressed()){
+      currentPiecePipeline = "CONE";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    }
+
+    ledStrips.updatePeriodic();
+    if (shooterController.getAButton()) {
+      ledStrips.setState(LEDMode.CONE);
+    } else if (shooterController.getBButton()) {
+      ledStrips.setState(LEDMode.CUBE);
+    } /*else if (shooterController.getYButton()) {
+      ledStrips.setState(LEDMode.ATTENTION);
+    } else if (shooterController.getXButton()) {
+      ledStrips.setState(LEDMode.STOPPLACING);
+    } */else if (shooterController.getLeftBumper()) {
+      ledStrips.setState(LEDMode.TARGETLOCK);
+    } else {
+      ledStrips.setState(LEDMode.OFF);
+    }
+    
   }
 
   /** This function is called once when test mode is enabled. */

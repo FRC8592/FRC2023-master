@@ -4,9 +4,12 @@ import java.awt.Color;
 
 import javax.xml.validation.SchemaFactory;
 
+import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,13 +22,16 @@ public class LED {
     private Timer blinkSpeedTimer;
     private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
     private LEDMode mode = LEDMode.OFF;
-    private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-    Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
+    // private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    // Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+    // Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
+    private Vision vision;
 
     private int count = 0;
     private double brightnessMultiplier = 1;
     private boolean lowVolts = false;
+    private Timer delayTimer = new Timer();
+    private Power power = new Power();
 
     final int LED_LENGTH = 43;
 
@@ -81,18 +87,27 @@ public class LED {
         OFF;
     }
 
-    public LED(){
+    public LED(PowerDistribution powerDist, Vision vision){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
         blinkSpeedTimer = new Timer();
+        this.vision = vision;
     }
 
     public void updatePeriodic() {
-        if (RoboRioDataJNI.getVInVoltage() < 9.0 || lowVolts) {
+        power.powerPeriodic();
+        SmartDashboard.putString("LED Mode", mode.name());
+        
+        if (power.voltage < 9.0 || lowVolts) {
+            delayTimer.start();
             lowVolts = true;
             lowVoltage();
+            if (delayTimer.get() > 5) {
+                delayTimer.stop();
+                lowVolts = false;
+            } 
         } else {
             switch (mode) {
                 case CONE:
@@ -104,12 +119,22 @@ public class LED {
                     upAndDown(Color.YELLOW, Color.OFF);
                     break;
                 case TARGETLOCK:
+                //5m = 196.85
                     blinkSpeed = BlinkSpeed.SOLID;
                     vision.updateVision();
+                    /*
                     if (!vision.isTargetLocked()) {
-                        setPct(50, Color.ORANGE);
-                    } else if (vision.distanceToTarget() < 196.85 && vision.distanceToTarget() >= 0.0) {
-                        setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
+                        delayTimer.start();
+                        if (delayTimer.get() > 0.5) {
+                            setPct(50, Color.ORANGE);
+                        }
+                    } else */if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+                        delayTimer.start();
+                        if (delayTimer.get() > 0.5) {
+                            setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
+                        }
+                    } else {
+                        delayTimer.stop();
                     }
                     break;
                 case STOPPLACING:
@@ -163,16 +188,13 @@ public class LED {
      */
     private void setColor(int i, Color color){
         blinkSpeedTimer.start();
-        SmartDashboard.putNumber("blinkspeedtimer", blinkSpeedTimer.get());
         if(blinkSpeedTimer.hasElapsed(blinkSpeed.speed)) {
-            SmartDashboard.putBoolean("blinking", true);
             liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));   
             
             if (blinkSpeedTimer.hasElapsed(blinkSpeed.speed * 2.0)) {
                 blinkSpeedTimer.reset();
             }
         } else {
-            SmartDashboard.putBoolean("blinking", false);
             liftBuffer.setRGB(i, 0, 0, 0);  
         }
     }
@@ -247,7 +269,7 @@ public class LED {
         // Formula to calculate how many LEDs to set in each strip
         // max = max distance before LEDs start lighting up
         // min = distance until piece is "in range"
-        double max = 5.0;
+        double max = 2.0;
         double min = 0.75;
         double difference = max - min;
         int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH / 2 - 0.5));
@@ -256,6 +278,7 @@ public class LED {
         if (numLEDs >= LED_LENGTH / 2) {
             numLEDs = LED_LENGTH / 2;
             color = Color.GREEN;
+            timer.start();
         }
 
         // loop through one side of the LEDs and set an amount of LEDs on depending on distance
