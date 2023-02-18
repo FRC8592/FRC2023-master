@@ -101,13 +101,10 @@ public class Robot extends LoggedRobot {
     shooterController = new XboxController(1);
     drive = new Drivetrain(logger);
     ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-    lift = new Lift();
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
-    
-
+    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,Constants.BALL_CLOSE_ERROR, 
+    Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE,Constants.BALL_TARGET_HEIGHT, 
+    Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
+     lift = new Lift();
     selector = new AutonomousSelector();
 
     SmartDashboard.putData(FIELD);
@@ -148,7 +145,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     selectedAuto = selector.getSelectedAutonomous();
-    selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.addModules(drive, lift); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
     selectedAuto.addDelay(selector.getDelay());
     
@@ -168,11 +165,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     selectedAuto.periodic();
-    // SmartDashboard.putNumber("Pose X", drive.getCurrentPos().getX());
-    // SmartDashboard.putNumber("Pose Y'", drive.getCurrentPos().getY());
-    // SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
-    // SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
-
+    lift.periodic();
     ledStrips.upAndDown();
   }
   

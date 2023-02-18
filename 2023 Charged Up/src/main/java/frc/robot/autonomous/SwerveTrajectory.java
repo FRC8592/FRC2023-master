@@ -25,9 +25,9 @@ public class SwerveTrajectory {
     private TrajectoryConfig config = new TrajectoryConfig(0, 0).setEndVelocity(0).setStartVelocity(0);
 
     public SwerveTrajectory(Trajectory trajectory) {
-        mXPID = new PIDController(0.1, 0, -0.0002);
-        mYPID = new PIDController(0.1, 0, -0.0002);
-        mTurnPID = new ProfiledPIDController(0.1, 0, 0, new Constraints(Math.PI, Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mXPID = new PIDController(0.1, 0, 0.0); // 0.1 0 -0.0002
+        mYPID = new PIDController(0.1, 0, 0.0); // 0.1 0 -0.0002
+        mTurnPID = new ProfiledPIDController(0.1, 0, 0, new Constraints(2 * Math.PI, Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
@@ -67,7 +67,7 @@ public class SwerveTrajectory {
     public ChassisSpeeds sample(double pSeconds, Pose2d robotPose) {
         State state = mTrajectory.sample(pSeconds);
 
-        ChassisSpeeds desired = mDrivePID.calculate(new Pose2d(), state, rotation);
+        ChassisSpeeds desired = mDrivePID.calculate(getInitialPose(), state, rotation);
         if (Robot.isReal()) {
             desired = mDrivePID.calculate(
                 robotPose, 

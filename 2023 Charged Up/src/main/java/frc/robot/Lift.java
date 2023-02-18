@@ -155,6 +155,12 @@ public class Lift {
         tiltEncoder.setPosition(0);
     }
 
+    public boolean atReference() {
+        double rawLift = liftEncoder.getPosition();
+        double heightInches = motorRotationsToInches(rawLift);
+        return Math.abs(heightInches - desiredHeight.getHeight()) <= 1d;
+    }
+
     // Called periodically to update outputs for the elevator given inputs
     public void periodic() {
         double rawLift, rawTilt;
