@@ -22,10 +22,9 @@ public class LED {
     private Timer blinkSpeedTimer;
     private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
     private LEDMode mode = LEDMode.OFF;
-    // private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-    // Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-    // Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
-    private Vision vision;
+    private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+    Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
 
     private int count = 0;
     private double brightnessMultiplier = 1;
@@ -87,13 +86,12 @@ public class LED {
         OFF;
     }
 
-    public LED(PowerDistribution powerDist, Vision vision){
+    public LED(){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
         blinkSpeedTimer = new Timer();
-        this.vision = vision;
     }
 
     public void updatePeriodic() {
@@ -104,7 +102,7 @@ public class LED {
             delayTimer.start();
             lowVolts = true;
             lowVoltage();
-            if (delayTimer.get() > 5) {
+            if (delayTimer.get() > 3) {
                 delayTimer.stop();
                 lowVolts = false;
             } 
