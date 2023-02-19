@@ -173,6 +173,16 @@ public class Drivetrain {
         return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+    public double getPitch(){
+        return m_navx.getPitch();
+    }
+
+
+    public double getAutoHeading() {
+        return m_navx.getYaw();
+    }
+    
+
     public boolean isGyroscopeRotating(){
         return m_navx.isRotating();
     }
@@ -269,18 +279,15 @@ public class Drivetrain {
         setDriveVelocity(velocityToApply, module);
     }
 
-    private void setThrottleCurrentLimit(double currentLimit){
+    public void setWheelLock(){
+        // m_frontLeftModule.setSteerAngle(Constants.WHEEL_LOCK_RADIANS);
+        // m_frontRightModule.setSteerAngle(-Constants.WHEEL_LOCK_RADIANS);
+        // m_backLeftModule.setSteerAngle(-Constants.WHEEL_LOCK_RADIANS);
+        // m_backRightModule.setSteerAngle(Constants.WHEEL_LOCK_RADIANS);
 
-        m_frontLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
-        m_frontRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
-        m_backLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
-        m_backRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
-    }
-
-    public void setTeleopCurrentLimit(){
-        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_TELEOP_CURRENT);
-    }
-    public void setAutoCurrentLimit(){
-        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_AUTO_CURRENT);
+        setModule(m_frontLeftModule, Constants.WHEEL_LOCK_RADIANS, 0);
+        setModule(m_frontRightModule, -Constants.WHEEL_LOCK_RADIANS, 0);
+        setModule(m_backLeftModule, -Constants.WHEEL_LOCK_RADIANS, 0);
+        setModule(m_backRightModule, Constants.WHEEL_LOCK_RADIANS, 0);
     }
 }
