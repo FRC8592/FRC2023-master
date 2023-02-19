@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Lift.Heights;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -169,14 +168,16 @@ public class Robot extends TimedRobot {
     // TEST PLAN 1
     // ===========
 
-    lift.testPlan1Lift(driverController.getLeftY());
+    // lift.testPlan1Lift(driverController.getLeftY());
+    lift.testPlan1Tilt(driverController.getLeftY());
 
     // ===========
     // TEST PLAN 2
     // ===========
 
     // if (driverController.getRightBumper()) {
-      // lift.testPlan2();
+      // lift.testPlan2Lift();
+      // lift.testPlan2Tilt();
     // }
 
     // ===========
@@ -185,12 +186,16 @@ public class Robot extends TimedRobot {
 
     // if (driverController.getAButton()) {
     //   lift.testPlan3Lift(Heights.INTAKE);
+    //   lift.testPlan3Tilt(Heights.INTAKE);
     // } else if (driverController.getBButton()) {
     //   lift.testPlan3Lift(Heights.MID);
+    //   lift.testPlan3Tilt(Heights.MID);
     // } else if (driverController.getYButton()) {
     //   lift.testPlan3Lift(Heights.HIGH);
-    // } else {
+    //   lift.testPlan3tilt(Heights.HIGH);
+    // } else if (driverController.getXButton()){
     //   lift.testPlan3Lift(Heights.STOWED);
+    //   lift.testPlan3tilt(Heights.STOWED);
     // }
 
     // ========================================

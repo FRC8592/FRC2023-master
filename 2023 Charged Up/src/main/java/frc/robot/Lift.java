@@ -114,7 +114,8 @@ public class Lift {
         liftCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_TILT, PID_TILT_SLOT);
 
         // The actual stowed height is stored as the 'zero' for the lift
-        liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getHeight()));
+        // liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getHeight()));
+        liftEncoder.setPosition(0);
         tiltEncoder.setPosition(0);
 
         liftMotor.setIdleMode(IdleMode.kBrake);
@@ -151,7 +152,8 @@ public class Lift {
 
     // Resets encoders and potentially other sensors
     public void reset() {
-        liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getHeight()));
+        // liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getHeight()));
+        liftEncoder.setPosition(0);
         tiltEncoder.setPosition(0);
     }
 
