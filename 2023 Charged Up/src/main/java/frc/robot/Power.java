@@ -57,7 +57,7 @@ public class Power {
         // Shuffleboard.selectTab("Power");
 
         // SmartDashboard.putNumber("Temperature", temp);
-        SmartDashboard.putNumber("Voltage", voltage);
+        // SmartDashboard.putNumber("Voltage", voltage);
         // SmartDashboard.putNumber("Current", current);
         // SmartDashboard.putNumber("Power", power);
         // SmartDashboard.putNumber("Energy", energy);

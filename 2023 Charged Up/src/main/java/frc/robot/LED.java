@@ -1,5 +1,8 @@
 package frc.robot;
 
+import javax.xml.validation.SchemaFactory;
+
+import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -32,7 +35,7 @@ public class LED {
     private Power power = new Power();
     private int indexOn = 0;
 
-    final int LED_LENGTH = 43;
+    final int LED_LENGTH = 8;
 
     /**
      * Premade color presets
@@ -159,8 +162,11 @@ public class LED {
                 turnOff();
                 break;
         }
-
-        if ((power.voltage < 9.0 || lowVolts)) {
+        
+        //power var
+        SmartDashboard.putNumber("voltage ", RoboRioDataJNI.getVInVoltage());
+        if ((RoboRioDataJNI.getVInVoltage() < 9.0 || lowVolts)) {
+            SmartDashboard.putBoolean("low Volts running", true);
             delayTimer.start();
             lowVolts = true;
             lowVoltage();
@@ -169,6 +175,8 @@ public class LED {
                 delayTimer.stop();
                 lowVolts = false;
             } 
+        } else  {
+            SmartDashboard.putBoolean("low Volts running", false);
         }
     }
 
@@ -291,23 +299,21 @@ public class LED {
         double max = 2.0;
         double min = 0.75;
         double difference = max - min;
-        int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH / 2 - 0.5));
+        int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH));
         
         //If distance is at or closer to the max distance, set the color of LEDs to green and cap amount to turn on
-        if (numLEDs >= LED_LENGTH / 2) {
-            numLEDs = LED_LENGTH / 2;
+        if (numLEDs >= LED_LENGTH ) {
+            numLEDs = LED_LENGTH;
             color = Color.GREEN;
             timer.start();
         }
 
         // loop through one side of the LEDs and set an amount of LEDs on depending on distance
-        for (int ledIndex = 0; ledIndex < LED_LENGTH / 2; ledIndex++){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
             if(ledIndex < numLEDs) {
                 setColor(ledIndex, color);
-                setColor((LED_LENGTH - 1) - ledIndex, color);
             } else {
                 setColor(ledIndex, Color.OFF);
-                setColor((LED_LENGTH - 1) - ledIndex, Color.OFF);
             }
         }
         liftNEOPIXELS.setData(liftBuffer);
@@ -320,111 +326,31 @@ public class LED {
     // private double voltages[] = new double[10];
     // int indexOn = 0, sum = 0, avg;
     private void lowVoltage() {
-        setColor(0, Color.RED);
-        setColor(1, Color.RED);
-        setColor(2, Color.RED);
+        for(int i = 0; i < LED_LENGTH / 4; i++) {
+            setColor(i, Color.RED);
+        }
+        
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
     }
 
     private int counter = 0;
     private void setWaves(Color color) {
         counter++;
-        for(int i = 0; i <= LED_LENGTH / 4; i++) {
-            if(/*Math.abs((i - indexOn) % 5) == 0*/ Math.abs(LED_LENGTH / 4 + i - indexOn) % 5 <= 2) {
-                setColor((LED_LENGTH / 4 + i), color);
-                setColor((LED_LENGTH / 4 - i), color);
-            } else {
-                setColor((LED_LENGTH / 4 + i), Color.OFF);
-                setColor((LED_LENGTH / 4 - i), Color.OFF);
-            }
-        }
-        if (counter >= 6) {
-            counter = 0;
-            indexOn = (int)((indexOn + 1) % (LED_LENGTH / 4));
-        }
-
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-    }
-
-    private boolean first = true;
-    private double valY = 0, valO = 0, valR = 0; 
-    private double numYellow, numOrange, numRed;
-
-    private void setFire(Color colorA, Color colorB, Color colorC) {
-        blinkSpeed = BlinkSpeed.SOLID;
-        SmartDashboard.putNumber("Num Yellow", numYellow);
-        SmartDashboard.putNumber("Num Orange", numOrange);
-        SmartDashboard.putNumber("Num Red", numRed);
-
-        SmartDashboard.putNumber("sin val", Math.sin(valY));
-        if (first) {
-            first = false;
-            numYellow = (Math.random() * 5); //6
-            numOrange = Math.abs(numYellow + (Math.random() * 7 - 3)); //6 + 5 = 11
-            numRed = Math.abs(numOrange + (Math.random() * 7 - 5)); // 11 + 5 = 16
-        } else {
-            valY = (valY + Math.random() * 1.5) % (2 * Math.PI);
-            valO = (valO + Math.random() * 2.0) % (2 * Math.PI);
-            valR = (valR + Math.random() * 2.5) % (2 * Math.PI);
-            numYellow +=  1.5 * Math.sin(valY);
-            numOrange += 2.0 * Math.sin(valO);
-            numRed += 2.5 * Math.sin(valR);
-        }
-
-        numYellow = Math.min(7, Math.max(3, numYellow));
-        numOrange = Math.min(9, Math.max(4, numOrange));
-        numRed = Math.min(11, Math.max(5, numRed));
-
-        // total = numRed;
-        // difference = total - prevTotalR;
-        // prevTotalR = total;
-        // if(Math.abs(difference) > 1.5) {
-        //     numRed += 1.5 * (difference) / Math.abs(difference);
-        // }
-        // SmartDashboard.putNumber("change red", (difference) / Math.abs(difference));
-
-        // total = numOrange;
-        // difference = total - prevTotalO;
-        // prevTotalO = total;
-        // if(Math.abs(difference) > 1.5) {
-        //     numOrange += 1.5 * (difference) / Math.abs(difference);
-        // }
-        // SmartDashboard.putNumber("change orange", (difference) / Math.abs(difference));
-
-        // total = numYellow;
-        // difference = total - prevTotalY;
-        // prevTotalY = total;
-        // if(Math.abs(difference) > 1.5) {
-        //     numYellow += 1.5 * (difference) / Math.abs(difference);
-        // }
-        // SmartDashboard.putNumber("change yellow", (difference) / Math.abs(difference));
-
         for(int i = 0; i < LED_LENGTH / 2; i++) {
-            if(i < (int)Math.abs(numYellow)) {
-
-                setColor(i, colorA);
-                setColor((LED_LENGTH - 1) - i, colorA);
-            } else if (i < (int)Math.abs(numYellow) + (int)Math.abs(numOrange)) {
-
-                setColor(i, colorB);
-                setColor((LED_LENGTH - 1) - i, colorB);
-            } else if (i < (int)Math.abs(numYellow) + (int)Math.abs(numOrange) + (int)Math.abs(numRed)) {
-
-                setColor(i, colorC);
-                setColor((LED_LENGTH - 1) - i, colorC);
+            if(/*Math.abs((i - indexOn) % 5) == 0*/ Math.abs(LED_LENGTH / 2 + i - indexOn) % 5 < Constants.PULSE_SIZE) {
+                setColor((LED_LENGTH / 2 + i), color);
+                setColor((LED_LENGTH / 2 - i), color);
             } else {
-                setColor(i, Color.OFF);
-                setColor((LED_LENGTH - 1) - i, Color.OFF);
+                setColor((LED_LENGTH / 2 + i), Color.OFF);
+                setColor((LED_LENGTH / 2 - i), Color.OFF);
             }
         }
+        if (counter >= Constants.PULSE_METHOD_SPEED) {
+            counter = 0;
+            indexOn = (indexOn + 1) % (LED_LENGTH / 2);
+        }
 
-        // if(ledIndex < numLEDs) {
-        //     setColor(ledIndex, color);
-        //     setColor((LED_LENGTH - 1) - ledIndex, color);
-        // } else {
-        //     setColor(ledIndex, Color.OFF);
-        //     setColor(LED_LENGTH - 1 - ledIndex, Color.OFF);
-        // }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
     }
