@@ -77,8 +77,9 @@ public final class Constants {
     public static final double MID_HEIGHT_CUBE       = 2;
     public static final double HIGH_HEIGHT_CUBE      = 3;
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
-    public static final double TILT_GEARBOX_RATIO    = 1.0 / 125.0;
+    public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
     public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
+    public static final double TILT_MAX_ROTATIONS = -21.6;
 
     //
     // IDs for claw pneumatics (NEEDS SETTING)

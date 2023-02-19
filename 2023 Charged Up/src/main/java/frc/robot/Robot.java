@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
     lift = new Lift();
+    lift.reset();
   }
 
   /**
@@ -52,7 +53,9 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    lift.writeToSmartDashboard();
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -80,8 +83,6 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-
-    lift.reset();
   }
 
   /** This function is called periodically during operator control. */
@@ -169,7 +170,7 @@ public class Robot extends TimedRobot {
     // ===========
 
     // lift.testPlan1Lift(driverController.getLeftY());
-    lift.testPlan1Tilt(driverController.getLeftY());
+    // lift.testPlan1Lift(driverController.getLeftY());
 
     // ===========
     // TEST PLAN 2
@@ -232,7 +233,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    // lift.testPlan1Tilt(driverController.getLeftY());
+    lift.testPlan2Tilt(driverController.getXButton());
+    SmartDashboard.putBoolean("Elevator/Controller Read Value", driverController.getXButton());
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
