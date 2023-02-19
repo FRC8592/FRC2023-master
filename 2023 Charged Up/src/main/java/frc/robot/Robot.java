@@ -144,6 +144,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
+    // ====== AUTONOMOUS - Ibrahim ====== //
     selectedAuto = selector.getSelectedAutonomous();
     selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
@@ -156,6 +157,7 @@ public class Robot extends LoggedRobot {
       drive.resetEncoder();
       drive.resetPose(selectedAuto.getStartPose());
     }
+    // ====== END AUTONOMOUS ====== //
 
     // SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
     drive.resetSteerAngles();
@@ -164,13 +166,9 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    /* ====== AUTONOMOUS - Ibrahim ====== */
     selectedAuto.periodic();
-    // SmartDashboard.putNumber("Pose X", drive.getCurrentPos().getX());
-    // SmartDashboard.putNumber("Pose Y'", drive.getCurrentPos().getY());
-    // SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
-    // SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
-
-    ledStrips.upAndDown();
+    // ====== END AUTONOMOUS ====== //
   }
   
   /** This function is called once when teleop is enabled. */

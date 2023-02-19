@@ -13,7 +13,7 @@ public abstract class BaseAuto {
 
     /**
      * Add all running subsystems for use for all autonomous routines
-     * @param pDrive {@code drivetrain} object
+     * @param pDrive {@code Drivetrain} object
      */
     public void addModules(Drivetrain pDrive) {
         drive = pDrive;

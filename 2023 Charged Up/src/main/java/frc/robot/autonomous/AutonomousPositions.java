@@ -11,7 +11,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 
-// Adjustments made based on simulation results
 public enum AutonomousPositions {
     GRID_A(1.664 + 0.6, 5.013 - 0.05),
     GRID_B(1.664 + 0.6, 4.448),
