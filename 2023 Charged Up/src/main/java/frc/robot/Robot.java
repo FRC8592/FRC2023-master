@@ -313,7 +313,7 @@ public class Robot extends LoggedRobot {
         ledStrips.setState(LEDMode.ATTENTION);
     }
     else {
-      ledStrips.setState(LEDMode.OFF);
+      ledStrips.setState(LEDMode.ATTENTION);
     }
     
   }

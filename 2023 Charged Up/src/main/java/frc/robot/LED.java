@@ -22,7 +22,6 @@ public class LED {
     private AddressableLED liftNEOPIXELS;
     private AddressableLEDBuffer liftBuffer;
     private Timer timer;
-    private Timer blinkSpeedTimer;
     private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
     private LEDMode mode = LEDMode.OFF;
     // private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
@@ -58,7 +57,8 @@ public class LED {
         WHITE (255, 255, 255),
         BROWN (74, 23, 0),
         DARKRED (50,0,0),
-        OFF (0, 0, 0);
+        OFF (0, 0, 0),
+        GRAY (80,80,80);
         public final int red;
         public final int blue;
         public final int green;
@@ -92,28 +92,45 @@ public class LED {
         ATTENTION,
         OFF;
     }
-
+    /**Construct an LED controller
+     * 
+     * @param power Power object to get battery voltage
+     * @param vision Vision object for the proximity method
+     */
     public LED(Power power, Vision vision){
+        //Get the physical LEDs ready
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
+        
+        //Timer to make the UpAndDown method work
         timer = new Timer();
-        blinkSpeedTimer = new Timer();
+        
+        //Vision and power objects; see above
         this.vision = vision;
         this.power = power;
+        
+        //UpAndDown colors
         col1=Color.OFF;
         col2=Color.OFF;
+        
+        //ArrayList for the fire method
         blobs=new ArrayList<Blob>();
+        
+        //Array to store the LEDs, also for the fire method
         LEDs=new SixteenMColor[42];
         for(int i = 0; i < 42; i++){
             LEDs[i]=new SixteenMColor(0,0,0);
         }
     }
-
+    /**Update the LEDs
+     * @param testLow A boolean for whether to force the LEDs to act as if the battery voltage is low.
+     */
     public void updatePeriodic(boolean testLow) {
+        //Update the Power object
         power.powerPeriodic();
-        SmartDashboard.putString("LED Mode", mode.name());
-        SmartDashboard.putBoolean("LowVoltage", testLow);
+        
+        //If we have low voltage
         if (power.voltage < 9.0 || lowVolts || testLow) {
             delayTimer.start();
             lowVolts = true;
@@ -125,6 +142,7 @@ public class LED {
                 col2=Color.OFF;
             }
         }
+        //If we want to do the proximity-targetlock-thing
         if(mode==LEDMode.TARGETLOCK){
             vision.updateVision();
             if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
@@ -136,6 +154,7 @@ public class LED {
                 delayTimer.stop();
             }
         }
+        //Temporarily, attention mode runs the fire method
         else if(mode==LEDMode.ATTENTION){
             setFire();
         }
@@ -150,6 +169,7 @@ public class LED {
                 case STOPPLACING:
                     col1=Color.WHITE;
                     break;
+                //Need to revise this
                 case ATTENTION:
                     col1=Color.CYAN;
                     break;
@@ -158,6 +178,7 @@ public class LED {
                     blobs=new ArrayList<Blob>();
                     break;
             }
+            //Run the UpAndDown with the two colors
             upAndDown(col1, col2);
         }
     }
@@ -198,6 +219,12 @@ public class LED {
     public void setColor(int i, Color color){
         liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));   
     }
+    /**
+     * Set the current leds to a certain color
+     * 
+     * @param i         index of the led light to set
+     * @param color     SixteenMColor to set the light
+     */
     public void setColor(int i, SixteenMColor color){
         liftBuffer.setRGB(i, (int)(color.getRed() * brightnessMultiplier), (int)(color.getGreen() * brightnessMultiplier), (int)(color.getBlue() * brightnessMultiplier));   
     }
@@ -230,7 +257,6 @@ public class LED {
     private void upAndDown(Color colorA, Color colorB){
         timer.start();
             if(timer.get() >= .05){
-                
                 count++;
                 timer.reset();
                 if(count > LED_LENGTH){
@@ -294,46 +320,56 @@ public class LED {
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
     }
-
-    /**
-     * Check the voltage of the robot, and if lower than a certain value for a certain time, blink a slow red
-     */
-    // private double voltages[] = new double[10];
-    // int counter = 0, sum = 0, avg;
-    private void lowVoltage() {
-        setPulseState(BlinkSpeed.NORMAL);
-        setPct(100, Color.RED);
-    }
-
     private void setFire() {
+        //Random amount for the frame to more forward
         int random=(int)Math.random()*5;
-        if(frame+1+random%12!=0&&frame+1%12==0){
+
+        //If frame + random or frame + 1 results in a multiple of 12, set the frame to the multiple of 12
+        if(frame+1+random%16!=0&&frame+1%16==0){
             frame++;
         }
         else{
             frame+=1+random;
         }
-        if(frame%12==0){
-            blobs.add(new Blob(0.2, 6+Math.random()*8, 3+Math.random()*15));
+        
+        //If the frame number is divisible by 12
+        if(frame%16==0){
+            //Add a new blob of color. See the private Blob class for more.
+            blobs.add(new Blob(0.05+Math.random()*0.15, 12+Math.random()*2, (8+Math.random()*5)*0.3));
         }
-        int k = 0;
-        for(int i = 0; i < blobs.size(); i++){
+        int k = blobs.size();
+        //                                              Go through the blobs list,
+        for(int i = 0; i < k; i++){
+            //                                          update the blobs and check if they're at the top while doing so,
             if(!blobs.get(i).updateBlob()){
-                blobs.remove(k);
-                i++;
+                //                                      and remove the blob and modify the variables to account for that if so.
+                blobs.remove(i);
+                i--;
+                k--;
             }
         }
+        
+        //Sort the blobs; red first, yellow last. During the double-for loop below, this will mean that yellow is drawn on top.
         Collections.sort(blobs);
+        
+        //Clear the LED list
         for(int i = 0; i < LEDs.length; i++){
             LEDs[i]=new SixteenMColor(0,0,0);
         }
+        
+        //                                              For all blobs,
         for(int i = 0; i < blobs.size(); i++){
+            //                                          for all indexes in the blob (aka for the area the blob covers)
             for(int j : blobs.get(i).getIndexes()){
+                //                                      if the index is actually on the LEDs in real life,
                 if(j>-1){
+                    //                                  assign the LED at the index to the color of the blob
                     LEDs[j]=blobs.get(i).getColor();
                 }
             }
         }
+        
+        //Now that we're done figuring out what has what color, set the LEDs
         for(int i = 0; i < LEDs.length/2; i++){
             setColor(i, LEDs[i]);
             setColor(42-i, LEDs[i]);
@@ -341,6 +377,8 @@ public class LED {
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
     }
+    
+    //Blob of color in the fire
     private class Blob implements Comparable<Blob> {
         private double speed;
         private double location;
@@ -349,39 +387,51 @@ public class LED {
         private double colorChange;
         private double red;
         private double green;
+        
+        /**Create a blob of color
+         * @param speed The starting speed of the blob
+         * @param height The height of the blob
+         * @param colorChange The speed that the blob changes from yellow to red
+         */
         public Blob(double speed, double height, double colorChange){
             this.speed = speed;
             this.location = 0;
             this.height = height;
             this.red = 255;
-            this.green = 255;
+            this.green = 128;
             this.colorChange = colorChange;
             this.heightChange=0.1;
         }
         public boolean updateBlob(){
+            //If we're at the top, decrease the height (the height determines the bottom of the blob, not the top)
             if(location>21){
                 height-=speed;
             }
+            //Otherwise move up
             else{
                 location+=speed;
             }
-            speed+=0.02;
-            heightChange+=heightChange/20;
+            //Increase the movement speed, the height change speed, and the height
+            speed+=0.01;
+            heightChange+=heightChange/32;
             height-=heightChange;
+            
+            //If the height is negative, return false (above, doing this deletes this blob)
             if(height<0){
                 return false;
             }
+            
+            //Redshift the blob
             green-=colorChange;
             if(green<0){
                 green=0;
             }
             return true;
         }
+        
+        //Couple self-explanatory methods
         public double getGreen(){
             return green;
-        }
-        public double random(double start, double end){
-            return start+(Math.random()*end-start);
         }
         public int compareTo(Blob b){
             return (int)(this.green - b.getGreen());
@@ -389,13 +439,11 @@ public class LED {
         public SixteenMColor getColor(){
             return new SixteenMColor((int)red, (int)green,0);
         }
+        
+        //Get a list of indexes that this blob covers
         public int[] getIndexes(){
             int intHeight = (int)height;
             if(intHeight<0){
-                System.out.println(heightChange);
-                System.out.println(height);
-                System.out.println(speed);
-                System.out.println(location);
                 return new int[0];
             }
             int[] result = new int[intHeight];
@@ -405,6 +453,8 @@ public class LED {
             return result;
         }
     }
+    
+    //Dubplicate of the built-in Color class.
     private class SixteenMColor{
         int red;
         int green;
