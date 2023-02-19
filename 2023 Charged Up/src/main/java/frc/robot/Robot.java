@@ -235,8 +235,19 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
     // lift.testPlan1Tilt(driverController.getLeftY());
-    lift.testPlan2Tilt(driverController.getXButton());
-    SmartDashboard.putBoolean("Elevator/Controller Read Value", driverController.getXButton());
+    // lift.testPlan2Tilt(driverController.getXButton());
+    // lift.testPlan1Lift(driverController.getLeftY());
+    // lift.testPlan2Lift(driverController.getXButton());
+    if (driverController.getAButton()) {
+      lift.testPlanLift(Heights.STOWED);
+    } else if (driverController.getXButton()) {
+      lift.testPlanLift(Heights.MID);
+    } else if (driverController.getYButton()) {
+      lift.testPlanLift(Heights.HIGH);
+    } else {
+      lift.testPlanLift(null);
+    }
+    // SmartDashboard.putBoolean("Elevator/Controller Read Value", driverController.getXButton());
   }
 
   /** This function is called once when the robot is first started up. */
