@@ -32,10 +32,10 @@ public class Intake {
         wristMotor.setSmartCurrentLimit(Constants.WRIST_MAX_CURRENT_AMPS);
         wristMotor.setIdleMode(IdleMode.kBrake);
 
-        rollerCtrl.setP(Constants.ROLLER_KP);
-        rollerCtrl.setI(Constants.ROLLER_KI);
-        rollerCtrl.setD(Constants.ROLLER_KD);
-        rollerCtrl.setFF(Constants.ROLLER_KF);
+        rollerCtrl.setP(Constants.ROLLER_KP, 0);
+        rollerCtrl.setI(Constants.ROLLER_KI, 0);
+        rollerCtrl.setD(Constants.ROLLER_KD, 0);
+        rollerCtrl.setFF(Constants.ROLLER_KF, 0);
         rollerCtrl.setSmartMotionMaxVelocity(Constants.ROLLER_MAX_VELOCITY, Constants.ROLLER_PID_SLOT);
         rollerCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, Constants.ROLLER_PID_SLOT);
         rollerCtrl.setSmartMotionMaxAccel(Constants.ROLLER_MAX_ACCELERATION, Constants.ROLLER_PID_SLOT);
@@ -47,6 +47,8 @@ public class Intake {
         wristCtrl.setSmartMotionMaxVelocity(Constants.WRIST_MAX_VELOCITY, Constants.WRIST_PID_SLOT);
         wristCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, Constants.WRIST_PID_SLOT);
         wristCtrl.setSmartMotionMaxAccel(Constants.WRIST_MAX_ACCELERATION, Constants.WRIST_PID_SLOT);
+
+        wristEncoder.setPosition(0);
 
         beam = new BeamSensor(Constants.BEAM_BREAK_ID);
     }
@@ -64,20 +66,34 @@ public class Intake {
         double rawWristVelocity = wristEncoder.getVelocity(); // RPM
         double rawRollerVelocity = rollerEncoder.getVelocity(); // RPM
         
+        SmartDashboard.putNumber("Wrist/Position (Rotations)", rawWristPosition);
         SmartDashboard.putNumber("Wrist/Position (Degrees)", rawWristPosition * 360.0 * Constants.WRIST_GEAR_RATIO);
+        SmartDashboard.putNumber("Wrist/Current", wristMotor.getOutputCurrent());
         SmartDashboard.putNumber("Wrist/Velocity (Degrees per Second)", rawWristVelocity * 60.0 * Constants.WRIST_GEAR_RATIO);
         SmartDashboard.putNumber("Roller/Velocity (Degrees per Second)", rawRollerVelocity * 60.0 * Constants.ROLLER_GEAR_RATIO);
     }
 
-    public void testPlan1() {
-
+    public void testPlan1(double pct) {
+        wristMotor.set(-pct/10);
     }
 
     public void testPlan2() {
-        
+        wristCtrl.setReference(20, ControlType.kSmartMotion, 0, 0.001);
     }
 
-    public void testPlan3() {
-        
+    public void stow() {
+        wristCtrl.setReference(Constants.WRIST_STOWED_ROTATIONS, ControlType.kSmartMotion);
+    }
+
+    public void intake() {
+        wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
+    }
+
+    public void score() {
+        wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+    }
+
+    public void stop() {
+        wristMotor.set(0.0);
     }
 }

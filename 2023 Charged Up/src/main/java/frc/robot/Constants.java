@@ -62,8 +62,8 @@ public final class Constants {
     public static final int ROLLER_ID    = 18;
     public static final int BEAM_BREAK_ID      = 0; // Not on CAN Config spreadsheet
     public static final int ROLLER_MAX_CURRENT_AMPS = 10;
-    public static final int WRIST_MAX_CURRENT_AMPS = 10;
-    public static final double ROLLER_KP = 0.0001;
+    public static final int WRIST_MAX_CURRENT_AMPS = 20;
+    public static final double ROLLER_KP = 0.00025;
     public static final double ROLLER_KI = 0.0;
     public static final double ROLLER_KD = 0.0;
     public static final double ROLLER_KF = 0.0;
@@ -72,13 +72,17 @@ public final class Constants {
     public static final double WRIST_KD = 0.0;
     public static final double WRIST_KF = 0.0;
     public static final double ROLLER_GEAR_RATIO = 1.0;
-    public static final double WRIST_GEAR_RATIO = 1.0;
+    public static final double WRIST_GEAR_RATIO = 1.0 / 64.0;
     public static final int ROLLER_PID_SLOT = 0;
     public static final int WRIST_PID_SLOT = 0;
     public static final double ROLLER_MAX_ACCELERATION = 1.0; // Rotations per minute per second
     public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
-    public static final double WRIST_MAX_ACCELERATION = 1.0; // Rotations per minute per second
-    public static final double WRIST_MAX_VELOCITY = 1.0; // Rotations per minute
+    public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
+    public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
+    public static final double WRIST_INTAKE_ROTATIONS = 48;
+    public static final double WRIST_STOWED_ROTATIONS = 0;
+    public static final double WRIST_SCORING_ROTATIONS = 50;
+    public static final double WRIST_MAX_ROTATIONS = 58;
 
     //
     // Constants and IDs for elevator hardware (NEEDS SETTING)

@@ -27,6 +27,7 @@ public class Robot extends TimedRobot {
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   private Lift lift;
+  private Intake intake;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -42,6 +43,9 @@ public class Robot extends TimedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
     lift = new Lift();
+    intake = new Intake();
+    intake.reset();
+    lift.reset();
   }
 
   /**
@@ -52,7 +56,9 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    intake.writeToSmartDashboard();
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -80,8 +86,6 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-
-    lift.reset();
   }
 
   /** This function is called periodically during operator control. */
@@ -169,7 +173,7 @@ public class Robot extends TimedRobot {
     // ===========
 
     // lift.testPlan1Lift(driverController.getLeftY());
-    lift.testPlan1Tilt(driverController.getLeftY());
+    // lift.testPlan1Tilt(driverController.getLeftY());
 
     // ===========
     // TEST PLAN 2
@@ -232,7 +236,23 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    // intake.testPlan1(driverController.getLeftY());
+    // if (driverController.getXButton()) {
+    //   intake.testPlan2();
+    // } else {
+    //   intake.stop();
+    // }
+    if (driverController.getLeftBumper()) {
+      intake.intake();
+    } else if (driverController.getRightBumper()) {
+      intake.score();
+    } else if (driverController.getBButton()) {
+      intake.stow();
+    } else {
+      intake.stop();
+    }
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
