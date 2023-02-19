@@ -103,7 +103,7 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
-     ledStrips = new LED(powerDist, gameObjectVision);
+     ledStrips = new LED(power, gameObjectVision);
     
 
   }
@@ -172,7 +172,7 @@ public class Robot extends LoggedRobot {
     // SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     
     gameObjectVision.updateVision();
-    ledStrips.updatePeriodic();
+    ledStrips.updatePeriodic(shooterController.getAButton());
     
     
     // if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
@@ -237,7 +237,7 @@ public class Robot extends LoggedRobot {
         * rotatePower; // Right joystick
         translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
 
-      
+
                                                                                                                           // is
                                                                                                                           // forward
                                                                                                                           // Direction,
@@ -296,18 +296,23 @@ public class Robot extends LoggedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
     }
 
-    ledStrips.updatePeriodic();
-    if (shooterController.getAButton()) {
+    ledStrips.updatePeriodic(shooterController.getAButton());
+    if (shooterController.getYButton()) {
       ledStrips.setState(LEDMode.CONE);
-    } else if (shooterController.getBButton()) {
+    }
+    else if (shooterController.getXButton()) {
       ledStrips.setState(LEDMode.CUBE);
-    } /*else if (shooterController.getYButton()) {
-      ledStrips.setState(LEDMode.ATTENTION);
-    } else if (shooterController.getXButton()) {
-      ledStrips.setState(LEDMode.STOPPLACING);
-    } */else if (shooterController.getLeftBumper()) {
+    }
+    else if (shooterController.getBButton()){
+        ledStrips.setState(LEDMode.ATTENTION);
+    }
+    else if (shooterController.getLeftBumper()) {
       ledStrips.setState(LEDMode.TARGETLOCK);
-    } else {
+    }
+    else if (shooterController.getRightBumper()){
+        ledStrips.setState(LEDMode.ATTENTION);
+    }
+    else {
       ledStrips.setState(LEDMode.OFF);
     }
     

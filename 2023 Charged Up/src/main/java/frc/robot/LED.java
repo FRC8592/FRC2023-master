@@ -4,6 +4,9 @@ import java.awt.Color;
 
 import javax.xml.validation.SchemaFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -15,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class LED {
-    
+
     private AddressableLED liftNEOPIXELS;
     private AddressableLEDBuffer liftBuffer;
     private Timer timer;
@@ -31,36 +34,39 @@ public class LED {
     private double brightnessMultiplier = 1;
     private boolean lowVolts = false;
     private Timer delayTimer = new Timer();
-    private Power power = new Power();
-
+    private Power power;
+    private Color col1;
+    private Color col2;
+    private double heightChange;
+    private double heightChangeSineChange;
+    private SixteenMColor[] LEDs;
+    private int frame;
+    ArrayList<Blob> blobs;
     final int LED_LENGTH = 43;
 
     /**
      * Premade color presets
      */
     public enum Color {
-        RED (200, 0, 0),
+        RED (255, 0, 0),
         GREEN (0, 255, 0),
         CYAN (0, 160, 255),
         BLUE (0, 0, 255),
         YELLOW (255, 128, 0),
-        PURPLE (138, 0,226),
-        ORANGE (243, 100, 0),
+        PURPLE (138, 0, 255),
+        ORANGE (255, 100, 0),
         WHITE (255, 255, 255),
         BROWN (74, 23, 0),
+        DARKRED (50,0,0),
         OFF (0, 0, 0);
-    
         public final int red;
         public final int blue;
         public final int green;
-    
         Color(int red, int green, int blue){
-    
             this.red = red;
             this.green = green;
             this.blue = blue;
         }
-    
     }
 
     /**
@@ -87,69 +93,72 @@ public class LED {
         OFF;
     }
 
-    public LED(PowerDistribution powerDist, Vision vision){
+    public LED(Power power, Vision vision){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
         blinkSpeedTimer = new Timer();
         this.vision = vision;
+        this.power = power;
+        col1=Color.OFF;
+        col2=Color.OFF;
+        blobs=new ArrayList<Blob>();
+        LEDs=new SixteenMColor[42];
+        for(int i = 0; i < 42; i++){
+            LEDs[i]=new SixteenMColor(0,0,0);
+        }
     }
 
-    public void updatePeriodic() {
+    public void updatePeriodic(boolean testLow) {
         power.powerPeriodic();
         SmartDashboard.putString("LED Mode", mode.name());
-        
-        if (power.voltage < 9.0 || lowVolts) {
+        SmartDashboard.putBoolean("LowVoltage", testLow);
+        if (power.voltage < 9.0 || lowVolts || testLow) {
             delayTimer.start();
             lowVolts = true;
-            lowVoltage();
-            if (delayTimer.get() > 5) {
+            col2=Color.DARKRED;
+            if (delayTimer.get() > 2) {
                 delayTimer.stop();
+                delayTimer.reset();
                 lowVolts = false;
-            } 
-        } else {
-            switch (mode) {
+                col2=Color.OFF;
+            }
+        }
+        if(mode==LEDMode.TARGETLOCK){
+            vision.updateVision();
+            if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+                delayTimer.start();
+                if (delayTimer.get() > 0.5) {
+                    setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
+                }
+            } else {
+                delayTimer.stop();
+            }
+        }
+        else if(mode==LEDMode.ATTENTION){
+            setFire();
+        }
+        else{
+            switch(mode){
                 case CONE:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.PURPLE, Color.OFF);
+                    col1=Color.YELLOW;
                     break;
                 case CUBE:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.YELLOW, Color.OFF);
-                    break;
-                case TARGETLOCK:
-                //5m = 196.85
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    vision.updateVision();
-                    /*
-                    if (!vision.isTargetLocked()) {
-                        delayTimer.start();
-                        if (delayTimer.get() > 0.5) {
-                            setPct(50, Color.ORANGE);
-                        }
-                    } else */if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
-                        delayTimer.start();
-                        if (delayTimer.get() > 0.5) {
-                            setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
-                        }
-                    } else {
-                        delayTimer.stop();
-                    }
+                    col1=Color.PURPLE;
                     break;
                 case STOPPLACING:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.WHITE, Color.OFF);
+                    col1=Color.WHITE;
                     break;
                 case ATTENTION:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.ORANGE, Color.BLUE);
+                    col1=Color.CYAN;
                     break;
                 case OFF:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    turnOff();
+                    col1=Color.OFF;
+                    blobs=new ArrayList<Blob>();
                     break;
             }
+            upAndDown(col1, col2);
         }
     }
 
@@ -186,17 +195,11 @@ public class LED {
      * @param i         index of the led light to set
      * @param color     color to set the light
      */
-    private void setColor(int i, Color color){
-        blinkSpeedTimer.start();
-        if(blinkSpeedTimer.hasElapsed(blinkSpeed.speed)) {
-            liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));   
-            
-            if (blinkSpeedTimer.hasElapsed(blinkSpeed.speed * 2.0)) {
-                blinkSpeedTimer.reset();
-            }
-        } else {
-            liftBuffer.setRGB(i, 0, 0, 0);  
-        }
+    public void setColor(int i, Color color){
+        liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));   
+    }
+    public void setColor(int i, SixteenMColor color){
+        liftBuffer.setRGB(i, (int)(color.getRed() * brightnessMultiplier), (int)(color.getGreen() * brightnessMultiplier), (int)(color.getBlue() * brightnessMultiplier));   
     }
 
     /**
@@ -237,9 +240,6 @@ public class LED {
                     if (Math.sin(1 * (double)(i + count))  > 0){
                         setColor(i, colorA);
                     }
-               /*     else if(Math.sin((double)(i + count)) > -.5){
-                        liftBuffer.setRGB(i, 0, 255, 0);
-                    } */
                      else  {
                         setColor(i, colorB);
                     }
@@ -301,90 +301,127 @@ public class LED {
     // private double voltages[] = new double[10];
     // int counter = 0, sum = 0, avg;
     private void lowVoltage() {
-        setPulseState(BlinkSpeed.SLOW);
+        setPulseState(BlinkSpeed.NORMAL);
         setPct(100, Color.RED);
     }
 
-    private boolean first = true;
-    private double valY = 0, valO = 0, valR = 0; 
-    private double numYellow, numOrange, numRed;
-
-    private void setFire(Color colorA, Color colorB, Color colorC) {
-        blinkSpeed = BlinkSpeed.SOLID;
-        SmartDashboard.putNumber("Num Yellow", numYellow);
-        SmartDashboard.putNumber("Num Orange", numOrange);
-        SmartDashboard.putNumber("Num Red", numRed);
-
-        SmartDashboard.putNumber("sin val", Math.sin(valY));
-        if (first) {
-            first = false;
-            numYellow = (Math.random() * 5); //6
-            numOrange = Math.abs(numYellow + (Math.random() * 7 - 3)); //6 + 5 = 11
-            numRed = Math.abs(numOrange + (Math.random() * 7 - 5)); // 11 + 5 = 16
-        } else {
-            valY = (valY + Math.random() * 1.5) % (2 * Math.PI);
-            valO = (valO + Math.random() * 2.0) % (2 * Math.PI);
-            valR = (valR + Math.random() * 2.5) % (2 * Math.PI);
-            numYellow +=  1.5 * Math.sin(valY);
-            numOrange += 2.0 * Math.sin(valO);
-            numRed += 2.5 * Math.sin(valR);
+    private void setFire() {
+        int random=(int)Math.random()*5;
+        if(frame+1+random%12!=0&&frame+1%12==0){
+            frame++;
         }
-
-        numYellow = Math.min(7, Math.max(3, numYellow));
-        numOrange = Math.min(9, Math.max(4, numOrange));
-        numRed = Math.min(11, Math.max(5, numRed));
-
-        // total = numRed;
-        // difference = total - prevTotalR;
-        // prevTotalR = total;
-        // if(Math.abs(difference) > 1.5) {
-        //     numRed += 1.5 * (difference) / Math.abs(difference);
-        // }
-        // SmartDashboard.putNumber("change red", (difference) / Math.abs(difference));
-
-        // total = numOrange;
-        // difference = total - prevTotalO;
-        // prevTotalO = total;
-        // if(Math.abs(difference) > 1.5) {
-        //     numOrange += 1.5 * (difference) / Math.abs(difference);
-        // }
-        // SmartDashboard.putNumber("change orange", (difference) / Math.abs(difference));
-
-        // total = numYellow;
-        // difference = total - prevTotalY;
-        // prevTotalY = total;
-        // if(Math.abs(difference) > 1.5) {
-        //     numYellow += 1.5 * (difference) / Math.abs(difference);
-        // }
-        // SmartDashboard.putNumber("change yellow", (difference) / Math.abs(difference));
-
-        for(int i = 0; i < LED_LENGTH / 2; i++) {
-            if(i < (int)Math.abs(numYellow)) {
-
-                setColor(i, colorA);
-                setColor((LED_LENGTH - 1) - i, colorA);
-            } else if (i < (int)Math.abs(numYellow) + (int)Math.abs(numOrange)) {
-
-                setColor(i, colorB);
-                setColor((LED_LENGTH - 1) - i, colorB);
-            } else if (i < (int)Math.abs(numYellow) + (int)Math.abs(numOrange) + (int)Math.abs(numRed)) {
-
-                setColor(i, colorC);
-                setColor((LED_LENGTH - 1) - i, colorC);
-            } else {
-                setColor(i, Color.OFF);
-                setColor((LED_LENGTH - 1) - i, Color.OFF);
+        else{
+            frame+=1+random;
+        }
+        if(frame%12==0){
+            blobs.add(new Blob(0.2, 6+Math.random()*8, 3+Math.random()*15));
+        }
+        int k = 0;
+        for(int i = 0; i < blobs.size(); i++){
+            if(!blobs.get(i).updateBlob()){
+                blobs.remove(k);
+                i++;
             }
         }
-
-        // if(ledIndex < numLEDs) {
-        //     setColor(ledIndex, color);
-        //     setColor((LED_LENGTH - 1) - ledIndex, color);
-        // } else {
-        //     setColor(ledIndex, Color.OFF);
-        //     setColor(LED_LENGTH - 1 - ledIndex, Color.OFF);
-        // }
+        Collections.sort(blobs);
+        for(int i = 0; i < LEDs.length; i++){
+            LEDs[i]=new SixteenMColor(0,0,0);
+        }
+        for(int i = 0; i < blobs.size(); i++){
+            for(int j : blobs.get(i).getIndexes()){
+                if(j>-1){
+                    LEDs[j]=blobs.get(i).getColor();
+                }
+            }
+        }
+        for(int i = 0; i < LEDs.length/2; i++){
+            setColor(i, LEDs[i]);
+            setColor(42-i, LEDs[i]);
+        }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
+    }
+    private class Blob implements Comparable<Blob> {
+        private double speed;
+        private double location;
+        private double height;
+        private double heightChange;
+        private double colorChange;
+        private double red;
+        private double green;
+        public Blob(double speed, double height, double colorChange){
+            this.speed = speed;
+            this.location = 0;
+            this.height = height;
+            this.red = 255;
+            this.green = 255;
+            this.colorChange = colorChange;
+            this.heightChange=0.1;
+        }
+        public boolean updateBlob(){
+            if(location>21){
+                height-=speed;
+            }
+            else{
+                location+=speed;
+            }
+            speed+=0.02;
+            heightChange+=heightChange/20;
+            height-=heightChange;
+            if(height<0){
+                return false;
+            }
+            green-=colorChange;
+            if(green<0){
+                green=0;
+            }
+            return true;
+        }
+        public double getGreen(){
+            return green;
+        }
+        public double random(double start, double end){
+            return start+(Math.random()*end-start);
+        }
+        public int compareTo(Blob b){
+            return (int)(this.green - b.getGreen());
+        }
+        public SixteenMColor getColor(){
+            return new SixteenMColor((int)red, (int)green,0);
+        }
+        public int[] getIndexes(){
+            int intHeight = (int)height;
+            if(intHeight<0){
+                System.out.println(heightChange);
+                System.out.println(height);
+                System.out.println(speed);
+                System.out.println(location);
+                return new int[0];
+            }
+            int[] result = new int[intHeight];
+            for(int i = 0; i < intHeight; i++){
+                result[i]=(int)location-i;
+            }
+            return result;
+        }
+    }
+    private class SixteenMColor{
+        int red;
+        int green;
+        int blue;
+        public SixteenMColor(int red, int green, int blue){
+            this.red=red;
+            this.green=green;
+            this.blue=blue;
+        }
+        public int getRed(){
+            return red;
+        }
+        public int getGreen(){
+            return green;
+        }
+        public int getBlue(){
+            return blue;
+        }
     }
 }
