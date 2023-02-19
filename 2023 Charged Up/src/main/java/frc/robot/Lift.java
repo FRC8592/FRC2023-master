@@ -27,17 +27,20 @@ public class Lift {
     // Different PID constants for moving upwards and downwards
     private final int PID_UP_SLOT_LIFT = 0;
     private final int PID_DOWN_SLOT_LIFT = 1;
-    private final int PID_TILT_SLOT = 0;
+    private final int PID_TILT_UP_SLOT = 0;
+    private final int PID_TILT_DOWN_SLOT = 1;
 
     // Acceleration in inches per second per second
     private final double MAX_ACCELERATION_UP_LIFT = 1600d;
     private final double MAX_ACCELERATION_DOWN_LIFT = 800d; // Acceleration downwards is considerably slower than acceleration upwards
-    private final double MAX_ACCELERATION_TILT = 9000d; // RPM per second
+    private final double MAX_ACCELERATION_TILT_UP = 3000d; // RPM per second
+    private final double MAX_ACCELERATION_TILT_DOWN = 100d; // RPM per second
 
     // Velocity in inches per second
     private final double MAX_VELOCITY_UP_LIFT = 1600d;
     private final double MAX_VELOCITY_DOWN_LIFT = 800d;
-    private final double MAX_VELOCITY_TILT = 600d; // RPM
+    private final double MAX_VELOCITY_TILT_UP = 1200d; // RPM
+    private final double MAX_VELOCITY_TILT_DOWN = 60d; // RPM
 
     private final int MAX_CURRENT_LIFT = 30; // Amps
     private final int MAX_CURRENT_TILT = 30; // Amps
@@ -96,21 +99,25 @@ public class Lift {
         liftCtrl.setD(0.0, PID_DOWN_SLOT_LIFT);
         liftCtrl.setFF(0.000391419, PID_DOWN_SLOT_LIFT);
 
-        tiltCtrl.setP(0.001, PID_TILT_SLOT);
-        tiltCtrl.setI(0.0, PID_TILT_SLOT);
-        tiltCtrl.setD(0.0, PID_TILT_SLOT);
+        tiltCtrl.setP(0.0001, PID_TILT_UP_SLOT);
+        tiltCtrl.setI(0.0, PID_TILT_UP_SLOT);
+        tiltCtrl.setD(-0.00001, PID_TILT_UP_SLOT);
+
+        tiltCtrl.setP(0.00001, PID_TILT_DOWN_SLOT);
+        tiltCtrl.setI(0.0, PID_TILT_DOWN_SLOT);
+        tiltCtrl.setD(0.0, PID_TILT_DOWN_SLOT);
 
         // Figure out how to convert inches per second to RPM and inches per second per second to RPM per second
         liftCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_DOWN_LIFT, PID_DOWN_SLOT_LIFT);
         liftCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_UP_LIFT, PID_UP_SLOT_LIFT);
-        tiltCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_TILT, PID_TILT_SLOT);
+        tiltCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_TILT_UP, PID_TILT_UP_SLOT);
 
         liftCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, PID_UP_SLOT_LIFT);
         liftCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, PID_UP_SLOT_LIFT);
-        tiltCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, PID_TILT_SLOT);
+        tiltCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, PID_TILT_UP_SLOT);
         liftCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_DOWN_LIFT, PID_DOWN_SLOT_LIFT);
         liftCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_UP_LIFT, PID_UP_SLOT_LIFT);
-        tiltCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_TILT, PID_TILT_SLOT);
+        tiltCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_TILT_UP, PID_TILT_UP_SLOT);
 
         // The actual stowed height is stored as the 'zero' for the lift
         // liftEncoder.setPosition((float)inchesToMotorRotations(Heights.STOWED.getHeight()));
@@ -118,7 +125,7 @@ public class Lift {
         tiltEncoder.setPosition(0);
 
         liftMotor.setIdleMode(IdleMode.kBrake);
-        tiltMotor.setIdleMode(IdleMode.kCoast);
+        tiltMotor.setIdleMode(IdleMode.kBrake);
 
         liftMotor.setSmartCurrentLimit(MAX_CURRENT_LIFT);
         tiltMotor.setSmartCurrentLimit(MAX_CURRENT_TILT);
@@ -129,6 +136,8 @@ public class Lift {
 
         tiltMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.TILT_MAX_ROTATIONS);
         tiltMotor.setSoftLimit(SoftLimitDirection.kForward, 5f);
+
+        tiltMotor.setInverted(true);
     }
 
     // Logs values to SmartDashboard
@@ -142,14 +151,15 @@ public class Lift {
             rawTilt = tiltMotor.getAnalog(Mode.kAbsolute).getPosition();
         }
 
-        SmartDashboard.putNumber("Lift Rotations", rawLift);
-        SmartDashboard.putNumber("Lift Degrees", motorRotationsToInches(rawLift));
+        // SmartDashboard.putNumber("Lift Rotations", rawLift);
+        // SmartDashboard.putNumber("Lift Degrees", motorRotationsToInches(rawLift));
         // SmartDashboard.putNumber("Elevator/Linear Height Inches", getLinearHeightInches());
         // SmartDashboard.putNumber("Elevator/Linear Height Inches", motorRotationsToInches(rawLift));
         // SmartDashboard.putString("Elevator/Desired State", prevHeight.name());
         // SmartDashboard.putNumber("Elevator/Absolute Height Inches", getAbsoluteHeightInches(rawLift, rawTilt));
-        // SmartDashboard.putNumber("Elevator/Tilt Degrees", motorRotationsToDegrees(rawTilt));
-        // SmartDashboard.putNumber("Elevator/Tilt Rotations", rawTilt);
+        // SmartDashboard.putNumber("Tilt Degrees", motorRotationsToDegrees(rawTilt));
+        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
+        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
     }
 
     // Resets encoders and potentially other sensors
@@ -181,9 +191,9 @@ public class Lift {
             if (desiredHeight == Heights.STOWED) { // If we want to go back into the resting state
                 if (liftInches <= kMaximumHeightToTiltThresholdDegrees) { // If the lift isn't currently extended
                     // tiltCtrl.setReference(degreesToMotorRotations(desiredHeight.getTilt()), ControlType.kSmartMotion, PID_TILT_SLOT);
-                    tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_SLOT);
+                    tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT);
                 } else {
-                    tiltCtrl.setReference(0, ControlType.kSmartVelocity, PID_TILT_SLOT);
+                    tiltCtrl.setReference(0, ControlType.kSmartVelocity, PID_TILT_UP_SLOT);
                 }
             } else {
                 if (desiredHeight.ordinal() >= this.prevHeight.ordinal()) { // If we want to lift UP
@@ -237,12 +247,37 @@ public class Lift {
         } else {
             double maxRots = Constants.TILT_MAX_ROTATIONS;
             double curRots = liftEncoder.getPosition();
-            // tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_SLOT, 0.1);
-            tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_SLOT, -((maxRots-curRots)/maxRots*12));
+            // tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, 0.000001);
+            tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, -((maxRots-curRots)/maxRots*12));
         }
 
         SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
         SmartDashboard.putNumber("Tilt Velocity", tiltEncoder.getVelocity());
+    }
+
+    public void testPlanTilt(Heights height) {
+        double curRots = tiltEncoder.getPosition();
+        double maxRots = Constants.TILT_MAX_ROTATIONS;
+        // double feedforward = ((maxRots-curRots)/maxRots*12);
+        double feedforwardUp = -((maxRots-curRots)/maxRots*12);
+        double feedforwardDown = (curRots/maxRots)*2;
+
+        if (height == null) {
+            tiltMotor.set(0.0);
+            return;
+        }
+
+        switch(height) {
+            case STOWED:
+                tiltCtrl.setReference(0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, feedforwardDown);
+                break;
+            case MID:
+                tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS / 2, ControlType.kSmartMotion, PID_TILT_UP_SLOT, feedforwardUp);
+                break;
+            case HIGH:
+                tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, feedforwardUp);
+                break;
+        }
     }
 
     // Go to the desired angle (up, in)
