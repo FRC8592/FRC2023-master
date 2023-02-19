@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
+    lift.writeToSmartDashboard();
   }
 
   /**
@@ -173,6 +174,7 @@ public class Robot extends TimedRobot {
     // ===========
 
     // lift.testPlan1Lift(driverController.getLeftY());
+    // lift.testPlan1Lift(driverController.getLeftY());
     // lift.testPlan1Tilt(driverController.getLeftY());
 
     // ===========
@@ -253,6 +255,25 @@ public class Robot extends TimedRobot {
     //   intake.stop();
     // }
     intake.rollerTest1(driverController.getLeftY());
+  }
+
+    // if (driverController.getAButton()) {
+    //   lift.testPlanLift(Heights.STOWED);
+    // } else if (driverController.getXButton()) {
+    //   lift.testPlanLift(Heights.MID);
+    // } else if (driverController.getYButton()) {
+    //   lift.testPlanLift(Heights.HIGH);
+    // } else {
+    //   lift.testPlanLift(null);
+    // }
+
+    if (driverController.getLeftBumper()) {
+      lift.testPlanTilt(Heights.STOWED);
+    } else if (driverController.getRightBumper()) {
+      lift.testPlanTilt(Heights.HIGH);
+    } else {
+      lift.testPlanTilt(null);
+    }
   }
 
   /** This function is called once when the robot is first started up. */
