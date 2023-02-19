@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
   public FRCLogger logger;
   public PIDController turnPID;
   public PIDController strafePID;
+  public boolean wasZeroed = false;
   // public Power power;
 
   public Autopark autoPark;
@@ -133,7 +134,8 @@ public class Robot extends LoggedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-    autoPark = new Autopark();
+    wasZeroed = true;
+    drive.zeroGyroscope();
     drive.resetSteerAngles();
     /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
@@ -160,9 +162,10 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-    autoPark = new Autopark();
-
-    drive.zeroGyroscope();
+    if (!wasZeroed){
+      wasZeroed = true;
+      drive.zeroGyroscope();
+    }
     drive.resetSteerAngles();
     /*SET LIMIT ON TELEOP - LIAM M */
 
@@ -180,7 +183,7 @@ public class Robot extends LoggedRobot {
     double rotate;
     
     // System.out.println(driverControler.getBButton());
-    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
     SmartDashboard.putNumber("pitch", drive.getPitch());
     SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
     // gameObjectVision.updateVision();
@@ -189,9 +192,7 @@ public class Robot extends LoggedRobot {
     // Read gamepad controls for drivetrain and scale control values
     //
     
-
-    ledStrips.upAndDown();
-    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
+    if (driverController.getXButton() && driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
   
