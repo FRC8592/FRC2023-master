@@ -135,6 +135,7 @@ public class Robot extends LoggedRobot {
     System.out.println("Auto selected: " + m_autoSelected);
     autoPark = new Autopark();
     drive.resetSteerAngles();
+    /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
   }
   
@@ -161,8 +162,10 @@ public class Robot extends LoggedRobot {
     slowModeToggle = false;
     autoPark = new Autopark();
 
-        drive.zeroGyroscope();
+    drive.zeroGyroscope();
     drive.resetSteerAngles();
+    /*SET LIMIT ON TELEOP - LIAM M */
+
     drive.setTeleopCurrentLimit();
 
   }
