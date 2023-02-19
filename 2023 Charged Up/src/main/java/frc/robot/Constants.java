@@ -58,8 +58,27 @@ public final class Constants {
     //
     // CAN IDs for intake hardware (NEEDS SETTING)
     //
-    public static final int ROLLER_MOTOR    = 0;
-    public static final int BEAM_BREAK      = 0;
+    public static final int WRIST_ID    = 17;
+    public static final int ROLLER_ID    = 18;
+    public static final int BEAM_BREAK_ID      = 0; // Not on CAN Config spreadsheet
+    public static final int ROLLER_MAX_CURRENT_AMPS = 10;
+    public static final int WRIST_MAX_CURRENT_AMPS = 10;
+    public static final double ROLLER_KP = 0.0001;
+    public static final double ROLLER_KI = 0.0;
+    public static final double ROLLER_KD = 0.0;
+    public static final double ROLLER_KF = 0.0;
+    public static final double WRIST_KP = 0.0001;
+    public static final double WRIST_KI = 0.0;
+    public static final double WRIST_KD = 0.0;
+    public static final double WRIST_KF = 0.0;
+    public static final double ROLLER_GEAR_RATIO = 1.0;
+    public static final double WRIST_GEAR_RATIO = 1.0;
+    public static final int ROLLER_PID_SLOT = 0;
+    public static final int WRIST_PID_SLOT = 0;
+    public static final double ROLLER_MAX_ACCELERATION = 1.0; // Rotations per minute per second
+    public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
+    public static final double WRIST_MAX_ACCELERATION = 1.0; // Rotations per minute per second
+    public static final double WRIST_MAX_VELOCITY = 1.0; // Rotations per minute
 
     //
     // Constants and IDs for elevator hardware (NEEDS SETTING)
@@ -87,6 +106,7 @@ public final class Constants {
     public static final int CLAW_PNEUMATIC_CHANNEL = 15;
     public static final int MIN_COMPRESSOR_PSI = 60;
     public static final int MAX_COMPRESSOR_PSI = 100;
+
 
     //
     // CAN IDs for the ball collector and launching system
