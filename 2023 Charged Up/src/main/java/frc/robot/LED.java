@@ -1,18 +1,17 @@
 package frc.robot;
 
-import java.awt.Color;
-
-import javax.xml.validation.SchemaFactory;
-
-import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
-import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/* 
+ * Reworked class for LEDs, state will be set in robot with setState() method, blink speed with the setBlinkState method, brightness with the setBrightness method,
+ * and updatePeriodic() will need to be called in robotPeriodic() to update state
+ * 
+ * -Cole
+ * -main
+ */
 
 public class LED {
     
@@ -31,6 +30,7 @@ public class LED {
     private boolean lowVolts = false;
     private Timer delayTimer = new Timer();
     private Power power = new Power();
+    private int indexOn = 0;
 
     final int LED_LENGTH = 43;
 
@@ -77,12 +77,23 @@ public class LED {
         }
     }
 
+    /**
+     * LED mode presets
+     */
     public enum LEDMode {
+        // Signal for a cone
         CONE,
+        // Signal for a cube
         CUBE,
+        // Target lock on a game piece
         TARGETLOCK,
+        // Signal to Human Player to stop placing game pieces
         STOPPLACING,
+        // Get the attention of the Human Player
         ATTENTION,
+        // Waves test
+        WAVES,
+        // LEDs off
         OFF;
     }
 
@@ -94,60 +105,70 @@ public class LED {
         blinkSpeedTimer = new Timer();
     }
 
+    /**
+     * Periodically update the LEDs based on the current state
+     */
     public void updatePeriodic() {
         power.powerPeriodic();
         SmartDashboard.putString("LED Mode", mode.name());
         
-        if (power.voltage < 9.0 || lowVolts) {
+        // Switch between the possible states of the LED
+        switch (mode) {
+            case CONE:
+                blinkSpeed = BlinkSpeed.SOLID;
+                upAndDown(Color.PURPLE, Color.OFF);
+                break;
+            case CUBE:
+                blinkSpeed = BlinkSpeed.SOLID;
+                upAndDown(Color.YELLOW, Color.OFF);
+                break;
+            case TARGETLOCK:
+            //5m = 196.85
+                blinkSpeed = BlinkSpeed.SOLID;
+                vision.updateVision();
+                /*
+                if (!vision.isTargetLocked()) {
+                    delayTimer.start();
+                    if (delayTimer.get() > 0.5) {
+                        setPct(50, Color.ORANGE);
+                    }
+                } else */if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+                    delayTimer.start();
+                    if (delayTimer.get() > 0.5) {
+                        setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
+                    }
+                } else {
+                    delayTimer.reset();
+                    delayTimer.stop();
+                }
+                break;
+            case STOPPLACING:
+                blinkSpeed = BlinkSpeed.SOLID;
+                upAndDown(Color.WHITE, Color.OFF);
+                break;
+            case ATTENTION:
+                blinkSpeed = BlinkSpeed.SOLID;
+                upAndDown(Color.ORANGE, Color.BLUE);
+                break;
+            case WAVES:
+                blinkSpeed = BlinkSpeed.SOLID;
+                setWaves(Color.BLUE);
+                break;
+            case OFF:
+                blinkSpeed = BlinkSpeed.SOLID;
+                turnOff();
+                break;
+        }
+
+        if ((power.voltage < 9.0 || lowVolts)) {
             delayTimer.start();
             lowVolts = true;
             lowVoltage();
-            if (delayTimer.get() > 3) {
+            if (delayTimer.get() > 5) {
+                delayTimer.reset();
                 delayTimer.stop();
                 lowVolts = false;
             } 
-        } else {
-            switch (mode) {
-                case CONE:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.PURPLE, Color.OFF);
-                    break;
-                case CUBE:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.YELLOW, Color.OFF);
-                    break;
-                case TARGETLOCK:
-                //5m = 196.85
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    vision.updateVision();
-                    /*
-                    if (!vision.isTargetLocked()) {
-                        delayTimer.start();
-                        if (delayTimer.get() > 0.5) {
-                            setPct(50, Color.ORANGE);
-                        }
-                    } else */if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
-                        delayTimer.start();
-                        if (delayTimer.get() > 0.5) {
-                            setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
-                        }
-                    } else {
-                        delayTimer.stop();
-                    }
-                    break;
-                case STOPPLACING:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.WHITE, Color.OFF);
-                    break;
-                case ATTENTION:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    upAndDown(Color.ORANGE, Color.BLUE);
-                    break;
-                case OFF:
-                    blinkSpeed = BlinkSpeed.SOLID;
-                    turnOff();
-                    break;
-            }
         }
     }
 
@@ -165,7 +186,7 @@ public class LED {
      * 
      * @param speed     blink speed of the robot
      */
-    public void setPulseState(BlinkSpeed speed) {
+    public void setBlinkState(BlinkSpeed speed) {
         blinkSpeed = speed;
     }
 
@@ -297,10 +318,32 @@ public class LED {
      * Check the voltage of the robot, and if lower than a certain value for a certain time, blink a slow red
      */
     // private double voltages[] = new double[10];
-    // int counter = 0, sum = 0, avg;
+    // int indexOn = 0, sum = 0, avg;
     private void lowVoltage() {
-        setPulseState(BlinkSpeed.SLOW);
-        setPct(100, Color.RED);
+        setColor(0, Color.RED);
+        setColor(1, Color.RED);
+        setColor(2, Color.RED);
+    }
+
+    private int counter = 0;
+    private void setWaves(Color color) {
+        counter++;
+        for(int i = 0; i <= LED_LENGTH / 4; i++) {
+            if(/*Math.abs((i - indexOn) % 5) == 0*/ Math.abs(LED_LENGTH / 4 + i - indexOn) % 5 <= 2) {
+                setColor((LED_LENGTH / 4 + i), color);
+                setColor((LED_LENGTH / 4 - i), color);
+            } else {
+                setColor((LED_LENGTH / 4 + i), Color.OFF);
+                setColor((LED_LENGTH / 4 - i), Color.OFF);
+            }
+        }
+        if (counter >= 6) {
+            counter = 0;
+            indexOn = (int)((indexOn + 1) % (LED_LENGTH / 4));
+        }
+
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
     }
 
     private boolean first = true;

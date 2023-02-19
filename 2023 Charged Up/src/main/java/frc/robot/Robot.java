@@ -286,30 +286,22 @@ public class Robot extends LoggedRobot {
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
 
-    if (shooterController.getXButtonPressed()){
-      currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-    }
-    
-    if (shooterController.getYButtonPressed()){
-      currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-    }
 
     ledStrips.updatePeriodic();
-    if (shooterController.getAButton()) {
-      ledStrips.setState(LEDMode.CONE);
-    } else if (shooterController.getBButton()) {
-      ledStrips.setState(LEDMode.CUBE);
-    } /*else if (shooterController.getYButton()) {
-      ledStrips.setState(LEDMode.ATTENTION);
-    } else if (shooterController.getXButton()) {
-      ledStrips.setState(LEDMode.STOPPLACING);
-    } */else if (shooterController.getLeftBumper()) {
-      ledStrips.setState(LEDMode.TARGETLOCK);
-    } else {
-      ledStrips.setState(LEDMode.OFF);
-    }
+    ledStrips.setState(LEDMode.WAVES);
+    // if (shooterController.getAButton()) {
+    //   ledStrips.setState(LEDMode.CONE);
+    // } else if (shooterController.getBButton()) {
+    //   ledStrips.setState(LEDMode.CUBE);
+    // } /*else if (shooterController.getYButton()) {
+    //   ledStrips.setState(LEDMode.ATTENTION);
+    // } else if (shooterController.getXButton()) {
+    //   ledStrips.setState(LEDMode.STOPPLACING);
+    // } */else if (shooterController.getLeftBumper()) {
+    //   ledStrips.setState(LEDMode.TARGETLOCK);
+    // } else {
+    //   ledStrips.setState(LEDMode.OFF);
+    // }
     
   }
 
