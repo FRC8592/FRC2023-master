@@ -81,6 +81,11 @@ public class Intake {
         wristCtrl.setReference(20, ControlType.kSmartMotion, 0, 0.001);
     }
 
+    public void rollerTest1(double pct) {
+        rollerMotor.set(pct);
+        SmartDashboard.putNumber("Roller Velocity RPM", rollerEncoder.getVelocity());
+    }
+
     public void stow() {
         wristCtrl.setReference(Constants.WRIST_STOWED_ROTATIONS, ControlType.kSmartMotion);
     }

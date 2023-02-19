@@ -243,15 +243,16 @@ public class Robot extends TimedRobot {
     // } else {
     //   intake.stop();
     // }
-    if (driverController.getLeftBumper()) {
-      intake.intake();
-    } else if (driverController.getRightBumper()) {
-      intake.score();
-    } else if (driverController.getBButton()) {
-      intake.stow();
-    } else {
-      intake.stop();
-    }
+    // if (driverController.getLeftBumper()) {
+    //   intake.intake();
+    // } else if (driverController.getRightBumper()) {
+    //   intake.score();
+    // } else if (driverController.getBButton()) {
+    //   intake.stow();
+    // } else {
+    //   intake.stop();
+    // }
+    intake.rollerTest1(driverController.getLeftY());
   }
 
   /** This function is called once when the robot is first started up. */
