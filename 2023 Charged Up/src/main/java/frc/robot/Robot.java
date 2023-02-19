@@ -103,7 +103,7 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
-     ledStrips = new LED();
+     ledStrips = new LED(power, gameObjectVision);
     
 
   }
@@ -284,25 +284,9 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    //                                                          // opposite of controller direct
-
-
+    //       
     ledStrips.updatePeriodic();
-    ledStrips.setState(LEDMode.ATTENTION);
-    // if (shooterController.getAButton()) {
-    //   ledStrips.setState(LEDMode.CONE);
-    // } else if (shooterController.getBButton()) {
-    //   ledStrips.setState(LEDMode.CUBE);
-    // } /*else if (shooterController.getYButton()) {
-    //   ledStrips.setState(LEDMode.ATTENTION);
-    // } else if (shooterController.getXButton()) {
-    //   ledStrips.setState(LEDMode.STOPPLACING);
-    // } */else if (shooterController.getLeftBumper()) {
-    //   ledStrips.setState(LEDMode.TARGETLOCK);
-    // } else {
-    //   ledStrips.setState(LEDMode.OFF);
-    // }
-    
+    ledStrips.setState(LEDMode.WAVES);
   }
 
   /** This function is called once when test mode is enabled. */

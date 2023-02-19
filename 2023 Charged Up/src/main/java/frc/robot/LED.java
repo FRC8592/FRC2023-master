@@ -1,8 +1,5 @@
 package frc.robot;
 
-import javax.xml.validation.SchemaFactory;
-
-import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -24,18 +21,16 @@ public class LED {
     private Timer blinkSpeedTimer;
     private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
     private LEDMode mode = LEDMode.OFF;
-    private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-    Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
+    private Vision vision;
 
     private int count = 0;
     private double brightnessMultiplier = 1;
-    private boolean lowVolts = false;
     private Timer delayTimer = new Timer();
-    private Power power = new Power();
+    private Power power;
     private int indexOn = 0;
+    private int waveCounter = 0;
 
-    final int LED_LENGTH = 8;
+    final int LED_LENGTH = 20;
 
     /**
      * Premade color presets
@@ -43,11 +38,11 @@ public class LED {
     public enum Color {
         RED (200, 0, 0),
         GREEN (0, 255, 0),
-        CYAN (0, 160, 255),
+        CYAN (0, 80, 30),
         BLUE (0, 0, 255),
         YELLOW (255, 128, 0),
         PURPLE (138, 0,226),
-        ORANGE (243, 100, 0),
+        ORANGE (110, 25, 0),
         WHITE (255, 255, 255),
         BROWN (74, 23, 0),
         OFF (0, 0, 0);
@@ -100,12 +95,14 @@ public class LED {
         OFF;
     }
 
-    public LED(){
+    public LED(Power power, Vision vision){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
         blinkSpeedTimer = new Timer();
+        this.power = power;
+        this.vision = vision;
     }
 
     /**
@@ -126,21 +123,15 @@ public class LED {
                 upAndDown(Color.YELLOW, Color.OFF);
                 break;
             case TARGETLOCK:
-            //5m = 196.85
                 blinkSpeed = BlinkSpeed.SOLID;
                 vision.updateVision();
-                /*
-                if (!vision.isTargetLocked()) {
-                    delayTimer.start();
-                    if (delayTimer.get() > 0.5) {
-                        setPct(50, Color.ORANGE);
-                    }
-                } else */if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+                if (vision.distanceToTarget() < Constants.PROXIMITY_MAX_DISTANCE && vision.distanceToTarget() >= 0.0) {
                     delayTimer.start();
                     if (delayTimer.get() > 0.5) {
                         setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
                     }
                 } else {
+                    setPct(50, Color.ORANGE);
                     delayTimer.reset();
                     delayTimer.stop();
                 }
@@ -151,33 +142,20 @@ public class LED {
                 break;
             case ATTENTION:
                 blinkSpeed = BlinkSpeed.SOLID;
-                upAndDown(Color.ORANGE, Color.BLUE);
+                upAndDown(Color.ORANGE, Color.CYAN);
                 break;
             case WAVES:
                 blinkSpeed = BlinkSpeed.SOLID;
-                setWaves(Color.BLUE);
+                setWaves(Color.CYAN);
                 break;
             case OFF:
                 blinkSpeed = BlinkSpeed.SOLID;
                 turnOff();
                 break;
         }
-        
-        //power var
-        SmartDashboard.putNumber("voltage ", RoboRioDataJNI.getVInVoltage());
-        if ((RoboRioDataJNI.getVInVoltage() < 9.0 || lowVolts)) {
-            SmartDashboard.putBoolean("low Volts running", true);
-            delayTimer.start();
-            lowVolts = true;
-            lowVoltage();
-            if (delayTimer.get() > 5) {
-                delayTimer.reset();
-                delayTimer.stop();
-                lowVolts = false;
-            } 
-        } else  {
-            SmartDashboard.putBoolean("low Volts running", false);
-        }
+
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
     }
 
     /**
@@ -241,8 +219,6 @@ public class LED {
                 setColor(ledIndex, Color.OFF);
             }
         }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start(); 
     }
 
     /**
@@ -254,27 +230,16 @@ public class LED {
     private void upAndDown(Color colorA, Color colorB){
         timer.start();
             if(timer.get() >= .05){
-                
                 count++;
                 timer.reset();
-                if(count > LED_LENGTH){
-                    count = 0;
-                }
                 for(int i = 0; i < LED_LENGTH; i++){
-                    if (Math.sin(1 * (double)(i + count))  > 0){
+                    if (Math.sin(i + count) > 0){
                         setColor(i, colorA);
-                    }
-               /*     else if(Math.sin((double)(i + count)) > -.5){
-                        liftBuffer.setRGB(i, 0, 255, 0);
-                    } */
-                     else  {
+                    } else  {
                         setColor(i, colorB);
                     }
                 }
             }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-        
     }
 
     /** 
@@ -316,42 +281,22 @@ public class LED {
                 setColor(ledIndex, Color.OFF);
             }
         }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
     }
 
-    /**
-     * Check the voltage of the robot, and if lower than a certain value for a certain time, blink a slow red
-     */
-    // private double voltages[] = new double[10];
-    // int indexOn = 0, sum = 0, avg;
-    private void lowVoltage() {
-        for(int i = 0; i < LED_LENGTH / 4; i++) {
-            setColor(i, Color.RED);
-        }
-        
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-    }
-
-    private int counter = 0;
     private void setWaves(Color color) {
-        counter++;
+        waveCounter++;
         for(int i = 0; i < LED_LENGTH / 2; i++) {
-            if(/*Math.abs((i - indexOn) % 5) == 0*/ Math.abs(LED_LENGTH / 2 + i - indexOn) % 5 < Constants.PULSE_SIZE) {
+            if(Math.abs(LED_LENGTH / 2 + i - indexOn) % 5 < Constants.PULSE_SIZE) {
                 setColor((LED_LENGTH / 2 + i), color);
-                setColor((LED_LENGTH / 2 - i), color);
+                setColor((LED_LENGTH / 2 - 1 - i), color);
             } else {
                 setColor((LED_LENGTH / 2 + i), Color.OFF);
-                setColor((LED_LENGTH / 2 - i), Color.OFF);
+                setColor((LED_LENGTH / 2 - 1- i), Color.OFF);
             }
         }
-        if (counter >= Constants.PULSE_METHOD_SPEED) {
-            counter = 0;
+        if (waveCounter >= Constants.PULSE_METHOD_SPEED) {
+            waveCounter = 0;
             indexOn = (indexOn + 1) % (LED_LENGTH / 2);
         }
-
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
     }
 }
