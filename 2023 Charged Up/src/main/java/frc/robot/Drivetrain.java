@@ -290,4 +290,20 @@ public class Drivetrain {
         setModule(m_backLeftModule, -Constants.WHEEL_LOCK_RADIANS, 0);
         setModule(m_backRightModule, Constants.WHEEL_LOCK_RADIANS, 0);
     }
+
+
+    private void setThrottleCurrentLimit(double currentLimit){
+
+        m_frontLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_frontRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_backLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_backRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+    }
+
+    public void setTeleopCurrentLimit(){
+        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_TELEOP_CURRENT);
+    }
+    public void setAutoCurrentLimit(){
+        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_AUTO_CURRENT);
+    }
 }
