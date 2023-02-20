@@ -87,9 +87,9 @@ public class AutoDrive {
           velocityX = Math.max(Math.min(velocityX, maxVelocity), -maxVelocity);
           velocityY = Math.max(Math.min(velocityY, maxVelocity), -maxVelocity);
         }
-
-        if(Math.abs(robot.getRotation().getRadians() - goal.getRotation().getRadians()) >= 0.04) { // Changed from less than to greater than
-            omega = pidOmegaControl.calculate(robot.getRotation().getRadians(), goal.getRotation().getRadians());
+        double errorAngle = getErrorAngle(robot, goal);
+        if(Math.abs(errorAngle) >= 0.04) { //use errorAngle here
+            omega = pidOmegaControl.calculate(0, errorAngle);  //this will still compute the correct error for the PID controller.
             omega = Math.max(Math.min(omega, maxTheta), -maxTheta);
         }
         ChassisSpeeds cs = new ChassisSpeeds(velocityX, velocityY, omega);
@@ -119,10 +119,9 @@ public class AutoDrive {
             nextWaypoint = false;
             currentGoal = waypoints.remove(0);
         }
-        nextWaypoint = (this.getDistance(robot, currentGoal) < this.acceptanceRadius);
+        nextWaypoint = (this.getDistance(robot, currentGoal) < this.acceptanceRadius && Math.abs(getErrorAngle(robot, currentGoal)) < 0.04);  //posibly add a condition for rotation
         return this.moveTo(this.currentGoal, robot);
     }
-
     /**
      * Add a waypoint to the movement path
      * 
@@ -145,5 +144,27 @@ public class AutoDrive {
 
     public Pose2d getLastWaypoint(){
         return this.waypoints.get(this.waypoints.size() - 1);
+    }
+
+
+    
+    public double getErrorAngle(Pose2d robot, Pose2d goal){
+         /*** Computation for currect rotate errors into waypoint ****/
+        double goalAngle = goal.getRotation().getRadians();
+        double curAngle = robot.getRotation().getRadians();
+       
+        double errorAngle = 0; 
+        //we only use angles between 0 and 2 PI so convert the angles to that range.
+        if(goalAngle < 0){
+                    goalAngle += Math.PI * 2;    
+        }
+        // find shortest angle difference error angle should allways be > -PI and <= PI
+        errorAngle = goalAngle - curAngle;   
+        if(errorAngle > Math.PI){
+            errorAngle -= 2* Math.PI;
+        } else if(errorAngle <= -Math.PI){
+            errorAngle += 2* Math.PI;
+        } 
+        return errorAngle;
     }
 }
