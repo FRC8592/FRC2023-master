@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Lift.Heights;
 import edu.wpi.first.wpilibj.XboxController;
@@ -97,11 +98,8 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
-    
-
-     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-     strafePID = new PIDController(-0.2, 0, 0);
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    strafePID = new PIDController(-0.2, 0, 0);
     lift = new Lift();
     intake = new Intake();
     intake.reset();
@@ -201,41 +199,27 @@ public class Robot extends LoggedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
 
-    if(driverController.getLeftTriggerAxis() >= 0.2){
-      //TODO: streighten the robot
-      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
-      drive.drive(new ChassisSpeeds(0, strafe, 0));
-    }
-    
-    else if(driverController.getLeftBumper())
-    {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else{  
-      // X
-      // is
-      // forward
-      // Direction,
-      // Forward
-      // on
-      // Joystick
-      // is
-      // Y
-      rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-          * rotatePower; // Right joystick
-      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
-      translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    // X
+    // is
+    // forward
+    // Direction,
+    // Forward
+    // on
+    // Joystick
+    // is
+    // Y
+    rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+    translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
+    translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
-      //
-      // Normal teleop drive
-      //
-      
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
-          joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    } // Inverted due to Robot Directions being the
-                                                                    // opposite of controller directions
+    //
+    // Normal teleop drive
+    //
+    
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+        joystickDeadband(rotate), drive.getGyroscopeRotation()));
+                                                                  // opposite of controller directions
     
     drive.getCurrentPos();
 
@@ -263,7 +247,36 @@ public class Robot extends LoggedRobot {
       ledStrips.setFullBlue();
     }
 
+    if (driverController.getLeftTriggerAxis() >= 0.1) {
+      intake.enableWrist(true);
+      if (driverController.getLeftBumper()) {
+        intake.outtake();
+      } else {
+        intake.intake();
+      }
+    } else if (driverController.getRightTriggerAxis() >= 0.1) {
+      intake.enableWrist(false);
+    } else if (driverController.getLeftBumper()) {
+      intake.score();
+    } else {
+      intake.stopRoller();
+    }
 
+    if (driverController.getYButton()) {
+      lift.testPlanTilt(Heights.HIGH);
+    } else if (driverController.getAButton()) {
+      lift.testPlanTilt(Heights.STOWED);
+    } else {
+      lift.testPlanTilt(null);
+    }
+
+    if (driverController.getXButton()) {
+      lift.testPlanLift(Heights.HIGH);
+    } else if (driverController.getBButton()) {
+      lift.testPlanLift(Heights.STOWED);
+    } else {
+      lift.testPlanLift(null);
+    }
   }
 
   /** This function is called once when the robot is disabled. */
@@ -282,36 +295,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {}
 
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {
-    // if(shooterController.getLeftTriggerAxis() >= 0.1){
-    //   if(shooterController.getLeftBumper()){
-    //     intake.outtake();
-    //   } else {
-    //     intake.intake();
-    //   }
-    // }
-    // else if(shooterController.getRightTriggerAxis() >= 0.1){
-    //   intake.score();
-    // } else if (shooterController.getRightBumper()){
-    //   intake.stow();
-    // }
-    if (shooterController.getLeftTriggerAxis() >= 0.1) {
-      intake.enableWrist(true);
-      if (shooterController.getLeftBumper()) {
-        intake.outtake();
-      } else {
-        intake.intake();
-      }
-    } else if (shooterController.getRightTriggerAxis() >= 0.1) {
-      intake.enableWrist(false);
-    } else if (shooterController.getRightBumper()) {
-      intake.score();
-    } else {
-      intake.stopRoller();
-    }
-  }
   public void testPeriodic() {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
