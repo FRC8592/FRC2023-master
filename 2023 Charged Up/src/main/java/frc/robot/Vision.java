@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 import java.util.LinkedList;
 
+import org.ejml.dense.row.decomposition.hessenberg.TridiagonalDecompositionHouseholderOrig_DDRM;
+
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
 public class Vision {
@@ -46,9 +48,7 @@ public class Vision {
   private double lastAngle = 0;
   private double changeInAngleError = 0;
 
-  // PID controller for turning;
-  private PIDController turnPID;
-  private PIDController closeTurnPID;
+
   //constants for averaging limelight averages
   private int MIN_LOCKS = 3;
   private int STAT_SIZE = 5; 
@@ -67,13 +67,15 @@ public class Vision {
   private final double DEG_TO_RAD = 0.0174533;
   private final double IN_TO_METERS = 0.0254;
   
+  private FRCLogger logger;
+  
 
   /**
    * This constructor will intialize internal variables for the robot turret
    */
   public Vision(String limelightName, double lockError, double closeError,
                 double cameraHeight, double cameraAngle, double targetHeight,
-                double rotationKP, double rotationKI, double rotationKD) {
+                FRCLogger logger) {
 
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
@@ -100,8 +102,9 @@ public class Vision {
     this.targetHeight  = targetHeight;
 
     // Creat the PID controller for turning
-    turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
-    closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
+
+    
+    this.logger = logger;
   }
 
 
@@ -129,6 +132,9 @@ public class Vision {
     area        = ta.getDouble(0.0);
     targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
 
+    logger.log(this, "NewestTargetValid", targetValid); //Logging up here instead of down
+    //below because targetValid gets modified with the processed value in a few lines
+
     //generates average of limelight parameters
     previousCoordinates.add(new LimelightData(xError, yError, targetValid));
     if (previousCoordinates.size() > STAT_SIZE){
@@ -143,7 +149,7 @@ public class Vision {
       }
     }
 
-    processedDx = (totalDx/totalValid) - 1.0;
+    processedDx = (totalDx/totalValid);
     processedDy = totalDy/totalValid;
     targetValid = (totalValid >= MIN_LOCKS);
 
@@ -157,11 +163,22 @@ public class Vision {
     }
 
     if (Math.abs(processedDx) < closeError) { // Turret is close to locking
-      targetClose = targetValid;              // We are only locked when targetValid
+      targetClose = targetValid;              // We are only close when targetValid
     }           
     else{
       targetClose = false;
     }
+
+    //Log all the data
+    logger.log(this, "NewestDX", xError);
+    logger.log(this, "NewestDY", yError);
+    logger.log(this, "Area", area);
+    logger.log(this, "ProcessedDX", processedDx);
+    logger.log(this, "ProcessedDY", processedDx);
+    logger.log(this, "ProcessedTargetValid", targetValid);
+    logger.log(this, "TargetRange", targetRange);
+    logger.log(this, "TargetLocked", targetLocked);
+    logger.log(this, "TargetClose", targetClose);
 
     //post driver data to smart dashboard periodically
     //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
@@ -220,9 +237,9 @@ public class Vision {
    * 2) if targetValid, turns towards the target using the PID controller output for turn speed
    * 3) if targetValid and processedDx is within our "locked" criteria, stop turning
    * 
-   * @return
+   * @return The turn speed
    */
-  public double turnRobot(double visionSearchSpeed){
+  public double turnRobot(double visionSearchSpeed, PIDController turnPID, double limit){
 
     // Stop turning if we have locked onto the target within acceptable angular error
     if (targetValid && targetLocked) {
@@ -233,8 +250,8 @@ public class Vision {
     // Limit maximum speed
     else if (targetValid) {
       turnSpeed = turnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
-      turnSpeed = Math.max(turnSpeed, -8);
-      turnSpeed = Math.min(turnSpeed, 8);
+      turnSpeed = Math.max(turnSpeed, -limit);
+      turnSpeed = Math.min(turnSpeed, limit);
     }
 
     // If no targetValid, spin in a circle to search
@@ -244,30 +261,7 @@ public class Vision {
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
 
-    return turnSpeed;
-  }
-
-  public double closeTurnRobot(double visionSearchSpeed){
-
-    // Stop turning if we have locked onto the target within acceptable angular error
-    if (targetValid && targetLocked) {
-      turnSpeed = 0;
-    }
-
-    // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
-    // Limit maximum speed
-    else if (targetValid) {
-      turnSpeed = closeTurnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
-      turnSpeed = Math.max(turnSpeed, -8);
-      turnSpeed = Math.min(turnSpeed, 8);
-    }
-
-    // If no targetValid, spin in a circle to search
-    else {
-      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
-    }
-
-    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+    logger.log(this, "Turn Speed", turnSpeed);
 
     return turnSpeed;
   }
@@ -319,5 +313,8 @@ public class Vision {
       this.ballValid = ballValid;
     }
 
+  }
+  public String getVisionName(){
+    return this.limelightName;
   }
 }
