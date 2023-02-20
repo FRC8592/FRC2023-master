@@ -67,7 +67,6 @@ public class Robot extends LoggedRobot {
 
   public Autopark autoPark;
 
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -145,6 +144,7 @@ public class Robot extends LoggedRobot {
 
     /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
+    autoPark = new Autopark();
   }
   
   /** This function is called periodically during autonomous. */
@@ -177,8 +177,6 @@ public class Robot extends LoggedRobot {
 
     drive.setTeleopCurrentLimit();
     autoPark = new Autopark();
-
-
   }
   
   /** This function is called periodically during operator control. */
@@ -297,6 +295,10 @@ public class Robot extends LoggedRobot {
       lift.testPlanLift(Heights.STOWED);
     } else {
       lift.testPlanLift(null);
+    }
+
+    if (driverController.getStartButton()) {
+      autoPark.balance(drive);
     }
   }
 
