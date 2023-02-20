@@ -99,6 +99,7 @@ public class Robot extends LoggedRobot {
     shooterController = new XboxController(1);
     // power = new Power();
     drive = new Drivetrain(logger);
+    autoPark = new Autopark();
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
