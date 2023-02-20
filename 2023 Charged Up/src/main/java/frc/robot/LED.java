@@ -35,7 +35,7 @@ public class LED {
     private Power power = new Power();
     private int indexOn = 0;
 
-    final int LED_LENGTH = 8;
+    final int LED_LENGTH = 43;
 
     /**
      * Premade color presets
@@ -129,13 +129,13 @@ public class LED {
             //5m = 196.85
                 blinkSpeed = BlinkSpeed.SOLID;
                 vision.updateVision();
-                /*
+                
                 if (!vision.isTargetLocked()) {
                     delayTimer.start();
                     if (delayTimer.get() > 0.5) {
                         setPct(50, Color.ORANGE);
                     }
-                } else */if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+                } else if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
                     delayTimer.start();
                     if (delayTimer.get() > 0.5) {
                         setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
@@ -164,9 +164,7 @@ public class LED {
         }
         
         //power var
-        SmartDashboard.putNumber("voltage ", RoboRioDataJNI.getVInVoltage());
-        if ((RoboRioDataJNI.getVInVoltage() < 9.0 || lowVolts)) {
-            SmartDashboard.putBoolean("low Volts running", true);
+        if ((power.voltage < 9.0 || lowVolts)) {
             delayTimer.start();
             lowVolts = true;
             lowVoltage();
@@ -175,9 +173,10 @@ public class LED {
                 delayTimer.stop();
                 lowVolts = false;
             } 
-        } else  {
-            SmartDashboard.putBoolean("low Volts running", false);
         }
+        
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start(); 
     }
 
     /**
@@ -241,8 +240,6 @@ public class LED {
                 setColor(ledIndex, Color.OFF);
             }
         }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start(); 
     }
 
     /**
@@ -272,8 +269,6 @@ public class LED {
                     }
                 }
             }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
         
     }
 
@@ -316,8 +311,6 @@ public class LED {
                 setColor(ledIndex, Color.OFF);
             }
         }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
     }
 
     /**
@@ -326,12 +319,10 @@ public class LED {
     // private double voltages[] = new double[10];
     // int indexOn = 0, sum = 0, avg;
     private void lowVoltage() {
-        for(int i = 0; i < LED_LENGTH / 4; i++) {
+        for(int i = 0; i < LED_LENGTH / 5; i++) {
             setColor(i, Color.RED);
         }
         
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
     }
 
     private int counter = 0;
@@ -351,7 +342,5 @@ public class LED {
             indexOn = (indexOn + 1) % (LED_LENGTH / 2);
         }
 
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
     }
 }

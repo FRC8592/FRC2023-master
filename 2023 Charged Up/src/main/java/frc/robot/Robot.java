@@ -288,7 +288,7 @@ public class Robot extends LoggedRobot {
 
 
     ledStrips.updatePeriodic();
-    ledStrips.setState(LEDMode.ATTENTION);
+    ledStrips.setState(LEDMode.TARGETLOCK);
     // if (shooterController.getAButton()) {
     //   ledStrips.setState(LEDMode.CONE);
     // } else if (shooterController.getBButton()) {
