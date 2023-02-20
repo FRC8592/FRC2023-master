@@ -28,6 +28,7 @@ import com.swervedrivespecialties.swervelib.DriveController;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -62,8 +63,10 @@ public class Robot extends LoggedRobot {
   public Vision gameObjectVision;
   public String currentPiecePipeline;
   public FRCLogger logger;
-  public PowerDistribution powerDist;
-  public Power power;
+  public PIDController turnPID;
+  public PIDController strafePID;
+  public boolean wasZeroed = false;
+  // public Power power;
 
   private Timer timer = new Timer();
 
@@ -95,17 +98,19 @@ public class Robot extends LoggedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    power = new Power();
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
+    // power = new Power();
     drive = new Drivetrain(logger);
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    ledStrips = new LED();
+    gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
-     ledStrips = new LED(power, gameObjectVision);
+     Constants.BALL_TARGET_HEIGHT, logger);
     
 
+     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+     strafePID = new PIDController(-0.2, 0, 0);
   }
 
   /**
@@ -133,7 +138,10 @@ public class Robot extends LoggedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    wasZeroed = true;
+    drive.zeroGyroscope();
     drive.resetSteerAngles();
+    drive.setAutoCurrentLimit();
   }
 
   /** This function is called periodically during autonomous. */
@@ -155,8 +163,12 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     fastMode     = true;
     slowModeToggle = false;
-    drive.zeroGyroscope();
+    if (!wasZeroed){
+      wasZeroed = true;
+      drive.zeroGyroscope();
+    }
     drive.resetSteerAngles();
+    drive.setTeleopCurrentLimit();
 
   }
 
@@ -169,30 +181,10 @@ public class Robot extends LoggedRobot {
     double translateY;
     double rotate;
 
-    // SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-    
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+
     gameObjectVision.updateVision();
-    ledStrips.updatePeriodic();
-    
-    
-    // if (gameObjectVision.isTargetLocked() && gameObjectVision.isTargetValid() && gameObjectVision.distanceToTarget() <= Constants.OBJECT_GRAB_DISTANCE){
-    //   if (currentPiecePipeline == "CUBE"){
-    //     ledStrips.setFull(Color.BLUE);
-    //   }else if (currentPiecePipeline == "CONE"){
-    //     ledStrips.setFull(Color.ORANGE);
-    //   }
-    // }else {
-    //   if (currentPiecePipeline == "CUBE"){
-    //     ledStrips.setHalf(Color.BLUE);
-    //   }else if (currentPiecePipeline == "CONE"){
-    //     ledStrips.setHalf(Color.ORANGE);
-    //   }
-    // }
-
-    // if(/* gameObjectVision.isTargetLocked() && */ gameObjectVision.distanceToTarget() < 60 && gameObjectVision.distanceToTarget() >= 0) {
-    //   ledStrips.setProximity(gameObjectVision.distanceToTarget() * Constants.INCHES_TO_METERS);
-    // }
-
+    // power.powerPeriodic();
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -218,42 +210,39 @@ public class Robot extends LoggedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
 
+    if(driverController.getLeftTriggerAxis() >= 0.2){
+      //TODO: streighten the robot
+      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
+      drive.drive(new ChassisSpeeds(0, strafe, 0));
+    }
     
-    // SmartDashboard.putNumber("targetDistance", gameObjectVision.distanceToTarget());
-
-    if(driverController.getLeftBumper())
+    else if(driverController.getLeftBumper())
     {
-
-        double turn = gameObjectVision.turnRobot(1.0);
-        double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      if (gameObjectVision.targetLocked && gameObjectVision.distanceToTarget()<Constants.OBJECT_GRAB_DISTANCE && gameObjectVision.targetValid){
-        drive.drive(new ChassisSpeeds());
-      }
-      else{
-        drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-      }
-    }  else{  
-        rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-        * rotatePower; // Right joystick
-        translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-
-      
-                                                                                                                          // is
-                                                                                                                          // forward
-                                                                                                                          // Direction,
-                                                                                                                          // Forward
-                                                                                                                          // on
-                                                                                                                          // Joystick
-                                                                                                                          // is
-                                                                                                                          // Y
+      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
+      double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
+      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
+    }
+    else{  
+      // X
+      // is
+      // forward
+      // Direction,
+      // Forward
+      // on
+      // Joystick
+      // is
+      // Y
+      rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+          * rotatePower; // Right joystick
+      translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
       translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
       //
       // Normal teleop drive
       //
       
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+          joystickDeadband(rotate), drive.getGyroscopeRotation()));
     } // Inverted due to Robot Directions being the
                                                                     // opposite of controller directions
     
@@ -261,12 +250,26 @@ public class Robot extends LoggedRobot {
 
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+      ledStrips.setFullPurple();
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.setFullYellow();
+    }
+    //TODO:don't know if the buttons are already in use
+    if (shooterController.getAButtonPressed()){
+      currentPiecePipeline = "APRILTAG";
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      ledStrips.setFullOrange();
+    }
+
+    if (shooterController.getBButtonPressed()){
+      currentPiecePipeline = "RETROTAPE";
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      ledStrips.setFullBlue();
     }
 
 
