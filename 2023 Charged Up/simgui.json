@@ -1,5 +1,6 @@
 {
   "HALProvider": {
+<<<<<<< HEAD
     "Addressable LEDs": {
       "0": {
         "columns": 2,
@@ -12,18 +13,30 @@
     },
     "Other Devices": {
       "navX-Sensor[0]": {
+=======
+    "Other Devices": {
+      "SPARK MAX [0]": {
+>>>>>>> main
         "header": {
           "open": true
         }
       },
+<<<<<<< HEAD
       "window": {
         "visible": false
+=======
+      "SPARK MAX [1]": {
+        "header": {
+          "open": true
+        }
+>>>>>>> main
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+<<<<<<< HEAD
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[45]": "PIDController",
@@ -62,6 +75,26 @@
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+=======
+      "/SmartDashboard/Auto choices": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "SmartDashboard": {
+        "Auto choices": {
+          "open": true
+        },
+        "Elevator": {
+          "open": true
+        },
+>>>>>>> main
         "open": true
       }
     }

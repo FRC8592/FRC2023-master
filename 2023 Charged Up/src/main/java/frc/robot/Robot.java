@@ -13,7 +13,8 @@ import frc.robot.autonomous.AutonomousSelector;
 import frc.robot.autonomous.autons.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Lift.Heights;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -31,6 +32,7 @@ import com.swervedrivespecialties.swervelib.DriveController;
 
 import org.littletonrobotics.junction.LoggedRobot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -62,7 +64,13 @@ public class Robot extends LoggedRobot {
 
   public Vision gameObjectVision;
   public String currentPiecePipeline;
+  private Lift lift;
+  private Intake intake;
   public FRCLogger logger;
+  public PIDController turnPID;
+  public PIDController strafePID;
+  public boolean wasZeroed = false;
+  // public Power power;
 
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
@@ -98,16 +106,18 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
+    // power = new Power();
     drive = new Drivetrain(logger);
     ledStrips = new LED();
-    gameObjectVision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+    gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
-    
-
-    selector = new AutonomousSelector();
-
-    SmartDashboard.putData(FIELD);
+     Constants.BALL_TARGET_HEIGHT, logger);
+    turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    strafePID = new PIDController(-0.2, 0, 0);
+    lift = new Lift();
+    intake = new Intake();
+    intake.reset();
+    lift.reset();
   }
 
   /**
@@ -122,7 +132,8 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    intake.writeToSmartDashboard();
+    lift.writeToSmartDashboard();
   }
 
   /**
@@ -156,11 +167,17 @@ public class Robot extends LoggedRobot {
       drive.zeroGyroscope();
       drive.resetEncoder();
       drive.resetPose(selectedAuto.getStartPose());
+    wasZeroed = true;
+    drive.zeroGyroscope();
+    drive.resetSteerAngles();
+    autoPark = new Autopark();
+
+    /*SET LIMIT ON AUTO - LIAM M */
+    drive.setAutoCurrentLimit();
     }
     // ====== END AUTONOMOUS ====== //
 
     // SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
-    drive.resetSteerAngles();
   }
   
   /** This function is called periodically during autonomous. */
@@ -176,11 +193,15 @@ public class Robot extends LoggedRobot {
   public void teleopInit() {
     fastMode = true;
     slowModeToggle = false;
-    autoPark = new Autopark();
-
-        drive.zeroGyroscope();
+    if (!wasZeroed){
+      wasZeroed = true;
+      drive.zeroGyroscope();
+    }
     drive.resetSteerAngles();
+    /*SET LIMIT ON TELEOP - LIAM M */
 
+    drive.setTeleopCurrentLimit();
+    autoPark = new Autopark();
   }
   
   /** This function is called periodically during operator control. */
@@ -198,17 +219,16 @@ public class Robot extends LoggedRobot {
     gameObjectVision.updateVision();
     
     // System.out.println(driverControler.getBButton());
-    //SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-    SmartDashboard.putNumber("pitch", drive.getPitch());
-    SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
-    // gameObjectVision.updateVision();
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+
+    gameObjectVision.updateVision();
+    lift.writeToSmartDashboard();
+
     //
     // Read gamepad controls for drivetrain and scale control values
     //
     
-
-    ledStrips.upAndDown();
-    if (driverController.getXButtonPressed() && driverController.getBackButtonPressed()) {
+    if (driverController.getXButton() && driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
   
@@ -227,53 +247,87 @@ public class Robot extends LoggedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
 
-    
-    if(driverController.getLeftBumper()){
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else if (driverController.getBButton()){
-      autoPark.balance(drive);
-      // System.out.println("Pitch " + drive.getPitch());
-    }else if (driverController.getAButton()){
-      drive.setWheelLock();
-    }else{
-      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-      * rotatePower; // Right joystick
-      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-      // is
-      // forward
-      // Direction,
-                                                                                                                            // Forward
-                                                                                                                            // on
-                                                                                                                            // Joystick
-                                                                                                                            // is
-                                                                                                                            // Y
-        translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
-  
-        //
-        // Normal teleop drive
-        //
-        
-        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-            -joystickDeadband(rotate), drive.getGyroscopeRotation()));
-    }
+    // X
+    // is
+    // forward
+    // Direction,
+    // Forward
+    // on
+    // Joystick
+    // is
+    // Y
+    rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+    translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
+    translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
+    //
+    // Normal teleop drive
+    //
+    
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+        joystickDeadband(rotate), drive.getGyroscopeRotation()));
+                                                                  // opposite of controller directions
+    
     drive.getCurrentPos();
 
-    if (shooterController.getXButtonPressed()) {
+    if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(Constants.CUBE_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
       ledStrips.setFullPurple();
     }
 
     if (shooterController.getYButtonPressed()) {
       currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(Constants.CONE_PIPELINE);
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
+    }
+    //TODO:don't know if the buttons are already in use
+    if (shooterController.getAButtonPressed()){
+      currentPiecePipeline = "APRILTAG";
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      ledStrips.setFullOrange();
+    }
+
+    if (shooterController.getBButtonPressed()){
+      currentPiecePipeline = "RETROTAPE";
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      ledStrips.setFullBlue();
+    }
+
+    if (driverController.getLeftTriggerAxis() >= 0.1) {
+      intake.enableWrist(true);
+      if (driverController.getLeftBumper()) {
+        intake.outtake();
+      } else {
+        intake.intake();
+      }
+    } else if (driverController.getRightTriggerAxis() >= 0.1) {
+      intake.enableWrist(false);
+    } else if (driverController.getLeftBumper()) {
+      intake.score();
+    } else {
+      intake.stopRoller();
+    }
+
+    if (driverController.getYButton()) {
+      lift.testPlanTilt(Heights.HIGH);
+    } else if (driverController.getAButton()) {
+      lift.testPlanTilt(Heights.STOWED);
+    } else {
+      lift.testPlanTilt(null);
+    }
+
+    if (driverController.getXButton()) {
+      lift.testPlanLift(Heights.HIGH);
+    } else if (driverController.getBButton()) {
+      lift.testPlanLift(Heights.STOWED);
+    } else {
+      lift.testPlanLift(null);
+    }
+
+    if (driverController.getStartButton()) {
+      autoPark.balance(drive);
     }
   }
 
@@ -295,8 +349,6 @@ public class Robot extends LoggedRobot {
   public void testInit() {
   }
 
-  /** This function is called periodically during test mode. */
-  @Override
   public void testPeriodic() {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());

@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "Joysticks": {
     "window": {
       "visible": false
@@ -9,6 +10,8 @@
       "visible": false
     }
   },
+=======
+>>>>>>> main
   "keyboardJoysticks": [
     {
       "axisConfig": [
