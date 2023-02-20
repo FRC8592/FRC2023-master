@@ -54,9 +54,6 @@ public class Intake {
     }
 
     public void reset() {
-        rollerCtrl.setReference(0,ControlType.kSmartVelocity);
-        wristCtrl.setReference(0,ControlType.kSmartVelocity);
-
         rollerEncoder.setPosition(0);
         wristEncoder.setVelocityConversionFactor(0);
     }
@@ -73,32 +70,33 @@ public class Intake {
         SmartDashboard.putNumber("Roller/Velocity (Degrees per Second)", rawRollerVelocity * 60.0 * Constants.ROLLER_GEAR_RATIO);
     }
 
-    public void testPlan1(double pct) {
-        wristMotor.set(-pct/10);
-    }
-
-    public void testPlan2() {
-        wristCtrl.setReference(20, ControlType.kSmartMotion, 0, 0.001);
-    }
-
-    public void rollerTest1(double pct) {
-        rollerMotor.set(pct);
-        SmartDashboard.putNumber("Roller Velocity RPM", rollerEncoder.getVelocity());
-    }
-
     public void stow() {
         wristCtrl.setReference(Constants.WRIST_STOWED_ROTATIONS, ControlType.kSmartMotion);
+        rollerMotor.set(0.0);
     }
 
     public void intake() {
         wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
+        if (!beam.isBroken()) {
+            rollerMotor.set(0.8);
+        } else {
+            rollerMotor.set(0.0);
+        }
+    }
+
+    public void outtake() {
+        rollerMotor.set(-0.8);
     }
 
     public void score() {
         wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 1){
+            outtake();
+        }
     }
 
     public void stop() {
         wristMotor.set(0.0);
+        rollerMotor.set(0.0);
     }
 }

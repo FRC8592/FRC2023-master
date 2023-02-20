@@ -168,59 +168,20 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
+    
+    if(shooterController.getLeftTriggerAxis() >= 0.1){
+      if(shooterController.getLeftBumper()){
+        intake.outtake();
+      } else {
+        intake.intake();
+      }
+    }
+    else if(shooterController.getRightTriggerAxis() >= 0.1){
+      intake.score();
+    } else if (shooterController.getRightBumper()){
+      intake.stow();
+    }
 
-    // ===========
-    // TEST PLAN 1
-    // ===========
-
-    // lift.testPlan1Lift(driverController.getLeftY());
-    // lift.testPlan1Lift(driverController.getLeftY());
-    // lift.testPlan1Tilt(driverController.getLeftY());
-
-    // ===========
-    // TEST PLAN 2
-    // ===========
-
-    // if (driverController.getRightBumper()) {
-      // lift.testPlan2Lift();
-      // lift.testPlan2Tilt();
-    // }
-
-    // ===========
-    // TEST PLAN 3
-    // ===========
-
-    // if (driverController.getAButton()) {
-    //   lift.testPlan3Lift(Heights.INTAKE);
-    //   lift.testPlan3Tilt(Heights.INTAKE);
-    // } else if (driverController.getBButton()) {
-    //   lift.testPlan3Lift(Heights.MID);
-    //   lift.testPlan3Tilt(Heights.MID);
-    // } else if (driverController.getYButton()) {
-    //   lift.testPlan3Lift(Heights.HIGH);
-    //   lift.testPlan3tilt(Heights.HIGH);
-    // } else if (driverController.getXButton()){
-    //   lift.testPlan3Lift(Heights.STOWED);
-    //   lift.testPlan3tilt(Heights.STOWED);
-    // }
-
-    // ========================================
-    // REAL CODE FOR ELEVATOR
-    // ========================================
-
-    // elevator.periodic();
-    // 
-    // if (shooterController.getAButton()) {
-    //   lift.setHeight(Heights.STOWED);
-    // } else if (shooterController.getBButton()) {
-    //   lift.setHeight(Heights.INTAKE);
-    // } else if (shooterController.getXButton()) {
-    //   lift.setHeight(Heights.MID);
-    // } else if (shooterController.getYButton()) {
-    //   lift.setHeight(Heights.HIGH);
-    // } else {
-    //   lift.hold(true);
-    // }
   } 
 
 
@@ -239,41 +200,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    // intake.testPlan1(driverController.getLeftY());
-    // if (driverController.getXButton()) {
-    //   intake.testPlan2();
-    // } else {
-    //   intake.stop();
-    // }
-    // if (driverController.getLeftBumper()) {
-    //   intake.intake();
-    // } else if (driverController.getRightBumper()) {
-    //   intake.score();
-    // } else if (driverController.getBButton()) {
-    //   intake.stow();
-    // } else {
-    //   intake.stop();
-    // }
-    intake.rollerTest1(driverController.getLeftY());
-  }
 
-    // if (driverController.getAButton()) {
-    //   lift.testPlanLift(Heights.STOWED);
-    // } else if (driverController.getXButton()) {
-    //   lift.testPlanLift(Heights.MID);
-    // } else if (driverController.getYButton()) {
-    //   lift.testPlanLift(Heights.HIGH);
-    // } else {
-    //   lift.testPlanLift(null);
-    // }
-
-    if (driverController.getLeftBumper()) {
-      lift.testPlanTilt(Heights.STOWED);
-    } else if (driverController.getRightBumper()) {
-      lift.testPlanTilt(Heights.HIGH);
-    } else {
-      lift.testPlanTilt(null);
-    }
   }
 
   /** This function is called once when the robot is first started up. */
