@@ -286,9 +286,9 @@ public class Robot extends LoggedRobot {
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
 
-
+    // gameObjectVision.updateVision();
     ledStrips.updatePeriodic();
-    ledStrips.setState(LEDMode.TARGETLOCK);
+    ledStrips.setState(LEDMode.ATTENTION);
     // if (shooterController.getAButton()) {
     //   ledStrips.setState(LEDMode.CONE);
     // } else if (shooterController.getBButton()) {

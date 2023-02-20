@@ -34,8 +34,9 @@ public class LED {
     private Timer delayTimer = new Timer();
     private Power power = new Power();
     private int indexOn = 0;
+    private int waveCounter = 0;
 
-    final int LED_LENGTH = 43;
+    final int LED_LENGTH = 21;
 
     /**
      * Premade color presets
@@ -126,21 +127,16 @@ public class LED {
                 upAndDown(Color.YELLOW, Color.OFF);
                 break;
             case TARGETLOCK:
-            //5m = 196.85
+            // //5m = 196.85
                 blinkSpeed = BlinkSpeed.SOLID;
                 vision.updateVision();
-                
-                if (!vision.isTargetLocked()) {
-                    delayTimer.start();
-                    if (delayTimer.get() > 0.5) {
-                        setPct(50, Color.ORANGE);
-                    }
-                } else if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+                if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
                     delayTimer.start();
                     if (delayTimer.get() > 0.5) {
                         setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
                     }
                 } else {
+                    setPct(50, Color.ORANGE);
                     delayTimer.reset();
                     delayTimer.stop();
                 }
@@ -319,28 +315,26 @@ public class LED {
     // private double voltages[] = new double[10];
     // int indexOn = 0, sum = 0, avg;
     private void lowVoltage() {
-        for(int i = 0; i < LED_LENGTH / 5; i++) {
+        for(int i = 0; i < LED_LENGTH / 10; i++) {
             setColor(i, Color.RED);
         }
         
     }
 
-    private int counter = 0;
     private void setWaves(Color color) {
-        counter++;
+        waveCounter++;
         for(int i = 0; i < LED_LENGTH / 2; i++) {
-            if(/*Math.abs((i - indexOn) % 5) == 0*/ Math.abs(LED_LENGTH / 2 + i - indexOn) % 5 < Constants.PULSE_SIZE) {
+            if(Math.abs(LED_LENGTH / 2 + i - indexOn) % 5 < Constants.PULSE_SIZE) {
                 setColor((LED_LENGTH / 2 + i), color);
-                setColor((LED_LENGTH / 2 - i), color);
+                setColor((LED_LENGTH / 2 - 1 - i), color);
             } else {
                 setColor((LED_LENGTH / 2 + i), Color.OFF);
-                setColor((LED_LENGTH / 2 - i), Color.OFF);
+                setColor((LED_LENGTH / 2 - 1- i), Color.OFF);
             }
         }
-        if (counter >= Constants.PULSE_METHOD_SPEED) {
-            counter = 0;
+        if (waveCounter >= Constants.PULSE_METHOD_SPEED) {
+            waveCounter = 0;
             indexOn = (indexOn + 1) % (LED_LENGTH / 2);
         }
-
     }
 }
