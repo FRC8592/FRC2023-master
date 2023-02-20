@@ -168,20 +168,6 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
-    
-    if(shooterController.getLeftTriggerAxis() >= 0.1){
-      if(shooterController.getLeftBumper()){
-        intake.outtake();
-      } else {
-        intake.intake();
-      }
-    }
-    else if(shooterController.getRightTriggerAxis() >= 0.1){
-      intake.score();
-    } else if (shooterController.getRightBumper()){
-      intake.stow();
-    }
-
   } 
 
 
@@ -200,7 +186,32 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-
+    // if(shooterController.getLeftTriggerAxis() >= 0.1){
+    //   if(shooterController.getLeftBumper()){
+    //     intake.outtake();
+    //   } else {
+    //     intake.intake();
+    //   }
+    // }
+    // else if(shooterController.getRightTriggerAxis() >= 0.1){
+    //   intake.score();
+    // } else if (shooterController.getRightBumper()){
+    //   intake.stow();
+    // }
+    if (shooterController.getLeftTriggerAxis() >= 0.1) {
+      intake.enableWrist(true);
+      if (shooterController.getLeftBumper()) {
+        intake.outtake();
+      } else {
+        intake.intake();
+      }
+    } else if (shooterController.getRightTriggerAxis() >= 0.1) {
+      intake.enableWrist(false);
+    } else if (shooterController.getRightBumper()) {
+      intake.score();
+    } else {
+      intake.stopRoller();
+    }
   }
 
   /** This function is called once when the robot is first started up. */

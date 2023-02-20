@@ -60,7 +60,8 @@ public final class Constants {
     //
     public static final int WRIST_ID    = 17;
     public static final int ROLLER_ID    = 18;
-    public static final int BEAM_BREAK_ID      = 0; // Not on CAN Config spreadsheet
+    public static final int BEAM_BREAK_CONE_ID      = 2;
+    public static final int BEAM_BREAK_CUBE_ID      = 3;
     public static final int ROLLER_MAX_CURRENT_AMPS = 10;
     public static final int WRIST_MAX_CURRENT_AMPS = 20;
     public static final double ROLLER_KP = 0.00025;

@@ -17,7 +17,8 @@ public class Intake {
     private SparkMaxPIDController rollerCtrl;
     private RelativeEncoder wristEncoder;
     private RelativeEncoder rollerEncoder;
-    private BeamSensor beam;
+    private BeamSensor beamCone;
+    private BeamSensor beamCube;
 
     public Intake() {
         rollerMotor = new CANSparkMax(Constants.ROLLER_ID, MotorType.kBrushless);
@@ -50,7 +51,8 @@ public class Intake {
 
         wristEncoder.setPosition(0);
 
-        beam = new BeamSensor(Constants.BEAM_BREAK_ID);
+        beamCone = new BeamSensor(Constants.BEAM_BREAK_CONE_ID);
+        beamCube = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
     }
 
     public void reset() {
@@ -76,8 +78,8 @@ public class Intake {
     }
 
     public void intake() {
-        wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
-        if (!beam.isBroken()) {
+        // wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
+        if (beamCone.isBroken() && beamCube.isBroken()) {
             rollerMotor.set(0.8);
         } else {
             rollerMotor.set(0.0);
@@ -90,13 +92,20 @@ public class Intake {
 
     public void score() {
         wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
-        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 1){
+        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 5){
             outtake();
         }
     }
 
-    public void stop() {
-        wristMotor.set(0.0);
+    public void enableWrist(boolean enable) {
+        if (enable) {
+            wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+        } else {
+            wristCtrl.setReference(0.0, ControlType.kSmartMotion);
+        }
+    }
+
+    public void stopRoller() {
         rollerMotor.set(0.0);
     }
 }
