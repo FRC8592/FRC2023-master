@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Lift.Heights;
 import edu.wpi.first.wpilibj.XboxController;
+
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
@@ -62,6 +64,8 @@ public class Robot extends LoggedRobot {
   public PIDController strafePID;
   public boolean wasZeroed = false;
   // public Power power;
+
+  public Autopark autoPark;
 
 
   /**
@@ -137,15 +141,28 @@ public class Robot extends LoggedRobot {
     wasZeroed = true;
     drive.zeroGyroscope();
     drive.resetSteerAngles();
+    autoPark = new Autopark();
+
+    /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
   }
-
+  
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    // switch (m_autoSelected) {
+    //   case kCustomAuto:
+    //   // Put custom auto code here
+    //   break;
+    //   case kDefaultAuto:
+    //   default:
+    //   // Put default auto code here
+    //   break;
+    // }
+    autoPark.balance(drive);
 
   }
-
+  
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
@@ -156,10 +173,14 @@ public class Robot extends LoggedRobot {
       drive.zeroGyroscope();
     }
     drive.resetSteerAngles();
+    /*SET LIMIT ON TELEOP - LIAM M */
+
     drive.setTeleopCurrentLimit();
+    autoPark = new Autopark();
+
 
   }
-
+  
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
@@ -168,7 +189,8 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
-
+    
+    // System.out.println(driverControler.getBButton());
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
@@ -177,19 +199,18 @@ public class Robot extends LoggedRobot {
     //
     // Read gamepad controls for drivetrain and scale control values
     //
-
     
     if (driverController.getXButton() && driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
-
+  
   
     if (driverController.getRightBumperPressed()){
-       slowModeToggle = ! slowModeToggle;
-     }
-     fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
-  
-
+      slowModeToggle = ! slowModeToggle;
+    }
+    fastMode = ! slowModeToggle; //&& !controlPanel.getRawButton(7); 
+    
+    
     if (fastMode) {
       rotatePower    = ConfigRun.ROTATE_POWER_FAST;
       translatePower = ConfigRun.TRANSLATE_POWER_FAST;
@@ -286,9 +307,11 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-    0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    //                                                          // opposite of controller direct
+    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+    // 0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    // //                                                          // opposite of controller direct
+    // drive.setWheelLock();
+  
   }
 
   /** This function is called once when test mode is enabled. */
