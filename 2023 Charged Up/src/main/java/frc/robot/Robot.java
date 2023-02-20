@@ -6,16 +6,13 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Lift.Heights;
 import edu.wpi.first.wpilibj.XboxController;
 
 
 import edu.wpi.first.networktables.NetworkTableInstance;
-
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import java.rmi.registry.LocateRegistry;
@@ -60,6 +57,8 @@ public class Robot extends LoggedRobot {
 
   public Vision gameObjectVision;
   public String currentPiecePipeline;
+  private Lift lift;
+  private Intake intake;
   public FRCLogger logger;
   public PIDController turnPID;
   public PIDController strafePID;
@@ -67,7 +66,6 @@ public class Robot extends LoggedRobot {
   // public Power power;
 
   public Autopark autoPark;
-
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -103,10 +101,12 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
-    
-
-     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-     strafePID = new PIDController(-0.2, 0, 0);
+    turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    strafePID = new PIDController(-0.2, 0, 0);
+    lift = new Lift();
+    intake = new Intake();
+    intake.reset();
+    lift.reset();
   }
 
   /**
@@ -117,8 +117,11 @@ public class Robot extends LoggedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
-  
+  public void robotPeriodic() {
+    intake.writeToSmartDashboard();
+    lift.writeToSmartDashboard();
+  }
+
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
    * autonomous modes using the dashboard. The sendable chooser code works with the Java
@@ -141,6 +144,7 @@ public class Robot extends LoggedRobot {
 
     /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
+    autoPark = new Autopark();
   }
   
   /** This function is called periodically during autonomous. */
@@ -173,8 +177,6 @@ public class Robot extends LoggedRobot {
 
     drive.setTeleopCurrentLimit();
     autoPark = new Autopark();
-
-
   }
   
   /** This function is called periodically during operator control. */
@@ -188,10 +190,10 @@ public class Robot extends LoggedRobot {
     
     // System.out.println(driverControler.getBButton());
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-    SmartDashboard.putNumber("Pitch", drive.getRoll());
-    SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
-    // gameObjectVision.updateVision();
-    // power.powerPeriodic();
+
+    gameObjectVision.updateVision();
+    lift.writeToSmartDashboard();
+
     //
     // Read gamepad controls for drivetrain and scale control values
     //
@@ -216,51 +218,29 @@ public class Robot extends LoggedRobot {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
     }
 
-    if(driverController.getLeftTriggerAxis() >= 0.2){
-      //TODO: streighten the robot
-      double strafe = gameObjectVision.turnRobot(0.0, strafePID, 0.5);
-      drive.drive(new ChassisSpeeds(0, strafe, 0));
-    }
-    
-    else if(driverController.getLeftBumper())
-    {
-      double speed = gameObjectVision.moveTowardsTarget(-0.5, -0.5);
-      double turn = gameObjectVision.turnRobot(1.0, turnPID, 8.0);
-      drive.drive(new ChassisSpeeds(speed, 0.0, turn));
-    }
-    else if (driverController.getBButton()){
-      autoPark.balance(drive);
-      // System.out.println("Pitch " + drive.getPitch());
-    }else if (driverController.getAButton()){
-      drive.setWheelLock();
-    }else{
-      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-      * rotatePower; // Right joystick
-      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
-      // is
-      // forward
-      // Direction,
-                                                                                                                            // Forward
-                                                                                                                            // on
-                                                                                                                            // Joystick
-                                                                                                                            // is
-                                                                                                                            // Y
-        translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
-  
-        //
-        // Normal teleop drive
-        //
-        
-        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
-            joystickDeadband(rotate), drive.getGyroscopeRotation()));
-      }
+    // X
+    // is
+    // forward
+    // Direction,
+    // Forward
+    // on
+    // Joystick
+    // is
+    // Y
+    rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+        * rotatePower; // Right joystick
+    translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
+    translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
-      
-
-    //} // Inverted due to Robot Directions being the
-    //                                                                 opposite of controller directions
+    //
+    // Normal teleop drive
+    //
     
-    // drive.getCurrentPos();
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+        joystickDeadband(rotate), drive.getGyroscopeRotation()));
+                                                                  // opposite of controller directions
+    
+    drive.getCurrentPos();
 
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
@@ -286,7 +266,40 @@ public class Robot extends LoggedRobot {
       ledStrips.setFullBlue();
     }
 
+    if (driverController.getLeftTriggerAxis() >= 0.1) {
+      intake.enableWrist(true);
+      if (driverController.getLeftBumper()) {
+        intake.outtake();
+      } else {
+        intake.intake();
+      }
+    } else if (driverController.getRightTriggerAxis() >= 0.1) {
+      intake.enableWrist(false);
+    } else if (driverController.getLeftBumper()) {
+      intake.score();
+    } else {
+      intake.stopRoller();
+    }
 
+    if (driverController.getYButton()) {
+      lift.testPlanTilt(Heights.HIGH);
+    } else if (driverController.getAButton()) {
+      lift.testPlanTilt(Heights.STOWED);
+    } else {
+      lift.testPlanTilt(null);
+    }
+
+    if (driverController.getXButton()) {
+      lift.testPlanLift(Heights.HIGH);
+    } else if (driverController.getBButton()) {
+      lift.testPlanLift(Heights.STOWED);
+    } else {
+      lift.testPlanLift(null);
+    }
+
+    if (driverController.getStartButton()) {
+      autoPark.balance(drive);
+    }
   }
 
   /** This function is called once when the robot is disabled. */
@@ -307,8 +320,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {}
 
-  /** This function is called periodically during test mode. */
-  @Override
   public void testPeriodic() {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
