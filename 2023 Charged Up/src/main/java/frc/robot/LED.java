@@ -129,7 +129,7 @@ public class LED {
     public void updatePeriodic(boolean testLow) {
         //Update the Power object
         power.powerPeriodic();
-        
+
         //If we have low voltage
         if (power.voltage < 9.0 || lowVolts || testLow) {
             delayTimer.start();
@@ -142,44 +142,37 @@ public class LED {
                 col2=Color.OFF;
             }
         }
-        //If we want to do the proximity-targetlock-thing
-        if(mode==LEDMode.TARGETLOCK){
-            vision.updateVision();
-            if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
-                delayTimer.start();
-                if (delayTimer.get() > 0.5) {
-                    setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
-                }
-            } else {
-                delayTimer.stop();
-            }
-        }
-        //Temporarily, attention mode runs the fire method
-        else if(mode==LEDMode.ATTENTION){
-            setFire();
-        }
         else{
             switch(mode){
                 case CONE:
-                    col1=Color.YELLOW;
+                    upAndDown(Color.YELLOW, col2);
                     break;
                 case CUBE:
-                    col1=Color.PURPLE;
+                    upAndDown(Color.PURPLE, col2);
                     break;
                 case STOPPLACING:
-                    col1=Color.WHITE;
+                    upAndDown(Color.WHITE, col2);
                     break;
                 //Need to revise this
                 case ATTENTION:
-                    col1=Color.CYAN;
+                    setFire();
                     break;
                 case OFF:
-                    col1=Color.OFF;
+                    upAndDown(Color.OFF, col2);
                     blobs=new ArrayList<Blob>();
                     break;
+                case TARGETLOCK:
+                    vision.updateVision();
+                    if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+                        delayTimer.start();
+                        if (delayTimer.get() > 0.5) {
+                            setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
+                        }
+                    } else {
+                        delayTimer.stop();
+                    }
+                    break;
             }
-            //Run the UpAndDown with the two colors
-            upAndDown(col1, col2);
         }
     }
 
