@@ -24,7 +24,7 @@ public class Autopark {
     }
     
     public boolean balance(Drivetrain drivetrain){
-        double pitch = drivetrain.getPitch();
+        double pitch = drivetrain.getRoll();
         System.out.println(currentState.toString() + " " + pitch);
         
         switch (currentState){
@@ -36,7 +36,7 @@ public class Autopark {
                     currentState = AutoBalanceStates.FIX_TILT; 
                 }
                 else {
-                    drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
+                    drivetrain.drive(new ChassisSpeeds(-0.7, 0, 0)); //the slower the better
                     SmartDashboard.putNumber("Movement speed", 0.7);
                 }
                 break;
@@ -47,7 +47,7 @@ public class Autopark {
                     currentState = AutoBalanceStates.STOP; 
                 }
                 else{
-                    drivetrain.drive(new ChassisSpeeds(pitch * Constants.PITCH_MULTIPLIER, 0, 0));
+                    drivetrain.drive(new ChassisSpeeds(-(pitch * Constants.PITCH_MULTIPLIER), 0, 0));
                     SmartDashboard.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER);
                 }
                 break;

@@ -177,6 +177,10 @@ public class Drivetrain {
         return m_navx.getPitch();
     }
 
+    public double getRoll(){
+        return m_navx.getRoll();
+    }
+
 
     public double getAutoHeading() {
         return m_navx.getYaw();

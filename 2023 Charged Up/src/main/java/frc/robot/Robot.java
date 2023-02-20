@@ -99,7 +99,6 @@ public class Robot extends LoggedRobot {
     shooterController = new XboxController(1);
     // power = new Power();
     drive = new Drivetrain(logger);
-    autoPark = new Autopark();
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
@@ -138,6 +137,8 @@ public class Robot extends LoggedRobot {
     wasZeroed = true;
     drive.zeroGyroscope();
     drive.resetSteerAngles();
+    autoPark = new Autopark();
+
     /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
   }
@@ -171,6 +172,8 @@ public class Robot extends LoggedRobot {
     /*SET LIMIT ON TELEOP - LIAM M */
 
     drive.setTeleopCurrentLimit();
+    autoPark = new Autopark();
+
 
   }
   
@@ -185,7 +188,7 @@ public class Robot extends LoggedRobot {
     
     // System.out.println(driverControler.getBButton());
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-    SmartDashboard.putNumber("pitch", drive.getPitch());
+    SmartDashboard.putNumber("Pitch", drive.getRoll());
     SmartDashboard.putString("AutoPark State", autoPark.currentState.toString());
     // gameObjectVision.updateVision();
     // power.powerPeriodic();
@@ -248,8 +251,8 @@ public class Robot extends LoggedRobot {
         // Normal teleop drive
         //
         
-        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-            -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+            joystickDeadband(rotate), drive.getGyroscopeRotation()));
       }
 
       
