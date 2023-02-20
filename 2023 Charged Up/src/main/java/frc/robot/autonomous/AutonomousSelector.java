@@ -12,6 +12,7 @@ import frc.robot.autonomous.autons.LoadingZoneThreePieceParkAuto;
 import frc.robot.autonomous.autons.LoadingZoneTwoPieceParkAuto;
 import frc.robot.autonomous.autons.MiddlePreloadParkAuto;
 import frc.robot.autonomous.autons.MoveOutCommunityAuto;
+import frc.robot.autonomous.autons.WaypointBox;
 
 public class AutonomousSelector {
 
@@ -27,6 +28,7 @@ public class AutonomousSelector {
         MiddlePreloadParkAuto.class,
         MoveOutCommunityAuto.class,
         LoadingZoneThreePieceParkAuto.class,
+        WaypointBox.class
     };
 
     public AutonomousSelector() {

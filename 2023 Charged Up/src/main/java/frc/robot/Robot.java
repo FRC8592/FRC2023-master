@@ -55,6 +55,14 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
  * project.
  */
 public class Robot extends LoggedRobot {
+  private static final String kDefaultAuto = "Default";
+  private static final String kCustomAuto = "My Auto";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  
+
+
+
   public XboxController driverController;
   public XboxController shooterController;
   public Drivetrain drive;
@@ -102,7 +110,9 @@ public class Robot extends LoggedRobot {
     }
     Logger.getInstance().start();
     
-    
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    m_chooser.addOption("My Auto", kCustomAuto);
+    SmartDashboard.putData("Auto choices", m_chooser);
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
@@ -118,6 +128,8 @@ public class Robot extends LoggedRobot {
     intake = new Intake();
     intake.reset();
     lift.reset();
+
+    selector = new AutonomousSelector();
   }
 
   /**
@@ -167,14 +179,14 @@ public class Robot extends LoggedRobot {
       drive.zeroGyroscope();
       drive.resetEncoder();
       drive.resetPose(selectedAuto.getStartPose());
-    wasZeroed = true;
-    drive.zeroGyroscope();
-    drive.resetSteerAngles();
-    autoPark = new Autopark();
+    }
+    // ====== END AUTONOMOUS ====== //
 
+    // SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
+    drive.resetSteerAngles();
     /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
-    }
+    
     // ====== END AUTONOMOUS ====== //
 
     // SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
