@@ -1,4 +1,17 @@
 {
+<<<<<<< HEAD
+  "Joysticks": {
+    "window": {
+      "visible": false
+    }
+  },
+  "System Joysticks": {
+    "window": {
+      "visible": false
+    }
+  },
+=======
+>>>>>>> main
   "keyboardJoysticks": [
     {
       "axisConfig": [

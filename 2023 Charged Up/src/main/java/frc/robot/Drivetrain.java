@@ -21,6 +21,7 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -38,6 +39,9 @@ public class Drivetrain {
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
     
     private FRCLogger logger;
+
+    private final double kWheelCircumference = 4*Math.PI;
+    private final double kFalconTicksToMeters = 1.0 / 4096.0 / kWheelCircumference;
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -239,10 +243,45 @@ public class Drivetrain {
             }
         );
 
+        if (Robot.isReal()) {
+            Robot.FIELD.setRobotPose(getCurrentPos());
+        }
+        //Steer Angles
+        SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
+        SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
+        SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
+        SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
+
+        //Motor Velocities
+        SmartDashboard.putNumber("Front Left Velocity", getModuleVelocity(m_frontLeftModule));
+        SmartDashboard.putNumber("Front Right Velocity", getModuleVelocity(m_frontRightModule));
+        SmartDashboard.putNumber("Back Left Velocity", getModuleVelocity(m_backLeftModule));
+        SmartDashboard.putNumber("Back Right Velocity", getModuleVelocity(m_backRightModule));
+
+        //What Velocities we're trying to set
+        SmartDashboard.putNumber("Front Left", metersPerSecondToTicks(states[0].speedMetersPerSecond));
+        SmartDashboard.putNumber("Front Right", metersPerSecondToTicks(states[1].speedMetersPerSecond));
+        SmartDashboard.putNumber("Back Left", metersPerSecondToTicks(states[2].speedMetersPerSecond));
+        SmartDashboard.putNumber("Back Right", metersPerSecondToTicks(states[3].speedMetersPerSecond));
+
 
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
+
+    public void resetEncoder(){
+        m_frontLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_frontRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_backLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+        m_backRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+    }
+
+    public void getSwervePositions() {
+        SmartDashboard.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Front Right Posiiton", m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Back Left Posiiton", m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDashboard.putNumber("Back Right Posiiton", m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+    }
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
         return new SwerveModulePosition(mod.getDriveController().getDriveFalcon().getSelectedSensorPosition()/4096.0/Constants.kWheelCircumference, new Rotation2d(mod.getSteerAngle()));
@@ -312,4 +351,8 @@ public class Drivetrain {
         setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_AUTO_CURRENT);
     }
     /********END CURRENT LIMIT CODE**********/
+
+    public SwerveDriveKinematics getKinematics() {
+        return m_kinematics;
+    }
 }

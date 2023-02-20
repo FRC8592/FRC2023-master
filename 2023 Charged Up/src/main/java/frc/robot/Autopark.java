@@ -3,12 +3,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 public class Autopark {
-
     public enum AutoBalanceStates {
         DRIVE_FORWARD,
         FIX_TILT,
