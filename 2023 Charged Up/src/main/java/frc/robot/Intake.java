@@ -62,18 +62,14 @@ public class Intake {
 
     public void writeToSmartDashboard() {
         double rawWristPosition = wristEncoder.getPosition(); // rotations
-        double rawWristVelocity = wristEncoder.getVelocity(); // RPM
-        double rawRollerVelocity = rollerEncoder.getVelocity(); // RPM
         
-        SmartDashboard.putNumber("Wrist/Position (Rotations)", rawWristPosition);
-        SmartDashboard.putNumber("Wrist/Position (Degrees)", rawWristPosition * 360.0 * Constants.WRIST_GEAR_RATIO);
-        SmartDashboard.putNumber("Wrist/Current", wristMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Wrist/Velocity (Degrees per Second)", rawWristVelocity * 60.0 * Constants.WRIST_GEAR_RATIO);
-        SmartDashboard.putNumber("Roller/Velocity (Degrees per Second)", rawRollerVelocity * 60.0 * Constants.ROLLER_GEAR_RATIO);
+        SmartDashboard.putNumber("Intake/Wrist Position", rawWristPosition);
+        SmartDashboard.putNumber("Intake/Wrist Current", wristMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Intake/Roller Current", rollerMotor.getOutputCurrent());
     }
 
     public void stow() {
-        wristCtrl.setReference(Constants.WRIST_STOWED_ROTATIONS, ControlType.kSmartMotion);
+        // wristCtrl.setReference(Constants.WRIST_STOWED_ROTATIONS, ControlType.kSmartMotion);
         rollerMotor.set(0.0);
     }
 
@@ -91,10 +87,14 @@ public class Intake {
     }
 
     public void score() {
-        wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
-        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 5){
+        // wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 5.0){
             outtake();
         }
+    }
+
+    public void spinRollers(double pct) {
+        rollerMotor.set(pct);
     }
 
     public void enableWrist(boolean enable) {

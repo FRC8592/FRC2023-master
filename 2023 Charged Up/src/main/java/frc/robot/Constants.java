@@ -109,6 +109,7 @@ public final class Constants {
     public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
     public static final double TILT_MAX_ROTATIONS = -21.0;
     public static final double LIFT_MAX_ROTATIONS = -80;
+    public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
 
 
