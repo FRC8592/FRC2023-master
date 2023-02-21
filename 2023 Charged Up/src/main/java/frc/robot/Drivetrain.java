@@ -11,10 +11,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.Logger;
 import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -93,7 +94,7 @@ public class Drivetrain {
         // Create configuration object for motors.  We do this primarily for current limiting
         swerveMotorConfig = new Mk4ModuleConfiguration();
         swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
-        swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_CURRENT);
+        swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_TELEOP_CURRENT);
         swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
         
         this.logger = logger;
@@ -102,7 +103,7 @@ public class Drivetrain {
         //
         // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
         // you MUST change it. If you do not, your code will crash on startup.
-        m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
@@ -110,7 +111,7 @@ public class Drivetrain {
             // Motor configuration
             swerveMotorConfig,
             // This can either be L!, L2, L3 or L4
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             // This is the ID of the drive motor
             FRONT_LEFT_MODULE_DRIVE_MOTOR,
             // This is the ID of the steer motor
@@ -122,36 +123,36 @@ public class Drivetrain {
         );
 
         // We will do the same for the other modules
-        m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(2, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             FRONT_RIGHT_MODULE_STEER_MOTOR,
             FRONT_RIGHT_MODULE_STEER_ENCODER,
             FRONT_RIGHT_MODULE_STEER_OFFSET
         );
 
-        m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR, 
             BACK_LEFT_MODULE_STEER_ENCODER,
             BACK_LEFT_MODULE_STEER_OFFSET
         );
 
-        m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
             swerveMotorConfig,
-            Mk4SwerveModuleHelper.GearRatio.L2,
+            Mk4iSwerveModuleHelper.GearRatio.L2,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
             BACK_RIGHT_MODULE_STEER_ENCODER,
@@ -178,6 +179,10 @@ public class Drivetrain {
 
     public double getPitch(){
         return m_navx.getPitch();
+    }
+
+    public double getRoll(){
+        return m_navx.getRoll();
     }
 
 
@@ -238,27 +243,6 @@ public class Drivetrain {
             }
         );
 
-        if (Robot.isReal()) {
-            Robot.FIELD.setRobotPose(getCurrentPos());
-        }
-        //Steer Angles
-        SmartDashboard.putNumber("Front Left Azimuth (Degrees)", getSMPosition(m_frontLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Front Right Azimuth (Degrees)", getSMPosition(m_frontRightModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Left Azimuth (Degrees)", getSMPosition(m_backLeftModule).angle.getDegrees());
-        SmartDashboard.putNumber("Back Right Azimuth (Degrees)", getSMPosition(m_backRightModule).angle.getDegrees());
-
-        //Motor Velocities
-        SmartDashboard.putNumber("Front Left Velocity", getModuleVelocity(m_frontLeftModule));
-        SmartDashboard.putNumber("Front Right Velocity", getModuleVelocity(m_frontRightModule));
-        SmartDashboard.putNumber("Back Left Velocity", getModuleVelocity(m_backLeftModule));
-        SmartDashboard.putNumber("Back Right Velocity", getModuleVelocity(m_backRightModule));
-
-        //What Velocities we're trying to set
-        SmartDashboard.putNumber("Front Left", metersPerSecondToTicks(states[0].speedMetersPerSecond));
-        SmartDashboard.putNumber("Front Right", metersPerSecondToTicks(states[1].speedMetersPerSecond));
-        SmartDashboard.putNumber("Back Left", metersPerSecondToTicks(states[2].speedMetersPerSecond));
-        SmartDashboard.putNumber("Back Right", metersPerSecondToTicks(states[3].speedMetersPerSecond));
-
 
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
@@ -279,7 +263,7 @@ public class Drivetrain {
     }
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
-        return new SwerveModulePosition(mod.getDriveController().getDriveFalcon().getSelectedSensorPosition()/4096.0/kWheelCircumference, new Rotation2d(mod.getSteerAngle()));
+        return new SwerveModulePosition(mod.getDriveController().getDriveFalcon().getSelectedSensorPosition()/4096.0/Constants.kWheelCircumference, new Rotation2d(mod.getSteerAngle()));
     }
 
     public void setDriveVelocity(double inputVelocity, SwerveModule module){
@@ -316,7 +300,7 @@ public class Drivetrain {
         SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
         setDriveVelocity(velocityToApply, module);
     }
-
+    /* WHEEL LOCK MODE FOR AUTOPARK - Liam M */
     public void setWheelLock(){
         // m_frontLeftModule.setSteerAngle(Constants.WHEEL_LOCK_RADIANS);
         // m_frontRightModule.setSteerAngle(-Constants.WHEEL_LOCK_RADIANS);
@@ -328,6 +312,24 @@ public class Drivetrain {
         setModule(m_backLeftModule, -Constants.WHEEL_LOCK_RADIANS, 0);
         setModule(m_backRightModule, Constants.WHEEL_LOCK_RADIANS, 0);
     }
+    /********** END WHEEL LOCK CODE ***********/
+
+    /* CURRENT LIMIT CODE - Liam M */
+    private void setThrottleCurrentLimit(double currentLimit){
+
+        m_frontLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_frontRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_backLeftModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+        m_backRightModule.getDriveController().getDriveFalcon().configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, currentLimit, 0, 0));
+    }
+
+    public void setTeleopCurrentLimit(){
+        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_TELEOP_CURRENT);
+    }
+    public void setAutoCurrentLimit(){
+        setThrottleCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_AUTO_CURRENT);
+    }
+    /********END CURRENT LIMIT CODE**********/
 
     public SwerveDriveKinematics getKinematics() {
         return m_kinematics;
