@@ -35,10 +35,13 @@ public class AutonomousSelector {
         }
 
         autonTab.add("Choose Autonomous", autonChooser)
-                .withPosition(3, 3)
-                .withSize(4, 2);
+            .withPosition(3, 2)
+            .withSize(4, 2);
 
-        delayEntry = Shuffleboard.getTab("Auton Configuration").add("Autonomous Delay", 0d).getEntry();
+        delayEntry = autonTab.add("Autonomous Delay", 0d)
+            .withPosition(4, 1)
+            .withSize(2, 1)
+            .getEntry();
     }
 
     public double getDelay() {

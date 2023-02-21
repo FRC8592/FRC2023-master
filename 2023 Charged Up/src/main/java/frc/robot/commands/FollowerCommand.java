@@ -14,8 +14,7 @@ public class FollowerCommand extends Command {
     private Drivetrain drive;
     private SwerveTrajectory trajectory;
     private Timer timer;
-    private boolean lockWheels;
-    private Rotation2d endRotation;
+    // private Rotation2d endRotation;
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj) {
         drive = pDrive;
@@ -35,7 +34,7 @@ public class FollowerCommand extends Command {
         trajectory = pTraj.addRotation(pRot);
         timer = new Timer();
 
-        endRotation = pRot;
+        // endRotation = pRot;
     }
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, String tag) {
@@ -44,28 +43,26 @@ public class FollowerCommand extends Command {
         timer = new Timer();
         setTag(tag);
 
-        endRotation = pRot;
+        // endRotation = pRot;
     }
 
-    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels) {
-        drive = pDrive;
-        trajectory = pTraj.addRotation(pRot);
-        timer = new Timer();
-        this.lockWheels = lockWheels;
-        setTag(tag);
+    // public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels) {
+    //     drive = pDrive;
+    //     trajectory = pTraj.addRotation(pRot);
+    //     timer = new Timer();
+    //     setTag(tag);
 
-        endRotation = pRot;
-    }
+    //     endRotation = pRot;
+    // }
 
-    public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels, String tag) {
-        drive = pDrive;
-        trajectory = pTraj.addRotation(pRot);
-        timer = new Timer();
-        this.lockWheels = lockWheels;
-        setTag(tag);
+    // public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels, String tag) {
+    //     drive = pDrive;
+    //     trajectory = pTraj.addRotation(pRot);
+    //     timer = new Timer();
+    //     setTag(tag);
 
-        endRotation = pRot;
-    }
+    //     endRotation = pRot;
+    // }
 
     @Override
     public void initialize() {
