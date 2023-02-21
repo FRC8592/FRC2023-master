@@ -195,18 +195,63 @@ public class Robot extends LoggedRobot {
     gameObjectVision.updateVision();
     lift.update();
 
+    /*
+     * Controls:
+     * - Driver:
+     *  - [Left Joystick X]: drivetrain left/right
+     *  - [Left Joystick Y]: drivetrain forward/back
+     *  - [Right Joysick X]: Drivetrain turn
+     *  - [Right Joysick Y]: N/A
+     *  - [Left Bumper]: Prime elevator
+     *  - [Right Bumper]: Slow mode (*changed to only when held*)
+     *  - [Left Trigger]: Target-lock cone/cube
+     *  - [Right Trigger]: Target-lock apriltag/retro-reflective tape
+     *  - [Back btn]: Reset field-centric rotation
+     *  - [Start btn]: Autopark
+     *  - [A btn]: Elevator stow
+     *  - [X btn]: Get human player attention (*Currently not set*)
+     *  - [B btn]: Set wheels locked
+     *  - [Y btn]: N/A
+     *  - [DPAD Up]: Turn field-centric North (*Currently not set*)
+     *  - [DPAD Down]: Turn field-centric South (*Currently not set*)
+     *  - [DPAD Left]: Turn field-centric West (*Currently not set*)
+     *  - [DPAD Right]: Turn field-centric East (*Currently not set*)
+     * 
+     * - Operator:
+     *  - [Left Joystick X]: N/A
+     *  - [Left Joystick Y]: Manual tilt control (*Currently not set*)
+     *  - [Right Joystick X]: N/A
+     *  - [Right Joystick Y]: Manual lift control (*Currently not set*)
+     *  - [Left Bumper]: Stow
+     *  - [Right Bumper]: Outtake
+     *  - [Left Trigger]: Intake (*Auto activates wrist*)
+     *  - [Right Trigger]: Score (*Auto activates wrist*)
+     *  - [Back btn]: N/A
+     *  - [Start btn]: N/A
+     *  - [A btn]: Elevator stow (*Auto deactivates 4 bar*)
+     *  - [X btn]: Elevator mid (*Auto activates 4 bar*)
+     *  - [B btn]: N/A
+     *  - [Y btn]: Elevator high (*Auto activates 4 bar*)
+     *  - [DPAD Up]: Manual wrist up (*Currently not set*)
+     *  - [DPAD Down]: Manual wrist down (*Currently not set*)
+     *  - [DPAD Left]: Activate cone mode
+     *  - [DPAD Right]: Activate cube mode
+     */
+
     // ========================== \\
     // ======= Drivetrain ======= \\
     // ========================== \\
 
-    if (driverController.getXButton() && driverController.getBackButton()) {
+    if (driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
 
     if (operatorController.getPOV() == 270) { // DPAD Left
       coneVision = true;
+      // Set LED's to cone attention
     } else if (operatorController.getPOV() == 90) { // DPAD Right
       coneVision = false;
+      // Set LED's to cube attention
     }
 
     if (driverController.getRightBumper()) {
@@ -227,11 +272,11 @@ public class Robot extends LoggedRobot {
     } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
       if (coneVision) {
         NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-        // set LED accordingly
       } else {
         NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-        // set LED accordingly
       }
+
+      // set LED to targetlock
 
       driveSpeeds = new ChassisSpeeds(
         driveSpeeds.vxMetersPerSecond,
@@ -245,11 +290,11 @@ public class Robot extends LoggedRobot {
     } else if (driverController.getRightTriggerAxis() >= 0.1) { // Track scoring grid
       if (coneVision) {
         NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-        // set LED accordingly
       } else {
         NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-        // set LED accordingly
       }
+
+      // set LED to targetlock
 
       driveSpeeds = new ChassisSpeeds(
         driveSpeeds.vxMetersPerSecond,
@@ -265,15 +310,23 @@ public class Robot extends LoggedRobot {
       );
     }
 
-    drive.drive(driveSpeeds);
+    if (driverController.getBButton()) { // Wheels locked
+      drive.setWheelLock();
+    } else {
+      drive.drive(driveSpeeds);
+    }
+
+    if (driverController.getXButton()) {
+      // Signal to human player for attention
+    }
 
     // ===================== \\
     // ======= Wrist ======= \\
     // ===================== \\
 
-    if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getLeftBumper()) {
+    if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getRightTriggerAxis() >= 0.1) {
       intake.enableWrist(true);
-    } else if (operatorController.getRightTriggerAxis() >= 0.1) {
+    } else if (operatorController.getLeftBumper()) {
       intake.enableWrist(false);
     }
 
@@ -283,7 +336,7 @@ public class Robot extends LoggedRobot {
 
     if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
       intake.intake();
-    } else if (operatorController.getLeftBumper()) { // Outtake game piece
+    } else if (operatorController.getRightTriggerAxis() >= 0.1) { // Outtake game piece
       intake.score();
     } else if (operatorController.getRightBumper()) { // Score game piece
       intake.outtake();
@@ -295,7 +348,7 @@ public class Robot extends LoggedRobot {
     // ======= Elevator ======= \\
     // ======================== \\
 
-    if (operatorController.getAButton()) { // Stowed height
+    if (operatorController.getAButton() || driverController.getAButton()) { // Stowed height
       lift.set(Heights.STOWED);
     } else if (operatorController.getXButton()) { // Mid height
       lift.set(Heights.MID);
