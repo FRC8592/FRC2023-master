@@ -9,8 +9,6 @@ import frc.robot.commands.FollowerCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.JointCommand;
 import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.IntakeCommand.IntakeMode;
-import frc.robot.commands.ScoreCommand.Height;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
 
@@ -110,19 +108,19 @@ public class LoadingZoneThreePieceAuto extends BaseAuto {
         );
 
         queue = new CommandQueue(
-            new ScoreCommand(Height.HIGH, 1.5), // Score preload
+            new ScoreCommand(intake), // Score preload
             new FollowerCommand(drive, A5_TO_Ilz), // Go and grab second game piece
             new JointCommand(
                 new FollowerCommand(drive, Ilz_TO_GP1.addRotation(Rotation2d.fromDegrees(180))),
-                new IntakeCommand(IntakeMode.OUT)
+                new IntakeCommand(intake)
             ),
             new FollowerCommand(drive, GP1_TO_Ilz), // Drive back to grid space A
                 new FollowerCommand(drive, Ilz_TO_A5),
-            new ScoreCommand(Height.MID), // Score mid
+            // new ScoreCommand(Height.MID), // Score mid
             new FollowerCommand(drive, A5_TO_Ilz), // Go and grab third game piece
                 new JointCommand(
                     new FollowerCommand(drive, Ilz_TO_GP2),
-                    new IntakeCommand(IntakeMode.OUT)
+                    new IntakeCommand(intake)
                 ),
             new FollowerCommand(drive, GP2_TO_Ilz), // Drive back to grid space C
                 new FollowerCommand(drive, Ilz_TO_C5.addRotation(Rotation2d.fromDegrees(180))),

@@ -91,7 +91,7 @@ public class Intake {
     }
 
     public void score() {
-        wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+        // wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
         if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 5){
             outtake();
         }
@@ -107,5 +107,9 @@ public class Intake {
 
     public void stopRoller() {
         rollerMotor.set(0.0);
+    }
+
+    public boolean hasPiece() {
+        return beamCone.isBroken() || beamCube.isBroken();
     }
 }

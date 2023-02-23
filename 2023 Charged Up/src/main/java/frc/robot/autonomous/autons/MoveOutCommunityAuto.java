@@ -5,7 +5,6 @@ import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.commands.CommandQueue;
 import frc.robot.commands.FollowerCommand;
 import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.ScoreCommand.Height;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
 
@@ -15,13 +14,12 @@ public class MoveOutCommunityAuto extends BaseAuto {
     private SwerveTrajectory MOVE_OUT = generateTrajectoryFromPoints(
         config,
         GRID_A.getPose(),
-        GRID_A.translate(1, 0)
+        GRID_A.translate(2, 0)
     );
 
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new ScoreCommand(Height.HIGH, 1d),
             new FollowerCommand(drive, MOVE_OUT)
         );
     }

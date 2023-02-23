@@ -213,13 +213,15 @@ public enum AutonomousPositions {
                 new Pose2d(
                     RED_WALL.getPose().getX() - startPose.getX(),
                     startPose.getY(),
-                    startPose.getRotation().plus(Rotation2d.fromDegrees(180))
+                    // startPose.getRotation().plus(Rotation2d.fromDegrees(180))
+                    Rotation2d.fromDegrees(180-startPose.getRotation().getDegrees())
                 ),
                 List.of(nonEndPoses), 
                 new Pose2d(
                     RED_WALL.getPose().getX() - endPose.getX(),
                     endPose.getY(),
-                    endPose.getRotation().plus(Rotation2d.fromDegrees(180))
+                    Rotation2d.fromDegrees(180-endPose.getRotation().getDegrees())
+                    // endPose.getRotation().plus(Rotation2d.fromDegrees(180))
                 ), 
                 config
             );

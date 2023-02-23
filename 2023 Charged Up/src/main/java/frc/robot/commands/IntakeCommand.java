@@ -1,69 +1,32 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Intake;
 
 public class IntakeCommand extends Command {
+    private Intake intake;
     private Timer timer;
-
-    public static enum IntakeMode {
-        IN,
-        OUT,
-    }
-
-    private double forSeconds = 0;
     private double delay = 0;
     private boolean isDependent = false;
-    private IntakeMode mode = IntakeMode.IN;
 
-    // ACTUAL CONSTRUCTOR
-    public IntakeCommand(IntakeMode mode, double delay) {
-        this.mode = mode;
-        this.delay = delay;
-        isDependent = true;
+    public IntakeCommand(Intake intake) {
+        this.intake = intake;
     }
 
-    public IntakeCommand(IntakeMode mode, double delay, String tag) {
-        this.mode = mode;
-        this.delay = delay;
-        isDependent = true;
-        setTag(tag);
-    }
-
-    public IntakeCommand(IntakeMode mode) {
-        this.mode = mode;
-        isDependent = true;
-    }
-
-    // ===============================
-    // CONSTRUCTORS FOR TESTING
-    // ===============================
-
-    public IntakeCommand(double forSeconds, double delay) {
-        this.forSeconds = forSeconds;
+    public IntakeCommand(Intake intake, double delay) {
+        this.intake = intake;
         this.delay = delay;
     }
 
-    public IntakeCommand(IntakeMode mode, double forSeconds, double delay) {
-        this.mode = mode;
-        this.forSeconds = forSeconds;
-        this.delay = delay;
-    }
-
-    public IntakeCommand(IntakeMode mode, double delay, boolean dependency) {
-        this.mode = mode;
-        this.delay = delay;
+    public IntakeCommand(Intake intake, boolean dependency) {
+        this.intake = intake;
         isDependent = dependency;
     }
 
-    public IntakeCommand setDelay(double delay) {
+    public IntakeCommand(Intake intake, double delay, boolean dependency) {
+        this.intake = intake;
         this.delay = delay;
-        return this;
-    }
-
-    public IntakeCommand setDependency(boolean dependency) {
         isDependent = dependency;
-        return this;
     }
 
     @Override
@@ -71,21 +34,21 @@ public class IntakeCommand extends Command {
         timer = new Timer();
         timer.reset();
         timer.start();
-        // Initialize intake module
     }
 
     @Override
     public boolean execute() {
         if (timer.get() >= delay) {
-            SmartDashboard.putString("Intaking", mode.toString());
-            // Run intake / Open intake claw until game piece in range
-            return timer.get() >= forSeconds || isDependent;
+            intake.enableWrist(true);
+            intake.intake();
+            return intake.hasPiece() || isDependent;
         }
-        return false;
+        return isDependent;
     }
 
     @Override
     public void shutdown() {
-        SmartDashboard.putString("Intaking", IntakeMode.IN.toString());
+        intake.enableWrist(false);
+        intake.stopRoller();
     }
 }

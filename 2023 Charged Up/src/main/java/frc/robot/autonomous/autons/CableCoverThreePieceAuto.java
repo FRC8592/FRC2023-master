@@ -2,131 +2,144 @@ package frc.robot.autonomous.autons;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import frc.robot.Lift.Heights;
 import frc.robot.autonomous.SwerveTrajectory;
-import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
 import frc.robot.commands.FollowerCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.JointCommand;
+import frc.robot.commands.LiftCommand;
 import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.IntakeCommand.IntakeMode;
-import frc.robot.commands.ScoreCommand.Height;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class CableCoverThreePieceAuto extends BaseAuto {
     private TrajectoryConfig fastConfig = new TrajectoryConfig(5, 3);
-    private TrajectoryConfig slowConfig = new TrajectoryConfig(2, 2);
+    private TrajectoryConfig slowConfig = new TrajectoryConfig(3, 2);
 
     @Override
     public void initialize() {
-        SwerveTrajectory I5_TO_Icc = generateTrajectoryFromPoints(
-            GRID_I, 
-            INTERMEDIARY_CABLE_COVER,
-            Rotation2d.fromDegrees(0), 
+        SwerveTrajectory H_TO_Icc = generateTrajectoryFromPoints(
             slowConfig
-                .setStartVelocity(0)
-                .setEndVelocity(2)
-                .setKinematics(drive.getKinematics())
                 .setReversed(false)
+                .setStartVelocity(0.0)
+                .setEndVelocity(slowConfig.getMaxVelocity())
+                .setKinematics(drive.getKinematics())
+            ,
+            GRID_H.getPose(),
+            INTERMEDIARY_CABLE_COVER.translate(0, 0.5)
         );
 
         SwerveTrajectory Icc_TO_GP4 = generateTrajectoryFromPoints(
-            INTERMEDIARY_CABLE_COVER,
-            GAME_PIECE_4,
-            Rotation2d.fromDegrees(180), 
             fastConfig
-                .setStartVelocity(2)
-                .setEndVelocity(0)
-                .setKinematics(drive.getKinematics())
                 .setReversed(false)
+                .setStartVelocity(slowConfig.getMaxVelocity())
+                .setEndVelocity(0.0)
+                .setKinematics(drive.getKinematics())
+            ,
+            INTERMEDIARY_CABLE_COVER.translate(0, 0.5),
+            GAME_PIECE_4.getPose()
         );
 
         SwerveTrajectory GP4_TO_Icc = generateTrajectoryFromPoints(
-            GAME_PIECE_4,
-            INTERMEDIARY_CABLE_COVER,
-            Rotation2d.fromDegrees(0), 
             fastConfig
-                .setStartVelocity(0)
-                .setEndVelocity(2)
-                .setKinematics(drive.getKinematics())
                 .setReversed(true)
+                .setStartVelocity(0.0)
+                .setEndVelocity(slowConfig.getMaxVelocity())
+                .setKinematics(drive.getKinematics())
+            ,
+            GAME_PIECE_4.getPose(),
+            INTERMEDIARY_CABLE_COVER.translate(-0.5, 0)
         );
 
-        SwerveTrajectory Icc_TO_I5 = generateTrajectoryFromPoints(
-            INTERMEDIARY_CABLE_COVER,
-            GRID_I,
-            Rotation2d.fromDegrees(0), 
+        SwerveTrajectory Icc_TO_I = generateTrajectoryFromPoints(
             slowConfig
-                .setStartVelocity(2)
-                .setEndVelocity(0)
-                .setKinematics(drive.getKinematics())
                 .setReversed(true)
+                .setStartVelocity(slowConfig.getMaxVelocity())
+                .setEndVelocity(0.0)
+                .setKinematics(drive.getKinematics())
+            ,
+            INTERMEDIARY_CABLE_COVER.translate(-0.5, 0),
+            GRID_I.getPose()
+        );
+
+        SwerveTrajectory I_TO_Icc = generateTrajectoryFromPoints(
+            slowConfig
+                .setReversed(false)
+                .setStartVelocity(0.0)
+                .setEndVelocity(slowConfig.getMaxVelocity())
+                .setKinematics(drive.getKinematics())
+            ,
+            GRID_I.getPose(),
+            INTERMEDIARY_CABLE_COVER.getPose()
         );
 
         SwerveTrajectory Icc_TO_GP3 = generateTrajectoryFromPoints(
-            INTERMEDIARY_CABLE_COVER, 
-            GAME_PIECE_3, 
-            Rotation2d.fromDegrees(0), 
             fastConfig
-                .setStartVelocity(2)
-                .setEndVelocity(0)
-                .setKinematics(drive.getKinematics())
                 .setReversed(false)
+                .setStartVelocity(slowConfig.getMaxVelocity())
+                .setEndVelocity(0.0)
+                .setKinematics(drive.getKinematics())
+            ,
+            INTERMEDIARY_CABLE_COVER.getPose(),
+            GAME_PIECE_3.rotate(Rotation2d.fromDegrees(45))
         );
 
         SwerveTrajectory GP3_TO_Icc = generateTrajectoryFromPoints(
-            GAME_PIECE_3, 
-            INTERMEDIARY_CABLE_COVER, 
-            Rotation2d.fromDegrees(0), 
             fastConfig
-                .setStartVelocity(0)
-                .setEndVelocity(2)
-                .setKinematics(drive.getKinematics())
                 .setReversed(true)
+                .setStartVelocity(0.0)
+                .setEndVelocity(slowConfig.getMaxVelocity())
+                .setKinematics(drive.getKinematics())
+            ,
+            GAME_PIECE_3.getPose(),
+            INTERMEDIARY_CABLE_COVER.getPose()
         );
 
-        // SwerveTrajectory I5_TO_G5 = generateTrajectoryFromPoints(
-        //     GRID_I, 
-        //     GRID_G,
-        //     Rotation2d.fromDegrees(0),
-        //     Rotation2d.fromDegrees(90),
-        //     Rotation2d.fromDegrees(90),
-        //     fastConfig
-        //         .setStartVelocity(0)
-        //         .setEndVelocity(0)
-        //         .setKinematics(drive.getKinematics())
-        //         .setReversed(true)
-        // );
-
-        SwerveTrajectory Icc_TO_G5 = generateTrajectoryFromPoints(
-            slowConfig
-                .setStartVelocity(2)
-                .setEndVelocity(0)
+        SwerveTrajectory Icc_TO_G = generateTrajectoryFromPoints(
+            fastConfig
+                .setReversed(true)
+                .setStartVelocity(slowConfig.getMaxVelocity())
+                .setEndVelocity(0.0)
                 .setKinematics(drive.getKinematics())
-                .setReversed(true),
-            INTERMEDIARY_CABLE_COVER,
-            COMMUNITY_CABLE_COVER,
-            GRID_G
+            ,
+            INTERMEDIARY_CABLE_COVER.getPose(),
+            COMMUNITY_CABLE_COVER.getPose(),
+            GRID_G.getPose()
         );
 
         queue = new CommandQueue(
-            new ScoreCommand(Height.HIGH, 1.5),
-            new FollowerCommand(drive, I5_TO_Icc),
-            new JointCommand(
-                new FollowerCommand(drive, Icc_TO_GP4),
-                new IntakeCommand(IntakeMode.OUT)
+            new ScoreCommand(intake), // Score preload game piece
+            new JointCommand( // Lower lift; go to and intake second game piece
+                new FollowerCommand(drive, H_TO_Icc),
+                new LiftCommand(lift, Heights.STOWED)
             ),
-            new FollowerCommand(drive, GP4_TO_Icc),
             new JointCommand(
-                new FollowerCommand(drive, Icc_TO_I5),
-                new ScoreCommand(Height.MID)
+                new FollowerCommand(drive, Icc_TO_GP4.addRotation(Rotation2d.fromDegrees(180))),
+                new IntakeCommand(intake)
             ),
-            new FollowerCommand(drive, I5_TO_Icc),
-                new FollowerCommand(drive, Icc_TO_GP3),
-            new FollowerCommand(drive, GP3_TO_Icc),
-                new FollowerCommand(drive, Icc_TO_G5.addRotation(Rotation2d.fromDegrees(180))),
-            new AutobalanceCommand(drive)
+            new FollowerCommand(drive, GP4_TO_Icc), // Go to scoring grid and prime elevator
+            new JointCommand(
+                new FollowerCommand(drive, Icc_TO_I)
+                // new LiftCommand(lift, Heights.PRIME)
+            ),
+            new LiftCommand(lift, Heights.HIGH), // Lift to high height and score second piece
+            new ScoreCommand(intake),
+            new JointCommand( // Lower lift; go to and intake third game piece
+                new FollowerCommand(drive, I_TO_Icc),
+                new LiftCommand(lift, Heights.STOWED)
+            ),
+            new JointCommand(
+                new FollowerCommand(drive, Icc_TO_GP3.addRotation(Rotation2d.fromDegrees(-135))),
+                new IntakeCommand(intake)
+            ),
+            new FollowerCommand(drive, GP3_TO_Icc), // Go to scoring grid and prime elevator
+            new JointCommand(
+                new FollowerCommand(drive, Icc_TO_G)
+                // new LiftCommand(lift, Heights.PRIME)
+            ),
+            new LiftCommand(lift, Heights.HIGH), // Lift to high height and score third piece
+            new ScoreCommand(intake)
         );
     }
 

@@ -9,8 +9,6 @@ import frc.robot.commands.FollowerCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.JointCommand;
 import frc.robot.commands.ScoreCommand;
-import frc.robot.commands.IntakeCommand.IntakeMode;
-import frc.robot.commands.ScoreCommand.Height;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
 
@@ -78,16 +76,14 @@ public class LoadingZoneTwoPieceParkAuto extends BaseAuto {
         );
 
         queue = new CommandQueue(
-            new ScoreCommand(Height.HIGH, 1.5),
             new FollowerCommand(drive, A5_TO_Ilz),
             new JointCommand(
                 new FollowerCommand(drive, Ilz_TO_GP1),
-                new IntakeCommand(IntakeMode.OUT)
+                new IntakeCommand(intake)
             ),
             new FollowerCommand(drive, GP1_TO_Ilz),
             new JointCommand(
-                new FollowerCommand(drive, Ilz_TO_A5),
-                new ScoreCommand(Height.MID)
+                new FollowerCommand(drive, Ilz_TO_A5)
             ),
             new FollowerCommand(drive, A5_TO_Ilz),
                 new FollowerCommand(drive, Ilz_TO_BM),

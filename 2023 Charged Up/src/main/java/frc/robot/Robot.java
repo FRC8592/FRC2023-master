@@ -157,7 +157,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     selectedAuto = selector.getSelectedAutonomous();
-    selectedAuto.addModules(drive, lift); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.addModules(drive, lift, intake); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
     selectedAuto.addDelay(selector.getDelay());
     
@@ -179,9 +179,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     selectedAuto.periodic();
-    lift.periodic();
-    ledStrips.upAndDown();
-    autoPark.balance(drive);
+    // lift.periodic();
+    // ledStrips.upAndDown();
+    // autoPark.balance(drive);
   }
   
   /** This function is called once when teleop is enabled. */
@@ -210,7 +210,7 @@ public class Robot extends LoggedRobot {
     double rotate;
     
     // System.out.println(driverControler.getBButton());
-    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
+    SmartDashboard.putNumber("Heading", drive.getGyroscopeRotation().getDegrees());
 
     gameObjectVision.updateVision();
     lift.writeToSmartDashboard();

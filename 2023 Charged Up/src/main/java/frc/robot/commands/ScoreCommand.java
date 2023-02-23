@@ -2,34 +2,23 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Intake;
+import frc.robot.Lift;
+import frc.robot.Robot;
+import frc.robot.Lift.Heights;
 
 public class ScoreCommand extends Command {
     private Timer timer;
-    private double forSeconds;
-    private Height height;
+    private Intake intake;
+    private double delay = 0;
 
-    public static enum Height {
-        OFF,
-        LOW,
-        MID,
-        HIGH
+    public ScoreCommand(Intake intake) {
+        this.intake = intake;
     }
 
-    // FOR TESTING
-    public ScoreCommand(Height pHeight, double forSeconds) {
-        height = pHeight;
-        this.forSeconds = forSeconds;
-    }
-
-    public ScoreCommand(Height pHeight, double forSeconds, String tag) {
-        height = pHeight;
-        this.forSeconds = forSeconds;
-        setTag(tag);
-    }
-
-    // ACTUAL CONSTRUCTOR
-    public ScoreCommand(Height pHeight) {
-        height = pHeight;
+    public ScoreCommand(Intake intake, double delay) {
+        this.intake = intake;
+        this.delay = delay;
     }
 
     @Override
@@ -41,12 +30,22 @@ public class ScoreCommand extends Command {
 
     @Override
     public boolean execute() {
-        SmartDashboard.putString("Lifting to height", height.toString());
-        return timer.get() >= forSeconds;
+        if (Robot.isReal()) {
+            if (timer.get() >= delay) {
+                intake.enableWrist(true);
+                intake.score();
+                return !intake.hasPiece();
+            }
+            return false;
+        }
+        return timer.get() >= 1.0;
     }
 
     @Override
     public void shutdown() {
-        SmartDashboard.putString("Lifting to height", Height.OFF.toString());
+        // Probably don't need a shutdown
+        // Might set velocity to 0 but that would be about it
+        intake.stopRoller();
+        intake.enableWrist(false);
     }
 }

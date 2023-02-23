@@ -27,7 +27,7 @@ public class SwerveTrajectory {
     public SwerveTrajectory(Trajectory trajectory) {
         mXPID = new PIDController(0.1, 0, 0.0); // 0.1 0 -0.0002
         mYPID = new PIDController(0.1, 0, 0.0); // 0.1 0 -0.0002
-        mTurnPID = new ProfiledPIDController(0.1, 0, 0, new Constraints(2 * Math.PI, Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mTurnPID = new ProfiledPIDController(0.2, 0, 0.0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
@@ -35,9 +35,10 @@ public class SwerveTrajectory {
         mTurnPID.setTolerance(0.001, 0.1);
         mTurnPID.enableContinuousInput(-Math.PI, Math.PI); // Might need to change to degrees
 
-        mDrivePID.setTolerance(new Pose2d(0.1, 0.1, Rotation2d.fromDegrees(1)));
+        mDrivePID.setTolerance(new Pose2d(0.1, 0.1, Rotation2d.fromDegrees(5)));
 
-        rotation = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation();
+        // rotation = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation();
+        rotation = new Rotation2d();
         mTrajectory = trajectory;
     }
 
@@ -46,7 +47,7 @@ public class SwerveTrajectory {
      * @return the same {@code SwerveTrajectory} object back but with the added {@code Rotation2d} for easy usage
      */
     public SwerveTrajectory addRotation(Rotation2d rotation) {
-        this.rotation = rotation;
+        this.rotation = Rotation2d.fromDegrees(-rotation.getDegrees());
         return this;
     }
 
@@ -79,21 +80,25 @@ public class SwerveTrajectory {
             SmartDashboard.putNumber("Current Heading", robotPose.getRotation().getDegrees());
         }
 
-        SmartDashboard.putNumber("Desired X", desired.vxMetersPerSecond);
-        SmartDashboard.putNumber("Desired Y", desired.vyMetersPerSecond);
-        SmartDashboard.putNumber("Desired Omega", desired.omegaRadiansPerSecond);
-        SmartDashboard.putNumber("Ending Turn", rotation.getDegrees());
-        SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("TOTAL FRICKING TIME", trajectory().getTotalTimeSeconds());
+        SmartDashboard.putNumber("Error X", getEndingPose().getX() - robotPose.getX());
+        SmartDashboard.putNumber("Error Y", getEndingPose().getY() - robotPose.getY());
+        SmartDashboard.putNumber("Error Theta", getEndingPose().getRotation().getDegrees() - robotPose.getRotation().getDegrees());
 
+        SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
+
+        // SmartDashboard.putNumber("Desired X", desired.vxMetersPerSecond);
+        // SmartDashboard.putNumber("Desired Y", desired.vyMetersPerSecond);
+        // SmartDashboard.putNumber("Desired Omega", desired.omegaRadiansPerSecond);
+        // SmartDashboard.putNumber("Ending Turn", rotation.getDegrees());
+        // SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
         return desired;
     }
 
     public boolean isFinished(double time) {
         if (Robot.isReal()) {
-            return mDrivePID.atReference();// || time >= (mTrajectory.getTotalTimeSeconds());
+            // return mDrivePID.atReference() && time >= (mTrajectory.getTotalTimeSeconds());
+            return time >= (mTrajectory.getTotalTimeSeconds());
         } else {
-            SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
             // return mDrivePID.atReference();
             return time >= mTrajectory.getTotalTimeSeconds();
         }
@@ -111,6 +116,10 @@ public class SwerveTrajectory {
      */
     public Rotation2d getEndingRotation() {
         return rotation;
+    }
+
+    public Pose2d getEndingPose() {
+        return mTrajectory.sample(mTrajectory.getTotalTimeSeconds() - 0.02).poseMeters;
     }
 
     /**
