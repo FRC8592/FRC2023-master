@@ -71,7 +71,7 @@ public class LED {
         BLUE (0, 0, 255),
         YELLOW (255, 128, 0),
         PURPLE (138, 0, 255),
-        ORANGE (255, 100, 0),
+        ORANGE (255, 70, 0),
         WHITE (255, 255, 255),
         BROWN (74, 23, 0),
         OFF (0, 0, 0),
@@ -165,7 +165,7 @@ public class LED {
             fireBlobs=new ArrayList<Blob>();
         }
         //If we have low voltage
-        if (power.voltage < MINIMUM_VOLTAGE || lowVolts || testLow) {
+        if ((power.voltage < MINIMUM_VOLTAGE || lowVolts || testLow) && power.voltage>0) {
             lowVoltTimer.start();
             lowVolts = true;
             if((int)(LVPulseTimer.get()*3)%2==0){
