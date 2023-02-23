@@ -7,7 +7,6 @@ import javax.xml.validation.SchemaFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -19,77 +18,81 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LED {
 
+    //Hardware objects
     private AddressableLED liftNEOPIXELS;
     private AddressableLEDBuffer liftBuffer;
-    private Timer timer;
-    private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
-    private LEDMode mode = LEDMode.OFF;
-    // private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-    // Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-    // Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
+    private Timer uadTimer = new Timer();
+    private Timer visionTimer = new Timer();
+    private Timer lowVoltTimer = new Timer();
+    private Timer LVPulseTimer = new Timer();
+    private Timer snakeTimer = new Timer();
     private Vision vision;
-
-    private int count = 0;
-    private double brightnessMultiplier = 1;
-    private boolean lowVolts = false;
-    private Timer delayTimer = new Timer();
     private Power power;
-    private Color col1;
-    private Color col2;
-    private double heightChange;
-    private double heightChangeSineChange;
-    private SixteenMColor[] LEDs;
-    private int frame;
-    ArrayList<Blob> blobs;
-    final int LED_LENGTH = 43;
+
+    //Settings
+    private LEDPattern mode = LEDPattern.OFF;
+    private double brightnessMultiplier = 1;
+
+    //Dymanic/UpAndDown
+    private int uadIndex = 0;
+    private PresetColor col1 = PresetColor.OFF;
+    private PresetColor col2 = PresetColor.OFF;
+    
+    //Dynamic/Fire
+    private int fireSpawnIDX = 0;
+    private ArrayList<Blob> fireBlobs = new ArrayList<Blob>();
+    private boolean lowVolts = false;
+
+    //Dynamic/Waves
+    private int waveCounter = 0;
+    private int indexOn = 0;
+    
+    //Dynamic/Binary
+    private Color[] binary;
+    private int binaryIndex;
+    
+    //Dynamic/Other
+    String lastFunction="";
+    
+    //Constants
+    private static final int LED_LENGTH = 43;
+    private static final double MINIMUM_VOLTAGE = 9.0;
+    private static final int PULSE_METHOD_SPEED = 4;
+    private static final int PULSE_SIZE = 3; 
 
     /**
      * Premade color presets
      */
-    public enum Color {
+    public enum PresetColor {
         RED (255, 0, 0),
         GREEN (0, 255, 0),
         CYAN (0, 160, 255),
+        TEAL (0,80,30),
         BLUE (0, 0, 255),
         YELLOW (255, 128, 0),
         PURPLE (138, 0, 255),
         ORANGE (255, 100, 0),
         WHITE (255, 255, 255),
         BROWN (74, 23, 0),
-        DARKRED (50,0,0),
         OFF (0, 0, 0),
         GRAY (80,80,80);
         public final int red;
         public final int blue;
         public final int green;
-        Color(int red, int green, int blue){
+        PresetColor(int red, int green, int blue){
             this.red = red;
             this.green = green;
             this.blue = blue;
         }
     }
 
-    /**
-     * Blink speed presets
-     */
-    public enum BlinkSpeed {
-        SLOW (1.0),
-        NORMAL (0.5),
-        SOLID (0.0);
-
-        public final double speed;
-
-        BlinkSpeed(double speed) {
-            this.speed = speed;
-        }
-    }
-
-    public enum LEDMode {
-        CONE,
-        CUBE,
-        TARGETLOCK,
-        STOPPLACING,
-        ATTENTION,
+    public enum LEDPattern {
+        UP_AND_DOWN,
+        BINARY,
+        FIRE,
+        WAVES,
+        TARGET_LOCK,
+        SNAKE,
         OFF;
     }
     /**Construct an LED controller
@@ -102,26 +105,26 @@ public class LED {
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
-        
-        //Timer to make the UpAndDown method work
-        timer = new Timer();
-        
+
         //Vision and power objects; see above
         this.vision = vision;
         this.power = power;
-        
-        //UpAndDown colors
-        col1=Color.OFF;
-        col2=Color.OFF;
-        
-        //ArrayList for the fire method
-        blobs=new ArrayList<Blob>();
-        
-        //Array to store the LEDs, also for the fire method
-        LEDs=new SixteenMColor[42];
-        for(int i = 0; i < 42; i++){
-            LEDs[i]=new SixteenMColor(0,0,0);
-        }
+
+        Color i = new Color(0,80,30); // 1
+        Color o = new Color(32,8,0); // 0
+        Color s = new Color(0,0,0); // Separation color
+        binary = new Color[] {  s,s,o,i,o,o,i,i,i,o, //N
+                                s,s,o,i,i,o,o,i,o,i, //e
+                                s,s,o,i,i,i,o,i,i,i, //w
+                                s,s,o,i,i,i,o,i,o,o, //t
+                                s,s,o,i,i,o,i,i,i,i, //o
+                                s,s,o,i,i,o,i,i,i,o, //n
+                                s,s,o,i,o,i,i,i,i,o, //^
+                                s,s,o,o,i,i,o,o,i,o, //2
+                                s,s,o,o,o,o,o,o,o,o};
+
+        LVPulseTimer.start();
+        snakeTimer.start();
     }
     /**Update the LEDs
      * @param testLow A boolean for whether to force the LEDs to act as if the battery voltage is low.
@@ -129,69 +132,271 @@ public class LED {
     public void updatePeriodic(boolean testLow) {
         //Update the Power object
         power.powerPeriodic();
-
+        switch(mode){
+            case UP_AND_DOWN:
+                setUpAndDown(col1, col2);
+                lastFunction = "uad";
+                break;
+            case FIRE:
+                setFire(true);
+                lastFunction="fire";
+                break;
+            case BINARY:
+                setBinary();
+                lastFunction="binary";
+                break;
+            case WAVES:
+                setWaves(col1, col2);
+                lastFunction="waves";
+                break;
+            case TARGET_LOCK:
+                setTargetLock();
+                lastFunction="targetlock";
+                break;
+            case SNAKE:
+                setSnake(col1);
+                break;
+            case OFF:
+                setOff();
+                lastFunction="off";
+                break;
+        }
+        if(mode != LEDPattern.FIRE && mode != LEDPattern.OFF && fireBlobs.size() > 0){
+            fireBlobs=new ArrayList<Blob>();
+        }
         //If we have low voltage
-        if (power.voltage < 9.0 || lowVolts || testLow) {
-            delayTimer.start();
+        if (power.voltage < MINIMUM_VOLTAGE || lowVolts || testLow) {
+            lowVoltTimer.start();
             lowVolts = true;
-            col2=Color.DARKRED;
-            if (delayTimer.get() > 2) {
-                delayTimer.stop();
-                delayTimer.reset();
+            if((int)(LVPulseTimer.get()*3)%2==0){
+                setColor(0,PresetColor.RED);
+                setColor(1,PresetColor.RED);
+                setColor(2,PresetColor.RED);
+                setColor(42,PresetColor.RED);
+                setColor(41,PresetColor.RED);
+                setColor(40,PresetColor.RED);
+            }
+            if (lowVoltTimer.get() > 2) {
+                lowVoltTimer.stop();
+                lowVoltTimer.reset();
                 lowVolts = false;
-                col2=Color.OFF;
+            }
+        }
+        updateLEDs();
+    }
+
+
+    /*|||||||||||||||||||||||||||||||||||||||||||||||||PATTERN METHODS|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
+
+
+    /**
+     * Run two colors up and down the LED strip
+     * 
+     * @param colorA    first color
+     * @param colorB    second color
+     */
+    public void setUpAndDown(PresetColor colorA, PresetColor colorB){
+        uadTimer.start();
+            if(uadTimer.get() >= .05){
+                uadIndex++;
+                uadTimer.reset();
+                for(int i = 0; i < LED_LENGTH; i++){
+                    if (Math.sin(i + uadIndex)  > 0){
+                        setColor(i, colorA);
+                    }
+                     else  {
+                        setColor(i, colorB);
+                    }
+                }
+            }
+    }
+    public void setTargetLock(){
+        for(int i = 0; i < 42; i++){
+            setColor(i, PresetColor.OFF);
+        }
+        vision.updateVision();
+        if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+            visionTimer.start();
+            if (visionTimer.get() > 0.5) {
+                PresetColor color = PresetColor.RED;
+                // Formula to calculate how many LEDs to set in each strip
+                // max = max distance before LEDs start lighting up
+                // min = distance until piece is "in range"
+                double max = 2.0;
+                double min = 0.75;
+                double difference = max - min;
+                int numLEDs = (int)((max - (vision.distanceToTarget() * Constants.INCHES_TO_METERS)) / difference * (LED_LENGTH / 2 - 0.5));
+        
+                //If distance is at or closer to the max distance, set the color of LEDs to green and cap amount to turn on
+                if (numLEDs >= LED_LENGTH / 2) {
+                    numLEDs = LED_LENGTH / 2;
+                    color = PresetColor.GREEN;
+                }
+        
+                // loop through one side of the LEDs and set an amount of LEDs on depending on distance
+                for (int ledIndex = 0; ledIndex < LED_LENGTH / 2; ledIndex++){
+                    if(ledIndex < numLEDs) {
+                        setColor(ledIndex, color);
+                        setColor((LED_LENGTH - 1) - ledIndex, color);
+                    } else {
+                        setColor(ledIndex, PresetColor.OFF);
+                        setColor((LED_LENGTH - 1) - ledIndex, PresetColor.OFF);
+                    }
+                }
+            }
+        } else {
+            visionTimer.stop();
+        }
+    }
+    public void setFire(boolean runFire) {
+        //Random amount for the fireSpawnIDX to more forward
+        int random=(int)Math.random();
+
+        //If fireSpawnIDX + random or fireSpawnIDX + 1 results in a multiple of 12, set the fireSpawnIDX to the multiple of 12
+        if(fireSpawnIDX+1+random%16!=0&&fireSpawnIDX+1%16==0){
+            fireSpawnIDX++;
+        }
+        else{
+            fireSpawnIDX+=1+random;
+        }
+
+        //If the fireSpawnIDX number is divisible by 12
+        if(fireSpawnIDX%16==0&&runFire){
+            //Add a new blob of color. See the private Blob class for more.
+            fireBlobs.add(new Blob(0.05+Math.random()*0.15, 
+            12+Math.random()*2, 
+            (8+Math.random()*5)*0.3,
+            0,128,0.1));
+        }
+        int k = fireBlobs.size();
+        //                                              Go through the fireBlobs list,
+        for(int i = 0; i < k; i++){
+            //                                          update the fireBlobs and check if they're at the top while doing so,
+            int increase = fireBlobs.get(i).updateBlob(i);
+            if(increase==-1){
+                //                                      and remove the blob and modify the variables to account for that if so.
+                fireBlobs.remove(i);
+                i--;
+                k--;
+            }
+            else{
+                k+=increase;
+            }
+        }
+
+        //Sort the fireBlobs; red first, yellow last. During the double-for loop below, this will mean that yellow is drawn on top.
+        Collections.sort(fireBlobs);
+
+        //Clear the LED list
+        for(int i = 0; i < 42; i++){
+            setColor(i,new Color(0,0,0));
+            setColor(42-i,new Color(0,0,0));
+        }
+
+        //                                              For all fireBlobs,
+        for(int i = 0; i < fireBlobs.size(); i++){
+            //                                          for all indexes in the blob (aka for the area the blob covers)
+            for(int j : fireBlobs.get(i).getIndexes()){
+                //                                      if the index is actually on the LEDs in real life,
+                if(j>-1){
+                    //                                  assign the LED at the index to the color of the blob
+                    setColor(j, fireBlobs.get(i).getColor());
+                    setColor(42-j, fireBlobs.get(i).getColor());
+                }
+            }
+        }
+    }
+    public void setBinary(){
+        binaryIndex++;
+        for(int i = 0; i < 21; i++){
+            setColor(20-i,binary[(binaryIndex/6+i)%90]);
+            setColor(22+i,binary[(binaryIndex/6+i)%90]);
+        }
+    }
+    public void setWaves(PresetColor col1, PresetColor col2) {
+        waveCounter++;
+        for(int i = 0; i < 21 / 2; i++) {
+            if(Math.abs(21 / 2 + i - indexOn) % 5 < PULSE_SIZE) {
+                setColor((21 / 2 + i), col1);
+                setColor((21 / 2 - 1 - i), col1);
+                setColor(42-(21 / 2 + i), col1);
+                setColor(42-(21 / 2 - 1 - i), col1);
+            } else {
+                setColor((21 / 2 + i), col2);
+                setColor((21 / 2 - 1- i), col2);
+                setColor(42-(21 / 2 + i), col2);
+                setColor(42-(21 / 2 - 1- i), col2);
+            }
+        }
+        if (waveCounter >= PULSE_METHOD_SPEED) {
+            waveCounter = 0;
+            indexOn = (indexOn + 1) % (LED_LENGTH / 2);
+        }
+    }
+    public void setSnake(PresetColor col1){
+        Color color = new Color(col1.red, col1.green, col1.blue);
+        int location;
+        int direction;
+        double speed = 50;
+        if(snakeTimer.get()*speed<21){
+            location = (int)(snakeTimer.get()*speed);
+            direction=0;
+        }
+        else if (snakeTimer.get()*speed<42){
+            location = 21-(((int)(snakeTimer.get()*speed))-21);
+            direction=1;
+        }
+        else{
+            snakeTimer.reset();
+            location=1;
+            direction=0;
+        }
+        for(int i = 0; i < 42; i++){
+            setColor(i,PresetColor.OFF);
+        }
+        if(direction==0){
+            for(int i = 0; i < 15; i++){
+                if(location+i<21){
+                    setColor(location+i,getColorAtBrightness(color, 0.0666*i));
+                    setColor(21+location+i,getColorAtBrightness(color, 0.0666*i));
+                }
+                else {
+                    setColor(21-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
+                    setColor(42-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
+                }
             }
         }
         else{
-            switch(mode){
-                case CONE:
-                    upAndDown(Color.YELLOW, col2);
-                    break;
-                case CUBE:
-                    upAndDown(Color.PURPLE, col2);
-                    break;
-                case STOPPLACING:
-                    upAndDown(Color.WHITE, col2);
-                    break;
-                //Need to revise this
-                case ATTENTION:
-                    setFire();
-                    break;
-                case OFF:
-                    upAndDown(Color.OFF, col2);
-                    blobs=new ArrayList<Blob>();
-                    break;
-                case TARGETLOCK:
-                    vision.updateVision();
-                    if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
-                        delayTimer.start();
-                        if (delayTimer.get() > 0.5) {
-                            setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
-                        }
-                    } else {
-                        delayTimer.stop();
-                    }
-                    break;
+            for(int i = 0; i < 15; i++){
+                if(location-i>0){
+                    setColor(location-i,getColorAtBrightness(color, 0.0666*i));
+                    setColor(21+location-i,getColorAtBrightness(color, 0.0666*i));
+                }
+                else{
+                    setColor(-(location-i),getColorAtBrightness(color, 0.0666*i));
+                    setColor(21-(location-i),getColorAtBrightness(color, 0.0666*i));
+                }
             }
         }
     }
+    public void setOff(){
+        setFire(false);
+    }
+
+    /*||||||||||||||||||||||||||||||||||||||||||UTILITY METHODS|||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
+
 
     /**
-     * Set a preset state of the LEDs
+     * Set the LED pattern and colors
      * 
-     * @param mode      mode to set the LEDs to
+     * @param p {@code LEDPattern} to set
+     * @param col1 {@code PresetColor} for the first color. Can be null for binary, fire, and off.
+     * @param col2 {@code PresetColor} for the second color. Can be null for binary, fire, and off.
      */
-    public void setState(LEDMode mode) {
-        this.mode = mode;
-    }
-    
-    /**
-     * Set the pulsing state of the robot
-     * 
-     * @param speed     blink speed of the robot
-     */
-    public void setPulseState(BlinkSpeed speed) {
-        blinkSpeed = speed;
+    public void set(LEDPattern p, PresetColor col1, PresetColor col2) {
+        this.mode = p;
+        this.col1 = col1;
+        this.col2 = col2;
     }
 
     /**
@@ -203,174 +408,36 @@ public class LED {
         brightnessMultiplier = pct / 100.0;
     }
 
-    /**
-     * Set the current leds to a certain color
-     * 
-     * @param i         index of the led light to set
-     * @param color     color to set the light
-     */
-    public void setColor(int i, Color color){
-        liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));   
+    public Color getColorAtBrightness(Color c, double b){
+        return new Color((int)(c.getRed()*b),(int)(c.getGreen()*b),(int)(c.getBlue()*b));
     }
     /**
      * Set the current leds to a certain color
      * 
      * @param i         index of the led light to set
-     * @param color     SixteenMColor to set the light
+     * @param color     PresetColor to set the light
      */
-    public void setColor(int i, SixteenMColor color){
-        liftBuffer.setRGB(i, (int)(color.getRed() * brightnessMultiplier), (int)(color.getGreen() * brightnessMultiplier), (int)(color.getBlue() * brightnessMultiplier));   
+    private void setColor(int i, PresetColor color){
+        liftBuffer.setRGB(i, (int)(color.red * brightnessMultiplier), (int)(color.green * brightnessMultiplier), (int)(color.blue * brightnessMultiplier));
     }
-
     /**
-     * Set a percentage of the LEDs on, automatically spaces out lights
+     * Set the current leds to a certain color
      * 
-     * @param pct   the percentage of LEDs to turn on (0 - 100)
-     * @param color the color of the LEDs that are on 
+     * @param i         index of the led light to set
+     * @param color     Color to set the light
      */
-    private void setPct(double pct, Color color) {
-        // loop through LEDs, and set the passed percentage as on
-        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            if (pct != 0 && (double)ledIndex % (1.0 / (pct / 100.0)) < 1.0){
-                setColor(ledIndex, color);
-            }else {
-                setColor(ledIndex, Color.OFF);
-            }
-        }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start(); 
+    private void setColor(int i, Color color){
+        liftBuffer.setRGB(i, (int)(color.getRed() * brightnessMultiplier), (int)(color.getGreen() * brightnessMultiplier), (int)(color.getBlue() * brightnessMultiplier));
     }
-
-    /**
-     * Run two colors up and down the LED strip
-     * 
-     * @param colorA    first color
-     * @param colorB    second color
-     */
-    private void upAndDown(Color colorA, Color colorB){
-        timer.start();
-            if(timer.get() >= .05){
-                count++;
-                timer.reset();
-                if(count > LED_LENGTH){
-                    count = 0;
-                }
-                for(int i = 0; i < LED_LENGTH; i++){
-                    if (Math.sin(1 * (double)(i + count))  > 0){
-                        setColor(i, colorA);
-                    }
-                     else  {
-                        setColor(i, colorB);
-                    }
-                }
-            }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-        
-    }
-
-    /** 
-     * Turn the LEDs off
-     */
-    private void turnOff() {
-        setPct(100, Color.OFF);
-    }
-
-    /**
-     * Set more LEDs on depending on how close you are to a target, when target is "in range" LEDs turn green
-     * 5m = max distance
-     * 0.75m = closest distance ("in range")
-     * 
-     * @param distToTarget  the distance to the target (meters)
-     */
-    private void setProximity(double distToTarget) {
-        Color color = Color.RED;
-        // Formula to calculate how many LEDs to set in each strip
-        // max = max distance before LEDs start lighting up
-        // min = distance until piece is "in range"
-        double max = 2.0;
-        double min = 0.75;
-        double difference = max - min;
-        int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH / 2 - 0.5));
-        
-        //If distance is at or closer to the max distance, set the color of LEDs to green and cap amount to turn on
-        if (numLEDs >= LED_LENGTH / 2) {
-            numLEDs = LED_LENGTH / 2;
-            color = Color.GREEN;
-            timer.start();
-        }
-
-        // loop through one side of the LEDs and set an amount of LEDs on depending on distance
-        for (int ledIndex = 0; ledIndex < LED_LENGTH / 2; ledIndex++){
-            if(ledIndex < numLEDs) {
-                setColor(ledIndex, color);
-                setColor((LED_LENGTH - 1) - ledIndex, color);
-            } else {
-                setColor(ledIndex, Color.OFF);
-                setColor((LED_LENGTH - 1) - ledIndex, Color.OFF);
-            }
-        }
+    private void updateLEDs(){
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
     }
-    private void setFire() {
-        //Random amount for the frame to more forward
-        int random=(int)Math.random()*5;
 
-        //If frame + random or frame + 1 results in a multiple of 12, set the frame to the multiple of 12
-        if(frame+1+random%16!=0&&frame+1%16==0){
-            frame++;
-        }
-        else{
-            frame+=1+random;
-        }
-        
-        //If the frame number is divisible by 12
-        if(frame%16==0){
-            //Add a new blob of color. See the private Blob class for more.
-            blobs.add(new Blob(0.05+Math.random()*0.15, 12+Math.random()*2, (8+Math.random()*5)*0.3));
-        }
-        int k = blobs.size();
-        //                                              Go through the blobs list,
-        for(int i = 0; i < k; i++){
-            //                                          update the blobs and check if they're at the top while doing so,
-            if(!blobs.get(i).updateBlob()){
-                //                                      and remove the blob and modify the variables to account for that if so.
-                blobs.remove(i);
-                i--;
-                k--;
-            }
-        }
-        
-        //Sort the blobs; red first, yellow last. During the double-for loop below, this will mean that yellow is drawn on top.
-        Collections.sort(blobs);
-        
-        //Clear the LED list
-        for(int i = 0; i < LEDs.length; i++){
-            LEDs[i]=new SixteenMColor(0,0,0);
-        }
-        
-        //                                              For all blobs,
-        for(int i = 0; i < blobs.size(); i++){
-            //                                          for all indexes in the blob (aka for the area the blob covers)
-            for(int j : blobs.get(i).getIndexes()){
-                //                                      if the index is actually on the LEDs in real life,
-                if(j>-1){
-                    //                                  assign the LED at the index to the color of the blob
-                    LEDs[j]=blobs.get(i).getColor();
-                }
-            }
-        }
-        
-        //Now that we're done figuring out what has what color, set the LEDs
-        for(int i = 0; i < LEDs.length/2; i++){
-            setColor(i, LEDs[i]);
-            setColor(42-i, LEDs[i]);
-        }
-        liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start();
-    }
-    
+
+    /*||||||||||||||||||||||||||||||||||||||||||||||||||||||PRIVATE CLASS|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
+
+
     //Blob of color in the fire
     private class Blob implements Comparable<Blob> {
         private double speed;
@@ -380,57 +447,67 @@ public class LED {
         private double colorChange;
         private double red;
         private double green;
-        
+
         /**Create a blob of color
          * @param speed The starting speed of the blob
          * @param height The height of the blob
          * @param colorChange The speed that the blob changes from yellow to red
+         * @param location The location of the blob
+         * @param green The green value of the color of this blob
+         * @param heightChange The speed, in LEDs/frame, that this blob shrinks
          */
-        public Blob(double speed, double height, double colorChange){
+        public Blob(double speed, double height, double colorChange, double location, double green, double heightChange){
             this.speed = speed;
-            this.location = 0;
+            this.location = location;
             this.height = height;
-            this.red = 255;
-            this.green = 128;
+            this.green = green;
             this.colorChange = colorChange;
-            this.heightChange=0.1;
+            this.heightChange=heightChange;
         }
-        public boolean updateBlob(){
+        public int updateBlob(int index){
             //If we're at the top, decrease the height (the height determines the bottom of the blob, not the top)
             if(location>21){
                 height-=speed;
             }
-            //Otherwise move up
-            else{
+            //Otherwise if the blob is low or small, move up
+            else if (location < 8||height<7){
                 location+=speed;
+            }
+            //If the blob is high and large, split into smaller blobs
+            else{
+                int half = (int)(height/2);
+                fireBlobs.remove(index);
+                fireBlobs.add(new Blob(speed, half, colorChange, location, green, heightChange/1.5));
+                fireBlobs.add(new Blob(speed, height-half, colorChange, location-half, green, heightChange/2));
+                return 1;
             }
             //Increase the movement speed, the height change speed, and the height
             speed+=0.01;
             heightChange+=heightChange/32;
             height-=heightChange;
-            
+
             //If the height is negative, return false (above, doing this deletes this blob)
             if(height<0){
-                return false;
+                return -1;
             }
-            
+
             //Redshift the blob
             green-=colorChange;
             if(green<0){
                 green=0;
             }
-            return true;
+            return 0;
         }
-        
-        //Couple self-explanatory methods
+
+        //Self-explanatory methods
         public double getGreen(){
             return green;
         }
         public int compareTo(Blob b){
             return (int)(this.green - b.getGreen());
         }
-        public SixteenMColor getColor(){
-            return new SixteenMColor((int)red, (int)green,0);
+        public Color getColor(){
+            return new Color(255, (int)green,0);
         }
         
         //Get a list of indexes that this blob covers
@@ -444,27 +521,6 @@ public class LED {
                 result[i]=(int)location-i;
             }
             return result;
-        }
-    }
-    
-    //Dubplicate of the built-in Color class.
-    private class SixteenMColor{
-        int red;
-        int green;
-        int blue;
-        public SixteenMColor(int red, int green, int blue){
-            this.red=red;
-            this.green=green;
-            this.blue=blue;
-        }
-        public int getRed(){
-            return red;
-        }
-        public int getGreen(){
-            return green;
-        }
-        public int getBlue(){
-            return blue;
         }
     }
 }

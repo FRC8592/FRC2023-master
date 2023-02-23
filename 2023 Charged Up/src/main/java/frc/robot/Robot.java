@@ -7,9 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.LED.BlinkSpeed;
-import frc.robot.LED.Color;
-import frc.robot.LED.LEDMode;
+import frc.robot.LED.LEDPattern;
+import frc.robot.LED.PresetColor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -104,6 +103,8 @@ public class Robot extends LoggedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, logger);
      ledStrips = new LED(power, gameObjectVision);
+     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+     
     
 
   }
@@ -286,34 +287,31 @@ public class Robot extends LoggedRobot {
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //                                                          // opposite of controller direct
 
-    if (shooterController.getXButtonPressed()){
-      currentPiecePipeline = "CUBE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-    }
+    // if (shooterController.getXButtonPressed()){
+    //   currentPiecePipeline = "CUBE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    // }
     
-    if (shooterController.getYButtonPressed()){
-      currentPiecePipeline = "CONE";
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-    }
+    // if (shooterController.getYButtonPressed()){
+    //   currentPiecePipeline = "CONE";
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    // }
 
-    ledStrips.updatePeriodic(shooterController.getAButton());
+    ledStrips.updatePeriodic(false);
     if (shooterController.getYButton()) {
-      ledStrips.setState(LEDMode.CONE);
+      ledStrips.set(LEDPattern.UP_AND_DOWN, PresetColor.YELLOW, PresetColor.PURPLE);
     }
     else if (shooterController.getXButton()) {
-      ledStrips.setState(LEDMode.CUBE);
+      ledStrips.set(LEDPattern.SNAKE, PresetColor.RED, null);
+    }
+    else if (shooterController.getAButton()){
+        ledStrips.set(LEDPattern.FIRE, null, null);
     }
     else if (shooterController.getBButton()){
-        ledStrips.setState(LEDMode.ATTENTION);
-    }
-    else if (shooterController.getLeftBumper()) {
-      ledStrips.setState(LEDMode.TARGETLOCK);
-    }
-    else if (shooterController.getRightBumper()){
-        ledStrips.setState(LEDMode.ATTENTION);
+        ledStrips.set(LEDPattern.WAVES, PresetColor.BLUE, PresetColor.OFF);
     }
     else {
-      ledStrips.setState(LEDMode.ATTENTION);
+      ledStrips.set(LEDPattern.BINARY, PresetColor.BLUE, PresetColor.OFF);
     }
     
   }
