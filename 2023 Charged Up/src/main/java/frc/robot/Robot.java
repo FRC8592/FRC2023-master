@@ -336,7 +336,7 @@ public class Robot extends LoggedRobot {
 
     if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
       intake.intake();
-    } else if (operatorController.getRightTriggerAxis() >= 0.1) { // Outtake game piece
+    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Outtake game piece
       intake.score();
     } else if (operatorController.getRightBumper()) { // Score game piece
       intake.outtake();
@@ -383,16 +383,30 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
 
-    if (operatorController.getLeftTriggerAxis() >= 0.1) {
-      intake.enableWrist(true);
-      intake.intake();
-    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Controller causes changes to axis values
-      intake.enableWrist(true);
-      intake.score();
-    } else if (operatorController.getLeftBumper()){
-      intake.enableWrist(false);
+    // if (operatorController.getLeftTriggerAxis() >= 0.1) {
+    //   intake.enableWrist(true);
+    //   intake.intake();
+    // } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Controller causes changes to axis values
+    //   intake.enableWrist(true);
+    //   intake.score();
+    // } else if (operatorController.getLeftBumper()){
+    //   intake.enableWrist(false);
+    // } else {
+    //   intake.stopRoller();
+    // }
+
+    lift.update();
+
+    if (operatorController.getAButton()) {
+      lift.set(Heights.STOWED);
+    } else if (operatorController.getYButton()) {
+      lift.set(Heights.PRIME);
+    } else if (operatorController.getXButton()) {
+      lift.set(Heights.HIGH);
+    } else if (operatorController.getBButton()){
+      lift.set(Heights.MID);
     } else {
-      intake.stopRoller();
+      lift.set(Heights.STALL);
     }
 
     SmartDashboard.putNumber("Left Trigger", operatorController.getLeftTriggerAxis());

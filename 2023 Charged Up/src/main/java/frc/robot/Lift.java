@@ -180,6 +180,24 @@ public class Lift {
                 liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
+            case MID:
+                tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
+                // if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
+                //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+                // } else {
+                //     liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
+                // }
+                liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+                break;
+            case HIGH:
+                tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
+                // if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
+                //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+                // } else {
+                //     liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
+                // }
+                liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+                break;
             default: // Mid or high
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
