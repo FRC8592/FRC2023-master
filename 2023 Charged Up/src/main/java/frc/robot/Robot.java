@@ -383,6 +383,36 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
 
+    if (operatorController.getLeftTriggerAxis() >= 0.1) {
+      intake.enableWrist(true);
+      intake.intake();
+    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Controller causes changes to axis values
+      intake.enableWrist(true);
+      intake.score();
+    } else if (operatorController.getLeftBumper()){
+      intake.enableWrist(false);
+    } else {
+      intake.stopRoller();
+    }
+
+    SmartDashboard.putNumber("Left Trigger", operatorController.getLeftTriggerAxis());
+    SmartDashboard.putNumber("Right Trigger", operatorController.getRightTriggerAxis());
+
+    // ======================= \\
+    // ======= Rollers ======= \\
+    // ======================= \\
+
+    // if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
+      
+    // } if (operatorController.getRightTriggerAxis() >= 0.1) { // Outtake game piece
+    //   // intake.score();
+    //   intake.outtake();
+    // } else if (operatorController.getRightBumper()) { // Score game piece
+    //   // intake.outtake();
+    //   intake.score();
+    // } else { // Stop rollers
+    //   intake.stopRoller();
+    // }
     // if (driverController.getLeftTriggerAxis() >= 0.1) {
     //   intake.enableWrist(true);
     //   if (driverController.getLeftBumper()) {

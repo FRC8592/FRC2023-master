@@ -75,11 +75,12 @@ public class Intake {
 
     public void intake() {
         // wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
-        if (beamCone.isBroken() && beamCube.isBroken()) {
-            rollerMotor.set(0.8);
-        } else {
-            rollerMotor.set(0.0);
-        }
+        // if (beamCone.isBroken() && beamCube.isBroken()) {
+        //     rollerMotor.set(0.8);
+        // } else {
+        //     rollerMotor.set(0.0);
+        // }
+        rollerMotor.set(0.8);
     }
 
     public void outtake() {
@@ -88,9 +89,13 @@ public class Intake {
 
     public void score() {
         // wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
-        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 5.0){
+        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS) <= 5.0){
             outtake();
+        } else {
+            stopRoller();
         }
+
+        SmartDashboard.putNumber("Wrist Error", Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS));
     }
 
     public void spinRollers(double pct) {
