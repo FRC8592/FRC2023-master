@@ -27,9 +27,24 @@ public class TestMoveAndTurnAuto extends BaseAuto {
             GAME_PIECE_3.getPose()
         );
 
+        SwerveTrajectory TEST_1 = generateTrajectoryFromPoints(
+            config.setStartVelocity(0.0).setEndVelocity(0.0),
+            GRID_I.getPose(),
+            GRID_I.translate(1, 0)
+        );
+
+        SwerveTrajectory TEST_2 = generateTrajectoryFromPoints(
+            config.setStartVelocity(0.0).setEndVelocity(0.0),
+            GRID_I.translate(1, 0),
+            GRID_I.getPose()
+        );
+
         queue = new CommandQueue(
             new DelayCommand(0.5),
-            new FollowerCommand(drive, I5_TO_Icc.addRotation(Rotation2d.fromDegrees(180)))
+            new FollowerCommand(drive, TEST_1.addRotation(Rotation2d.fromDegrees(-90))),
+            new FollowerCommand(drive, TEST_2)
+            // new FollowerCommand(drive, TEST_2.addRotation(Rotation2d.fromDegrees(90)))
+            // new FollowerCommand(drive, I5_TO_Icc.addRotation(Rotation2d.fromDegrees(-90)))
                 // new FollowerCommand(drive, Icc_TO_GP3)
             // new FollowerCommand(drive, I5_TO_Icc.addRotation(Rotation2d.fromDegrees(90)))
         );

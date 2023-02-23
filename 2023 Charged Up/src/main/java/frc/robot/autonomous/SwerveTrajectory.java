@@ -23,16 +23,17 @@ public class SwerveTrajectory {
     private Rotation2d rotation;
     private Trajectory mTrajectory;
     private TrajectoryConfig config = new TrajectoryConfig(0, 0).setEndVelocity(0).setStartVelocity(0);
+    private Pose2d poseRobot = new Pose2d();
 
     public SwerveTrajectory(Trajectory trajectory) {
-        mXPID = new PIDController(0.1, 0, 0.0); // 0.1 0 -0.0002
-        mYPID = new PIDController(0.1, 0, 0.0); // 0.1 0 -0.0002
-        mTurnPID = new ProfiledPIDController(0.2, 0, 0.0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mXPID = new PIDController(0.5, 0, 0.0); // 0.1 0 -0.0002
+        mYPID = new PIDController(0.5, 0, 0.0); // 0.1 0 -0.0002
+        mTurnPID = new ProfiledPIDController(-1.0, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
         mYPID.setTolerance(0.1, 0.1);
-        mTurnPID.setTolerance(0.001, 0.1);
+        mTurnPID.setTolerance(0.1, 0.1);
         mTurnPID.enableContinuousInput(-Math.PI, Math.PI); // Might need to change to degrees
 
         mDrivePID.setTolerance(new Pose2d(0.1, 0.1, Rotation2d.fromDegrees(5)));
@@ -47,7 +48,7 @@ public class SwerveTrajectory {
      * @return the same {@code SwerveTrajectory} object back but with the added {@code Rotation2d} for easy usage
      */
     public SwerveTrajectory addRotation(Rotation2d rotation) {
-        this.rotation = Rotation2d.fromDegrees(-rotation.getDegrees());
+        this.rotation = Rotation2d.fromDegrees(rotation.getDegrees());
         return this;
     }
 
@@ -82,7 +83,11 @@ public class SwerveTrajectory {
 
         SmartDashboard.putNumber("Error X", getEndingPose().getX() - robotPose.getX());
         SmartDashboard.putNumber("Error Y", getEndingPose().getY() - robotPose.getY());
-        SmartDashboard.putNumber("Error Theta", getEndingPose().getRotation().getDegrees() - robotPose.getRotation().getDegrees());
+        SmartDashboard.putNumber("Error Theta", rotation.getDegrees() - robotPose.getRotation().getDegrees());
+
+        SmartDashboard.putNumber("Ending X", getEndingPose().getX());
+        SmartDashboard.putNumber("Ending Y", getEndingPose().getY());
+        SmartDashboard.putNumber("Ending Theta", rotation.getDegrees());
 
         SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
 
@@ -91,13 +96,21 @@ public class SwerveTrajectory {
         // SmartDashboard.putNumber("Desired Omega", desired.omegaRadiansPerSecond);
         // SmartDashboard.putNumber("Ending Turn", rotation.getDegrees());
         // SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
+       
+        poseRobot = robotPose;
+       
         return desired;
     }
 
     public boolean isFinished(double time) {
         if (Robot.isReal()) {
             // return mDrivePID.atReference() && time >= (mTrajectory.getTotalTimeSeconds());
-            return time >= (mTrajectory.getTotalTimeSeconds());
+            // return time >= (mTrajectory.getTotalTimeSeconds());
+            return 
+                (Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.3) &&
+                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.2) && 
+                (Math.abs(rotation.getDegrees() - poseRobot.getRotation().getDegrees()) <= 5);
+            // return mDrivePID.atReference();
         } else {
             // return mDrivePID.atReference();
             return time >= mTrajectory.getTotalTimeSeconds();
