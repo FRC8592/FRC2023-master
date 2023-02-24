@@ -54,6 +54,7 @@ public class Elevator {
         PRIME(0.0),
         MID(Constants.LIFT_MAX_ROTATIONS / 2),
         HIGH(Constants.LIFT_MAX_ROTATIONS),
+        MANUAL(0.0),
         ;
 
         private double height;
@@ -97,6 +98,7 @@ public class Elevator {
         liftCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_DOWN_LIFT, PID_DOWN_SLOT_LIFT);
         liftCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_UP_LIFT, PID_UP_SLOT_LIFT);
         tiltCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_TILT_UP, PID_TILT_UP_SLOT);
+        // tiltCtrl.setSmartMotionMaxVelocity(MAX_VELOCITY_TILT_DOWN, PID_TILT_DOWN_SLOT);
 
         liftCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, PID_UP_SLOT_LIFT);
         liftCtrl.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, PID_UP_SLOT_LIFT);
@@ -104,6 +106,7 @@ public class Elevator {
         liftCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_DOWN_LIFT, PID_DOWN_SLOT_LIFT);
         liftCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_UP_LIFT, PID_UP_SLOT_LIFT);
         tiltCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_TILT_UP, PID_TILT_UP_SLOT);
+        // tiltCtrl.setSmartMotionMaxAccel(MAX_ACCELERATION_TILT_DOWN, PID_TILT_DOWN_SLOT);
 
         liftEncoder.setPosition(0);
         tiltEncoder.setPosition(0);
@@ -134,16 +137,10 @@ public class Elevator {
             rawTilt = tiltMotor.getAnalog(Mode.kAbsolute).getPosition();
         }
 
-        SmartDashboard.putNumber("Elevator Rotations", rawLift);
-        SmartDashboard.putNumber("Elevator Current", liftMotor.getOutputCurrent());
-        SmartDashboard.putString("Elevator State", desiredHeight.name());
-        SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
-
-        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
-        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
-
         double errorTilt;
         switch (desiredHeight) {
+            case MANUAL:
+            // Fall through to STALL
             case STALL:
                 errorTilt = 0;
                 break;
@@ -153,6 +150,14 @@ public class Elevator {
             default:
                 errorTilt = Constants.TILT_MAX_ROTATIONS - rawTilt;
         }
+
+        SmartDashboard.putNumber("Elevator Rotations", rawLift);
+        SmartDashboard.putNumber("Elevator Current", liftMotor.getOutputCurrent());
+        SmartDashboard.putString("Elevator State", desiredHeight.name());
+        SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
+
+        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
+        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
         SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
     }
 
@@ -178,34 +183,21 @@ public class Elevator {
                 if (rawLift >= Constants.LIFT_THRESHOLD_TO_STOW) { // Lifted back enough to retract pivot
                     tiltCtrl.setReference(0.0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
                 } else {
-                    tiltCtrl.setReference(0.0, ControlType.kSmartVelocity, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
+                    tiltCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
                 }
                 break;
             case STALL: // Hold both elevator and 4 bar in place
                 liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
                 tiltCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
-            case PRIME:
+            case PRIME: // Prepare 4 bar without lifting elevator
                 liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
-            // case MID:
-            //     tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
-            //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-            //     break;
-            // case HIGH:
-            //     tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
-            //     // if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
-            //     //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-            //     // } else {
-            //     //     liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
-            //     // }
-            //     if (rawTilt <= -18) { // If 
-            //         liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-            //     } else {
-            //         liftCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_UP_SLOT_LIFT, getTiltFeedForward(true));
-            //     }
-            //     break;
+            case MANUAL:
+                // tiltCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
+                // liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
+                break;
             default: // Mid or high
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 if (rawTilt <= Constants.TILT_THRESHOLD_TO_LIFT) { // Tilted enough to start lifting
@@ -222,6 +214,14 @@ public class Elevator {
         desiredHeight = desired;
     }
 
+    public void manualControl(double lift, double tilt) {
+        set(Heights.MANUAL);
+        liftMotor.set(lift / 2);
+        tiltMotor.set(tilt / 2);
+        // liftCtrl.setReference(lift * , ControlType.kSmartVelocity, PID_UP_SLOT_LIFT);
+        // tiltCtrl.setReference(tilt * , ControlType.kSmartVelocity, PID_UP_SLOT_LIFT);
+    }
+
     // Gets the amount we scale down the drivetrain speed if we are lifted passed a specific height and/or angle
     public double getDriveReduction() {
         double rawLift;
@@ -230,14 +230,6 @@ public class Elevator {
         } else {
             rawLift = liftMotor.getAnalog(Mode.kAbsolute).getPosition();
         }
-
-        // double heightInches = motorRotationsToInches(rawLift);
-
-        // if (heightInches >= Constants.LIFTED_DRIVING_LIMIT_THRESHOLD) {
-        //     return 0.25;
-        // } else {
-        //     return 0;
-        // }
         return 1.0 - rawLift / Constants.LIFT_MAX_ROTATIONS;
     }
 

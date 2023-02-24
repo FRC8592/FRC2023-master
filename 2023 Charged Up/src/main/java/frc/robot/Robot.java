@@ -195,19 +195,16 @@ public class Robot extends LoggedRobot {
     gameObjectVision.updateVision();
     elevator.update();
 
-
     /*
      * Controls:
      * 
-     * - Possibly make it so that when a certain button is held the robot switches to robot-centric for manually lining up using a camera
-     * 
      * - Driver:
-     *  - [Left Joystick X]: drivetrain left/right
-     *  - [Left Joystick Y]: drivetrain forward/back
+     *  - [Left Joystick X]: Drivetrain left/right
+     *  - [Left Joystick Y]: Drivetrain forward/back
      *  - [Right Joysick X]: Drivetrain turn
      *  - [Right Joysick Y]: N/A
      *  - [Left Bumper]: Prime elevator
-     *  - [Right Bumper]: Slow mode (*changed to only when held*)
+     *  - [Right Bumper]: Slow mode
      *  - [Left Trigger]: Target-lock cone/cube
      *  - [Right Trigger]: Target-lock apriltag/retro-reflective tape
      *  - [Back btn]: Reset field-centric rotation
@@ -240,6 +237,16 @@ public class Robot extends LoggedRobot {
      *  - [DPAD Down]: Manual wrist down (*Currently not set*)
      *  - [DPAD Left]: Activate cone mode
      *  - [DPAD Right]: Activate cube mode
+     * 
+     * - Additional Programmer Notes:
+     *  - Possibly make it so that when a certain button is held the robot switches to robot-centric for manually lining up using a camera
+     *  - Negative left trigger is equal to positive right trigger axis on some controllers
+     * 
+     * - Additional Driver Notes:
+     *  - Going to a pre-set elevator position automatically sets the pivot to the corresponding tilt
+     *  - Make sure to turn on the robot and disable the robot with the all mechanisms back to starting configuration
+     *  - Slow mode was changed from a toggle to a hold based on driver preference
+     *  - Activating cone/cube mode works for both intake and scoring target-lock
      */
 
     // ========================== \\
@@ -282,16 +289,18 @@ public class Robot extends LoggedRobot {
 
       // set LED to targetlock
 
-      driveSpeeds = new ChassisSpeeds(
-        driveSpeeds.vxMetersPerSecond,
-        driveSpeeds.vyMetersPerSecond,
-        gameObjectVision.turnRobot(
-          1.0,
-          turnPID,
-          8.0
-        )
-      );
-    } else if (driverController.getRightTriggerAxis() >= 0.1) { // Track scoring grid
+      if (gameObjectVision.targetValid) {
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond,
+          driveSpeeds.vyMetersPerSecond,
+          gameObjectVision.turnRobot(
+            1.0,
+            turnPID,
+            8.0
+          )
+        );
+      }
+    } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
       if (coneVision) {
         NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
       } else {
