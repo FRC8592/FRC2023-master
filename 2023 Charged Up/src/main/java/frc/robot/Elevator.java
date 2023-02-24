@@ -12,7 +12,7 @@ import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Lift {
+public class Elevator {
     
     // Elevator Lift Hardware
     private CANSparkMax liftMotor;
@@ -49,30 +49,25 @@ public class Lift {
     // Elevator States
     private Heights desiredHeight = Heights.STOWED;
     public enum Heights {
-        STOWED(0.0, 0.0),
-        STALL(0.0, 0.0),
-        PRIME(0.0, Constants.TILT_MAX_ROTATIONS),
-        MID(Constants.LIFT_MAX_ROTATIONS / 2, Constants.TILT_MAX_ROTATIONS),
-        HIGH(Constants.LIFT_MAX_ROTATIONS, Constants.TILT_MAX_ROTATIONS),
+        STOWED(0.0),
+        STALL(0.0),
+        PRIME(0.0),
+        MID(Constants.LIFT_MAX_ROTATIONS / 2),
+        HIGH(Constants.LIFT_MAX_ROTATIONS),
         ;
 
-        double height, tilt;
-        Heights(double height, double tilt) {
+        private double height;
+        Heights(double height) {
             this.height = height;
-            this.tilt = tilt;
         }
 
         double getHeight() {
             return height;
         }
-
-        double getTilt() {
-            return tilt;
-        }
     }
 
     // Did not set tilt down max accel and velocity
-    public Lift() {
+    public Elevator() {
         liftMotor = new CANSparkMax(Constants.ELEVATOR_LIFT_MOTOR_ID, MotorType.kBrushless);
         tiltMotor = new CANSparkMax(Constants.ELEVATOR_TILT_MOTOR_ID, MotorType.kBrushless);
         liftCtrl = liftMotor.getPIDController();
@@ -119,12 +114,11 @@ public class Lift {
         liftMotor.setSmartCurrentLimit(MAX_CURRENT_LIFT);
         tiltMotor.setSmartCurrentLimit(MAX_CURRENT_TILT);
 
-        // Consider dividing the upper soft limit by the sin of the angle to get the actual upper max
         liftMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.LIFT_MAX_ROTATIONS);
         liftMotor.setSoftLimit(SoftLimitDirection.kForward, 0f);
 
         tiltMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.TILT_MAX_ROTATIONS);
-        tiltMotor.setSoftLimit(SoftLimitDirection.kForward, 5f);
+        tiltMotor.setSoftLimit(SoftLimitDirection.kForward, 0f);
 
         tiltMotor.setInverted(true);
     }
@@ -140,15 +134,30 @@ public class Lift {
             rawTilt = tiltMotor.getAnalog(Mode.kAbsolute).getPosition();
         }
 
-        SmartDashboard.putNumber("Elevator/Lift Rotations", rawLift);
-        SmartDashboard.putNumber("Elevator/Tilt Rotations", rawTilt);
-        SmartDashboard.putNumber("Elevator/Tilt Current", tiltMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Elevator/Lift Current", liftMotor.getOutputCurrent());
-        SmartDashboard.putString("Elevator/Elevator State", desiredHeight.name());
+        SmartDashboard.putNumber("Elevator Rotations", rawLift);
+        SmartDashboard.putNumber("Elevator Current", liftMotor.getOutputCurrent());
+        SmartDashboard.putString("Elevator State", desiredHeight.name());
+        SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
+
+        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
+        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
+
+        double errorTilt;
+        switch (desiredHeight) {
+            case STALL:
+                errorTilt = 0;
+                break;
+            case STOWED:
+                errorTilt = -rawTilt;
+                break;
+            default:
+                errorTilt = Constants.TILT_MAX_ROTATIONS - rawTilt;
+        }
+        SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
     }
 
-    // Resets encoders and potentially other sensors
-    public void reset() {
+    // Resets encoders and potentially other sensors to desired start angle
+    public void reset(double lift, double tilt) {
         liftEncoder.setPosition(0);
         tiltEncoder.setPosition(0);
     }
@@ -164,65 +173,48 @@ public class Lift {
         }
 
         switch(desiredHeight) {
-            case STOWED: // Make sure lift retracts before 4 bar
+            case STOWED:
                 liftCtrl.setReference(0.0, ControlType.kSmartMotion);
-                if (rawLift >= -5.0) {
+                if (rawLift >= Constants.LIFT_THRESHOLD_TO_STOW) { // Lifted back enough to retract pivot
                     tiltCtrl.setReference(0.0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
                 } else {
                     tiltCtrl.setReference(0.0, ControlType.kSmartVelocity, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
                 }
                 break;
             case STALL: // Hold both elevator and 4 bar in place
-                liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
-                tiltCtrl.setReference(0.0, ControlType.kSmartVelocity, PID_UP_SLOT_LIFT);
+                liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
+                tiltCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
             case PRIME:
-                liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
+                liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
-            case MID:
-                tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
-                // if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
-                //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-                // } else {
-                //     liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
-                // }
-                liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-                break;
-            case HIGH:
-                tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
-                // if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
-                //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-                // } else {
-                //     liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
-                // }
-                liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-                break;
+            // case MID:
+            //     tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
+            //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+            //     break;
+            // case HIGH:
+            //     tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
+            //     // if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
+            //     //     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+            //     // } else {
+            //     //     liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
+            //     // }
+            //     if (rawTilt <= -18) { // If 
+            //         liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+            //     } else {
+            //         liftCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_UP_SLOT_LIFT, getTiltFeedForward(true));
+            //     }
+            //     break;
             default: // Mid or high
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
-                if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
-                    liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
+                if (rawTilt <= Constants.TILT_THRESHOLD_TO_LIFT) { // Tilted enough to start lifting
+                    liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
                 } else {
-                    liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
+                    liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
                 }
                 break;
         }
-
-        // if (desiredHeight == Heights.STOWED) { // Make sure lift retracts before 4 bar
-        //     liftCtrl.setReference(0.0, ControlType.kSmartMotion);
-        //     if (rawLift >= -5.0) {
-        //         tiltCtrl.setReference(0.0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
-        //     } else {
-        //         tiltCtrl.setReference(0.0, ControlType.kSmartVelocity, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
-        //     }
-        // } else { // Make sure 4 bar extends before lift
-        //     tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
-        //     if (Math.abs(rawTilt - Constants.TILT_MAX_ROTATIONS) <= 3.0 && desiredHeight != Heights.PRIME) {
-        //         liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion);
-        //     } else {
-        //         liftCtrl.setReference(0.0, ControlType.kSmartVelocity);
-        //     }
-        // }
     }
 
     // Sets the desired Height state of the elevator
@@ -232,12 +224,12 @@ public class Lift {
 
     // Gets the amount we scale down the drivetrain speed if we are lifted passed a specific height and/or angle
     public double getDriveReduction() {
-        // double rawLift;
-        // if (Robot.isReal()) {
-        //     rawLift = liftEncoder.getPosition();
-        // } else {
-        //     rawLift = liftMotor.getAnalog(Mode.kAbsolute).getPosition();
-        // }
+        double rawLift;
+        if (Robot.isReal()) {
+            rawLift = liftEncoder.getPosition();
+        } else {
+            rawLift = liftMotor.getAnalog(Mode.kAbsolute).getPosition();
+        }
 
         // double heightInches = motorRotationsToInches(rawLift);
 
@@ -246,7 +238,7 @@ public class Lift {
         // } else {
         //     return 0;
         // }
-        return 0.0;
+        return 1.0 - rawLift / Constants.LIFT_MAX_ROTATIONS;
     }
 
     private double getTiltFeedForward(boolean up) {

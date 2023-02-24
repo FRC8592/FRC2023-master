@@ -63,9 +63,12 @@ public class Intake {
     public void writeToSmartDashboard() {
         double rawWristPosition = wristEncoder.getPosition(); // rotations
         
-        SmartDashboard.putNumber("Intake/Wrist Position", rawWristPosition);
-        SmartDashboard.putNumber("Intake/Wrist Current", wristMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Intake/Roller Current", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Wrist position", rawWristPosition);
+        SmartDashboard.putNumber("Wrist current", wristMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Roller current", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Roller velocity", rollerEncoder.getVelocity());
+        SmartDashboard.putBoolean("Cone beam broken", beamCone.isBroken());
+        SmartDashboard.putBoolean("Cone beam broken", beamCube.isBroken());
     }
 
     public void stow() {
@@ -73,7 +76,7 @@ public class Intake {
         rollerMotor.set(0.0);
     }
 
-    public void intake() {
+    public void intakeRoller() {
         // wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
         // if (beamCone.isBroken() && beamCube.isBroken()) {
         //     rollerMotor.set(0.8);
@@ -83,14 +86,14 @@ public class Intake {
         rollerMotor.set(0.8);
     }
 
-    public void outtake() {
+    public void outtakeRoller() {
         rollerMotor.set(-0.8);
     }
 
-    public void score() {
+    public void scoreRoller() {
         // wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
         if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS) <= 5.0){
-            outtake();
+            outtakeRoller();
         } else {
             stopRoller();
         }
@@ -112,5 +115,9 @@ public class Intake {
 
     public void stopRoller() {
         rollerMotor.set(0.0);
+    }
+
+    public boolean hasPiece() { // Beam break not tested yet
+        return beamCone.isBroken() || beamCube.isBroken();
     }
 }

@@ -111,6 +111,8 @@ public final class Constants {
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
+    public static final double TILT_THRESHOLD_TO_LIFT = -18;
+    public static final double LIFT_THRESHOLD_TO_STOW = -10;
 
 
     //

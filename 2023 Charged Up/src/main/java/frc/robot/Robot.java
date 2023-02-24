@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Lift.Heights;
+import frc.robot.Elevator.Heights;
 import edu.wpi.first.wpilibj.XboxController;
 
 
@@ -55,7 +55,7 @@ public class Robot extends LoggedRobot {
 
   public Vision gameObjectVision;
   public String currentPiecePipeline;
-  private Lift lift;
+  private Elevator elevator;
   private Intake intake;
   public FRCLogger logger;
   public PIDController turnPID;
@@ -104,10 +104,10 @@ public class Robot extends LoggedRobot {
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
     strafePID = new PIDController(-0.2, 0, 0);
-    lift = new Lift();
+    elevator = new Elevator();
     intake = new Intake();
-    intake.reset();
-    lift.reset();
+    // intake.reset();
+    // lift.reset();
   }
 
   /**
@@ -120,7 +120,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
-    lift.writeToSmartDashboard();
+    elevator.writeToSmartDashboard();
   }
 
   /**
@@ -162,7 +162,7 @@ public class Robot extends LoggedRobot {
     //   break;
     // }
     autoPark.balance(drive);
-    lift.update();
+    elevator.update();
   }
   
   /** This function is called once when teleop is enabled. */
@@ -193,10 +193,14 @@ public class Robot extends LoggedRobot {
 
     drive.getCurrentPos();
     gameObjectVision.updateVision();
-    lift.update();
+    elevator.update();
+
 
     /*
      * Controls:
+     * 
+     * - Possibly make it so that when a certain button is held the robot switches to robot-centric for manually lining up using a camera
+     * 
      * - Driver:
      *  - [Left Joystick X]: drivetrain left/right
      *  - [Left Joystick Y]: drivetrain forward/back
@@ -324,7 +328,9 @@ public class Robot extends LoggedRobot {
     // ======= Wrist ======= \\
     // ===================== \\
 
-    if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getRightTriggerAxis() >= 0.1) {
+    // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
+
+    if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
       intake.enableWrist(true);
     } else if (operatorController.getLeftBumper()) {
       intake.enableWrist(false);
@@ -335,11 +341,11 @@ public class Robot extends LoggedRobot {
     // ======================= \\
 
     if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
-      intake.intake();
-    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Outtake game piece
-      intake.score();
-    } else if (operatorController.getRightBumper()) { // Score game piece
-      intake.outtake();
+      intake.intakeRoller();
+    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
+      intake.scoreRoller();
+    } else if (operatorController.getRightBumper()) { // Outtake game piece
+      intake.outtakeRoller();
     } else { // Stop rollers
       intake.stopRoller();
     }
@@ -349,15 +355,15 @@ public class Robot extends LoggedRobot {
     // ======================== \\
 
     if (operatorController.getAButton() || driverController.getAButton()) { // Stowed height
-      lift.set(Heights.STOWED);
+      elevator.set(Heights.STOWED);
     } else if (operatorController.getXButton()) { // Mid height
-      lift.set(Heights.MID);
+      elevator.set(Heights.MID);
     } else if (operatorController.getYButton()) { // High height
-      lift.set(Heights.HIGH);
+      elevator.set(Heights.HIGH);
     } if (driverController.getLeftBumper()) { // Prime
-      lift.set(Heights.PRIME);
+      elevator.set(Heights.PRIME);
     } else { // Stall at current height
-      lift.set(Heights.STALL);
+      elevator.set(Heights.STALL);
     }
   }
 
@@ -395,19 +401,20 @@ public class Robot extends LoggedRobot {
     //   intake.stopRoller();
     // }
 
-    lift.update();
+    elevator.update();
+    elevator.set(Heights.HIGH);
 
-    if (operatorController.getAButton()) {
-      lift.set(Heights.STOWED);
-    } else if (operatorController.getYButton()) {
-      lift.set(Heights.PRIME);
-    } else if (operatorController.getXButton()) {
-      lift.set(Heights.HIGH);
-    } else if (operatorController.getBButton()){
-      lift.set(Heights.MID);
-    } else {
-      lift.set(Heights.STALL);
-    }
+    // if (operatorController.getAButton()) {
+    //   lift.set(Heights.STOWED);
+    // } else if (driverController.getLeftBumper()) {
+    //   lift.set(Heights.PRIME);
+    // } else if (operatorController.getXButton()) {
+    //   lift.set(Heights.MID);
+    // } else if (operatorController.getYButton()){
+    //   lift.set(Heights.HIGH);
+    // } else {
+    //   lift.set(Heights.STALL);
+    // }
 
     SmartDashboard.putNumber("Left Trigger", operatorController.getLeftTriggerAxis());
     SmartDashboard.putNumber("Right Trigger", operatorController.getRightTriggerAxis());
