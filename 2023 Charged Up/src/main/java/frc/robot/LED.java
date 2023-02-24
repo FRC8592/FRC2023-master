@@ -87,6 +87,7 @@ public class LED {
     }
 
     public enum LEDPattern {
+        SOLID,
         UP_AND_DOWN,
         BINARY,
         FIRE,
@@ -155,6 +156,10 @@ public class LED {
                 break;
             case SNAKE:
                 setSnake(col1);
+                break;
+            case SOLID:
+                setSolid(col1);
+                lastFunction="solid";
                 break;
             case OFF:
                 setOff();
@@ -377,6 +382,11 @@ public class LED {
                     setColor(21-(location-i),getColorAtBrightness(color, 0.0666*i));
                 }
             }
+        }
+    }
+    public void setSolid(PresetColor col1){
+        for(int i = 0; i < 42; i++){
+            setColor(i, col1);
         }
     }
     public void setOff(){
