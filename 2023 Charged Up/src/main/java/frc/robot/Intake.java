@@ -53,6 +53,8 @@ public class Intake {
 
         beamCone = new BeamSensor(Constants.BEAM_BREAK_CONE_ID);
         beamCube = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
+
+        SmartDashboard.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS);
     }
 
     public void reset() {
@@ -107,7 +109,8 @@ public class Intake {
 
     public void enableWrist(boolean enable) {
         if (enable) {
-            wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+            // wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+            wristCtrl.setReference(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS), ControlType.kSmartMotion);
         } else {
             wristCtrl.setReference(0.0, ControlType.kSmartMotion);
         }

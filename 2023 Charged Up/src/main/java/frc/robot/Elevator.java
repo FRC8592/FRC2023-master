@@ -183,15 +183,15 @@ public class Elevator {
                 if (rawLift >= Constants.LIFT_THRESHOLD_TO_STOW) { // Lifted back enough to retract pivot
                     tiltCtrl.setReference(0.0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
                 } else {
-                    tiltCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
+                    tiltMotor.set(0.0);
                 }
                 break;
             case STALL: // Hold both elevator and 4 bar in place
-                liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
-                tiltCtrl.setReference(rawTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
+                liftMotor.set(0.0);
+                tiltMotor.set(0.0);
                 break;
             case PRIME: // Prepare 4 bar without lifting elevator
-                liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
+                liftMotor.set(0.0);
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
             case MANUAL:
@@ -200,10 +200,10 @@ public class Elevator {
                 break;
             default: // Mid or high
                 tiltCtrl.setReference(Constants.TILT_MAX_ROTATIONS, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
-                if (rawTilt <= Constants.TILT_THRESHOLD_TO_LIFT) { // Tilted enough to start lifting
+                if (Math.abs(rawTilt) >= Math.abs(Constants.TILT_THRESHOLD_TO_LIFT)) {
                     liftCtrl.setReference(desiredHeight.getHeight(), ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
                 } else {
-                    liftCtrl.setReference(rawLift, ControlType.kSmartMotion, PID_UP_SLOT_LIFT);
+                    liftMotor.set(0.0);
                 }
                 break;
         }

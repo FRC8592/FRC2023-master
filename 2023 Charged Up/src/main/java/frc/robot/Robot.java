@@ -363,13 +363,13 @@ public class Robot extends LoggedRobot {
     // ======= Elevator ======= \\
     // ======================== \\
 
-    if (operatorController.getAButton() || driverController.getAButton()) { // Stowed height
+    if (operatorController.getAButton()) { // Stowed height
       elevator.set(Heights.STOWED);
     } else if (operatorController.getXButton()) { // Mid height
       elevator.set(Heights.MID);
     } else if (operatorController.getYButton()) { // High height
       elevator.set(Heights.HIGH);
-    } if (driverController.getLeftBumper()) { // Prime
+    } else if (driverController.getLeftBumper()) { // Prime
       elevator.set(Heights.PRIME);
     } else { // Stall at current height
       elevator.set(Heights.STALL);
