@@ -286,8 +286,6 @@ public class Robot extends LoggedRobot {
       shouldBalance = false;
     }
 
-    
-
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
@@ -323,6 +321,13 @@ public class Robot extends LoggedRobot {
       * rotatePower;
     translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      driveScaler.scale(translateX), 
+      driveScaler.scale(translateY), 
+      driveScaler.scale(rotate), 
+      drive.getGyroscopeRotation()
+    );
 
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
