@@ -55,7 +55,7 @@ public class LED {
     String lastFunction="";
     
     //Constants
-    private static final int LED_LENGTH = 43;
+    private static final int LED_LENGTH = 42;
     private static final double MINIMUM_VOLTAGE = 9.0;
     private static final int PULSE_METHOD_SPEED = 4;
     private static final int PULSE_SIZE = 3; 
@@ -104,8 +104,8 @@ public class LED {
     public LED(Power power, Vision vision){
         //Get the physical LEDs ready
         liftNEOPIXELS = new AddressableLED(0);
-        liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
-        liftNEOPIXELS.setLength(LED_LENGTH);
+        liftBuffer = new AddressableLEDBuffer(LED_LENGTH+1);
+        liftNEOPIXELS.setLength(LED_LENGTH+1);
 
         //Vision and power objects; see above
         this.vision = vision;
@@ -177,9 +177,9 @@ public class LED {
                 setColor(0,PresetColor.RED);
                 setColor(1,PresetColor.RED);
                 setColor(2,PresetColor.RED);
-                setColor(42,PresetColor.RED);
-                setColor(41,PresetColor.RED);
-                setColor(40,PresetColor.RED);
+                setColor(LED_LENGTH,PresetColor.RED);
+                setColor(LED_LENGTH-1,PresetColor.RED);
+                setColor(LED_LENGTH-2,PresetColor.RED);
             }
             if (lowVoltTimer.get() > 2) {
                 lowVoltTimer.stop();
@@ -216,7 +216,7 @@ public class LED {
             }
     }
     public void setTargetLock(){
-        for(int i = 0; i < 42; i++){
+        for(int i = 0; i < LED_LENGTH; i++){
             setColor(i, PresetColor.OFF);
         }
         vision.updateVision();
@@ -293,9 +293,9 @@ public class LED {
         Collections.sort(fireBlobs);
 
         //Clear the LED list
-        for(int i = 0; i < 42; i++){
+        for(int i = 0; i < LED_LENGTH; i++){
             setColor(i,new Color(0,0,0));
-            setColor(42-i,new Color(0,0,0));
+            setColor(LED_LENGTH-i,new Color(0,0,0));
         }
 
         //                                              For all fireBlobs,
@@ -306,7 +306,7 @@ public class LED {
                 if(j>-1){
                     //                                  assign the LED at the index to the color of the blob
                     setColor(j, fireBlobs.get(i).getColor());
-                    setColor(42-j, fireBlobs.get(i).getColor());
+                    setColor(LED_LENGTH-j, fireBlobs.get(i).getColor());
                 }
             }
         }
@@ -320,17 +320,17 @@ public class LED {
     }
     public void setWaves(PresetColor col1, PresetColor col2) {
         waveCounter++;
-        for(int i = 0; i < 21 / 2; i++) {
-            if(Math.abs(21 / 2 + i - indexOn) % 5 < PULSE_SIZE) {
-                setColor((21 / 2 + i), col1);
-                setColor((21 / 2 - 1 - i), col1);
-                setColor(42-(21 / 2 + i), col1);
-                setColor(42-(21 / 2 - 1 - i), col1);
+        for(int i = 0; i < LED_LENGTH / 4; i++) {
+            if(Math.abs(LED_LENGTH / 4 + i - indexOn) % 5 < PULSE_SIZE) {
+                setColor((LED_LENGTH / 4 + i), col1);
+                setColor((LED_LENGTH / 4 - 1 - i), col1);
+                setColor(LED_LENGTH-(LED_LENGTH / 4 + i), col1);
+                setColor(LED_LENGTH-(LED_LENGTH / 4 - 1 - i), col1);
             } else {
-                setColor((21 / 2 + i), col2);
-                setColor((21 / 2 - 1- i), col2);
-                setColor(42-(21 / 2 + i), col2);
-                setColor(42-(21 / 2 - 1- i), col2);
+                setColor((LED_LENGTH / 4 + i), col2);
+                setColor((LED_LENGTH / 4 - 1- i), col2);
+                setColor(LED_LENGTH-(LED_LENGTH / 4 + i), col2);
+                setColor(LED_LENGTH-(LED_LENGTH / 4 - 1- i), col2);
             }
         }
         if (waveCounter >= PULSE_METHOD_SPEED) {
@@ -347,7 +347,7 @@ public class LED {
             location = (int)(snakeTimer.get()*speed);
             direction=0;
         }
-        else if (snakeTimer.get()*speed<42){
+        else if (snakeTimer.get()*speed<LED_LENGTH){
             location = 21-(((int)(snakeTimer.get()*speed))-21);
             direction=1;
         }
@@ -356,7 +356,7 @@ public class LED {
             location=1;
             direction=0;
         }
-        for(int i = 0; i < 42; i++){
+        for(int i = 0; i < LED_LENGTH; i++){
             setColor(i,PresetColor.OFF);
         }
         if(direction==0){
@@ -367,7 +367,7 @@ public class LED {
                 }
                 else {
                     setColor(21-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
-                    setColor(42-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
+                    setColor(LED_LENGTH-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
                 }
             }
         }
@@ -385,7 +385,7 @@ public class LED {
         }
     }
     public void setSolid(PresetColor col1){
-        for(int i = 0; i < 42; i++){
+        for(int i = 0; i < LED_LENGTH; i++){
             setColor(i, col1);
         }
     }

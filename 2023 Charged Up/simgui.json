@@ -1,5 +1,16 @@
 {
   "HALProvider": {
+    "Addressable LEDs": {
+      "0": {
+        "columns": 2,
+        "order": 1,
+        "serpentine": true,
+        "start": 1
+      },
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
       "SPARK MAX [0]": {
         "header": {

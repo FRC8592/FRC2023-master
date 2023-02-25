@@ -324,7 +324,22 @@ public class Robot extends LoggedRobot {
     // 0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     // //                                                          // opposite of controller direct
     // drive.setWheelLock();
-    ledStrips.set(LEDPattern.FIRE, null, null);
+    ledStrips.updatePeriodic(false);
+    if (shooterController.getYButton()) {
+      ledStrips.set(LEDPattern.UP_AND_DOWN, PresetColor.YELLOW, PresetColor.PURPLE);
+    }
+    else if (shooterController.getXButton()) {
+      ledStrips.set(LEDPattern.SNAKE, PresetColor.RED, null);
+    }
+    else if (shooterController.getAButton()){
+        ledStrips.set(LEDPattern.FIRE, null, null);
+    }
+    else if (shooterController.getBButton()){
+        ledStrips.set(LEDPattern.WAVES, PresetColor.BLUE, PresetColor.OFF);
+    }
+    else {
+      ledStrips.set(LEDPattern.BINARY, PresetColor.BLUE, PresetColor.OFF);
+    }
   }
 
   /** This function is called once when test mode is enabled. */
