@@ -73,13 +73,7 @@ public class Intake {
         SmartDashboard.putBoolean("Cone beam broken", beamCube.isBroken());
     }
 
-    public void stow() {
-        // wristCtrl.setReference(Constants.WRIST_STOWED_ROTATIONS, ControlType.kSmartMotion);
-        rollerMotor.set(0.0);
-    }
-
     public void intakeRoller() {
-        // wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
         // if (beamCone.isBroken() && beamCube.isBroken()) {
         //     rollerMotor.set(0.8);
         // } else {
@@ -93,7 +87,6 @@ public class Intake {
     }
 
     public void scoreRoller() {
-        // wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
         if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS) <= 5.0){
             outtakeRoller();
         } else {
@@ -109,7 +102,6 @@ public class Intake {
 
     public void enableWrist(boolean enable) {
         if (enable) {
-            // wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
             wristCtrl.setReference(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS), ControlType.kSmartMotion);
         } else {
             wristCtrl.setReference(0.0, ControlType.kSmartMotion);
