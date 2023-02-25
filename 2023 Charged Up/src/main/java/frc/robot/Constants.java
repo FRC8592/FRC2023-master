@@ -56,6 +56,74 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 11;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(285.0);
 
+
+    public static final double LEVEL_PITCH = 3.0;
+    public static final double PITCH_MULTIPLIER = 1.0 / 40.0;
+    //
+    // CAN IDs for intake hardware (NEEDS SETTING)
+    //
+    public static final int WRIST_ID    = 17;
+    public static final int ROLLER_ID    = 18;
+    public static final int BEAM_BREAK_CONE_ID      = 2;
+    public static final int BEAM_BREAK_CUBE_ID      = 3;
+    public static final int ROLLER_MAX_CURRENT_AMPS = 10;
+    public static final int WRIST_MAX_CURRENT_AMPS = 20;
+    public static final double ROLLER_KP = 0.00025;
+    public static final double ROLLER_KI = 0.0;
+    public static final double ROLLER_KD = 0.0;
+    public static final double ROLLER_KF = 0.0;
+    public static final double WRIST_KP = 0.0001;
+    public static final double WRIST_KI = 0.0;
+    public static final double WRIST_KD = 0.0;
+    public static final double WRIST_KF = 0.0;
+    public static final double ROLLER_GEAR_RATIO = 1.0;
+    public static final double WRIST_GEAR_RATIO = 1.0 / 64.0;
+    public static final int ROLLER_PID_SLOT = 0;
+    public static final int WRIST_PID_SLOT = 0;
+    public static final double ROLLER_MAX_ACCELERATION = 1.0; // Rotations per minute per second
+    public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
+    public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
+    public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
+    public static final double WRIST_INTAKE_ROTATIONS = 51.25;
+    public static final double WRIST_STOWED_ROTATIONS = 0;
+    public static final double WRIST_SCORING_ROTATIONS = 52.0;
+    public static final double WRIST_MAX_ROTATIONS = 58;
+
+    //
+    // Constants and IDs for elevator hardware (NEEDS SETTING)
+    //
+    public static final int ELEVATOR_LIFT_MOTOR_ID   = 16;
+    public static final int ELEVATOR_TILT_MOTOR_ID   = 15;
+    public static final double ARM_ANGLE_OUT         = 30;
+    public static final double ARM_ANGLE_IN          = 90;
+    public static final double STOWED_HEIGHT_CONE    = 0;
+    public static final double LOW_HEIGHT_CONE       = 1;
+    public static final double MID_HEIGHT_CONE       = 2;
+    public static final double HIGH_HEIGHT_CONE      = 3;
+    public static final double STOWED_HEIGHT_CUBE    = 0;
+    public static final double LOW_HEIGHT_CUBE       = 1;
+    public static final double MID_HEIGHT_CUBE       = 2;
+    public static final double HIGH_HEIGHT_CUBE      = 3;
+    public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
+    public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
+    public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
+    public static final double TILT_MAX_ROTATIONS = -23.0;
+    public static final double LIFT_MAX_ROTATIONS = -80;
+    public static final double LIFT_STOWED_ROTATIONS = 0;
+    public static final double LIFT_MAX_INCHES = -63;
+    public static final double TILT_THRESHOLD_TO_LIFT = -18;
+    public static final double LIFT_THRESHOLD_TO_STOW = -10;
+
+
+    //
+    // IDs for claw pneumatics (NEEDS SETTING)
+    //
+    public static final int PNEUMATIC_MODULE_ID = 14;
+    public static final int CLAW_PNEUMATIC_CHANNEL = 15;
+    public static final int MIN_COMPRESSOR_PSI = 60;
+    public static final int MAX_COMPRESSOR_PSI = 100;
+
+
     //
     // CAN IDs for the ball collector and launching system
     //
@@ -226,12 +294,13 @@ public final class Constants {
     public static final double ANGLE_B = -55;
     public static final double ANGLE_C = 24;
 
-    public static final int CUBE_PIPELINE = 1;
-    public static final int CONE_PIPELINE = 0;
+    public static final int CUBE_PIPELINE = 0;
+    public static final int CONE_PIPELINE = 1;
     public static final int APRILTAG_PIPELINE = 2;
     public static final int RETROTAPE_PIPELINE = 3;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
+    public static final double WHEEL_LOCK_RADIANS = 0.785398;
 
 }
 
