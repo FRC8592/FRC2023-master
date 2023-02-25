@@ -21,14 +21,14 @@ public class AutonomousSelector {
     private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-        CableCoverTwoPieceParkAuto.class,
-        CableCoverThreePieceAuto.class,
+        // CableCoverTwoPieceParkAuto.class,
+        // CableCoverThreePieceAuto.class,
         // LoadingZoneTwoPieceParkAuto.class,
-        LoadingZoneThreePieceAuto.class,
+        // LoadingZoneThreePieceAuto.class,
         // MiddlePreloadParkAuto.class,
         // MoveOutCommunityAuto.class,
         // LoadingZoneThreePieceParkAuto.class,
-        TestMoveAndTurnAuto.class,
+        // TestMoveAndTurnAuto.class,
         MiddleBalanceAuto.class
     };
 
