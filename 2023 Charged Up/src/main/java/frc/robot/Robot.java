@@ -74,6 +74,8 @@ public class Robot extends LoggedRobot {
   private AutonomousSelector selector;
   public Autopark autoPark;
 
+  private DriveScaler driveScaler;
+
   public static Field2d FIELD = new Field2d();
 
   /**
@@ -114,6 +116,10 @@ public class Robot extends LoggedRobot {
     strafePID = new PIDController(-0.2, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
+    // intake.reset();
+    // lift.reset();
+
+    driveScaler = new DriveScaler();
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
   }
@@ -197,6 +203,8 @@ public class Robot extends LoggedRobot {
 
     drive.setTeleopCurrentLimit();
     autoPark = new Autopark();
+
+    SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
   }
   
   /** This function is called periodically during operator control. */
@@ -343,9 +351,9 @@ public class Robot extends LoggedRobot {
       );
     } else { // Normal drive
       driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        joystickDeadband(translateX), 
-        joystickDeadband(translateY),
-        joystickDeadband(rotate), 
+        driveScaler.scale(joystickDeadband(translateX)),
+        driveScaler.scale(joystickDeadband(translateY)),
+        joystickDeadband(rotate),
         drive.getGyroscopeRotation()
       );
     }
