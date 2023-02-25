@@ -9,11 +9,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.ConfigRun.AutoOptions;
+import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.AutoDrive;
 import frc.robot.autonomous.AutonomousSelector;
 import frc.robot.autonomous.autons.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import frc.robot.Elevator.Heights;
 import edu.wpi.first.wpilibj.XboxController;
 
 
@@ -154,7 +154,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     selectedAuto = selector.getSelectedAutonomous();
-    selectedAuto.addModules(drive, lift, intake); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.addModules(drive, elevator, intake); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
     selectedAuto.addDelay(selector.getDelay());
     
@@ -271,6 +271,14 @@ public class Robot extends LoggedRobot {
     // ========================== \\
     // ======= Drivetrain ======= \\
     // ========================== \\
+    boolean shouldBalance = false;
+    if (driverController.getStartButton()){
+      shouldBalance = true;
+    }else{
+      shouldBalance = false;
+    }
+
+    
 
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
@@ -343,8 +351,11 @@ public class Robot extends LoggedRobot {
     }
 
     if (driverController.getBButton()) { // Wheels locked
+      
       drive.setWheelLock();
-    } else {
+    } else if (shouldBalance){
+      autoPark.balance(drive);
+    }else {
       drive.drive(driveSpeeds);
     }
 

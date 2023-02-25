@@ -2,7 +2,7 @@ package frc.robot.autonomous.autons;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import frc.robot.Lift.Heights;
+import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.commands.CommandQueue;
 import frc.robot.commands.FollowerCommand;
@@ -112,7 +112,7 @@ public class CableCoverThreePieceAuto extends BaseAuto {
             new ScoreCommand(intake), // Score preload game piece
             new JointCommand( // Lower lift; go to and intake second game piece
                 new FollowerCommand(drive, H_TO_Icc),
-                new LiftCommand(lift, Heights.STOWED)
+                new LiftCommand(elevator, Heights.STOWED)
             ),
             new JointCommand(
                 new FollowerCommand(drive, Icc_TO_GP4.addRotation(Rotation2d.fromDegrees(180))),
@@ -123,11 +123,11 @@ public class CableCoverThreePieceAuto extends BaseAuto {
                 new FollowerCommand(drive, Icc_TO_I)
                 // new LiftCommand(lift, Heights.PRIME)
             ),
-            new LiftCommand(lift, Heights.HIGH), // Lift to high height and score second piece
+            new LiftCommand(elevator, Heights.HIGH), // Lift to high height and score second piece
             new ScoreCommand(intake),
             new JointCommand( // Lower lift; go to and intake third game piece
                 new FollowerCommand(drive, I_TO_Icc),
-                new LiftCommand(lift, Heights.STOWED)
+                new LiftCommand(elevator, Heights.STOWED)
             ),
             new JointCommand(
                 new FollowerCommand(drive, Icc_TO_GP3.addRotation(Rotation2d.fromDegrees(-135))),
@@ -138,7 +138,7 @@ public class CableCoverThreePieceAuto extends BaseAuto {
                 new FollowerCommand(drive, Icc_TO_G)
                 // new LiftCommand(lift, Heights.PRIME)
             ),
-            new LiftCommand(lift, Heights.HIGH), // Lift to high height and score third piece
+            new LiftCommand(elevator, Heights.HIGH), // Lift to high height and score third piece
             new ScoreCommand(intake)
         );
     }

@@ -2,14 +2,14 @@ package frc.robot.autonomous.autons;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Drivetrain;
+import frc.robot.Elevator;
 import frc.robot.Intake;
-import frc.robot.Lift;
 import frc.robot.Robot;
 import frc.robot.commands.CommandQueue;
 
 public abstract class BaseAuto {
     protected Drivetrain drive;
-    protected Lift lift;
+    protected Elevator elevator;
     protected Intake intake;
     protected CommandQueue queue;
 
@@ -19,9 +19,9 @@ public abstract class BaseAuto {
      * Add all running subsystems for use for all autonomous routines
      * @param pDrive {@code drivetrain} object
      */
-    public void addModules(Drivetrain pDrive, Lift pLift, Intake pIntake) {
+    public void addModules(Drivetrain pDrive, Elevator pLift, Intake pIntake) {
         drive = pDrive;
-        lift = pLift;
+        elevator = pLift;
         intake = pIntake;
     }
 

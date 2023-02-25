@@ -40,7 +40,7 @@ public class IntakeCommand extends Command {
     public boolean execute() {
         if (timer.get() >= delay) {
             intake.enableWrist(true);
-            intake.intake();
+            intake.intakeRoller();
             return intake.hasPiece() || isDependent;
         }
         return isDependent;

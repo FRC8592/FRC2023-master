@@ -3,9 +3,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Intake;
-import frc.robot.Lift;
+import frc.robot.Elevator;
 import frc.robot.Robot;
-import frc.robot.Lift.Heights;
+import frc.robot.Elevator.Heights;
 
 public class ScoreCommand extends Command {
     private Timer timer;
@@ -33,7 +33,7 @@ public class ScoreCommand extends Command {
         if (Robot.isReal()) {
             if (timer.get() >= delay) {
                 intake.enableWrist(true);
-                intake.score();
+                intake.scoreRoller();
                 return !intake.hasPiece();
             }
             return false;

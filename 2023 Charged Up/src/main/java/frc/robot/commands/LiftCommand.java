@@ -1,22 +1,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Lift;
+import frc.robot.Elevator;
 import frc.robot.Robot;
-import frc.robot.Lift.Heights;
+import frc.robot.Elevator.Heights;
 
 public class LiftCommand extends Command {
     private Timer timer;
-    private Lift lift;
+    private Elevator lift;
     private Heights height;
     private double delay = 0;
 
-    public LiftCommand(Lift lift, Heights height) {
+    public LiftCommand(Elevator lift, Heights height) {
         this.lift = lift;
         this.height = height;
     }
 
-    public LiftCommand(Lift lift, Heights height, double delay) {
+    public LiftCommand(Elevator lift, Heights height, double delay) {
         this.lift = lift;
         this.height = height;
         this.delay = delay;
@@ -34,7 +34,7 @@ public class LiftCommand extends Command {
     public boolean execute() {
         if (Robot.isReal()) {
             if (timer.get() >= delay) {
-                lift.setHeight(height);
+                lift.set(height);
                 return lift.atReference();
             }
             return false;
@@ -44,8 +44,9 @@ public class LiftCommand extends Command {
 
     @Override
     public void shutdown() {
-        lift.testPlanTilt(null);
-        lift.testPlanLift(null);
+        // lift.testPlanTilt(null);
+        // lift.testPlanLift(null);
+        lift.set(Heights.STALL);
     }
     
 

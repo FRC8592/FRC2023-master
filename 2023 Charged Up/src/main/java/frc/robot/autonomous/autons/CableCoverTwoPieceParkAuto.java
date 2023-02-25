@@ -2,7 +2,7 @@ package frc.robot.autonomous.autons;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import frc.robot.Lift.Heights;
+import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
@@ -94,7 +94,7 @@ public class CableCoverTwoPieceParkAuto extends BaseAuto {
             new ScoreCommand(intake), // Score preload
             new JointCommand( // Lower lift; go to and intake second game piece
                 new FollowerCommand(drive, H_TO_Icc),
-                new LiftCommand(lift, Heights.STOWED)
+                new LiftCommand(elevator, Heights.STOWED)
             ),
             new JointCommand(
                 new FollowerCommand(drive, Icc_TO_GP4.addRotation(Rotation2d.fromDegrees(180))),
@@ -105,11 +105,11 @@ public class CableCoverTwoPieceParkAuto extends BaseAuto {
                 new FollowerCommand(drive, Icc_TO_I)
                 // new LiftCommand(lift, Heights.PRIME)
             ),
-            new LiftCommand(lift, Heights.HIGH), // Lift to high height and score second piece
+            new LiftCommand(elevator, Heights.HIGH), // Lift to high height and score second piece
             new ScoreCommand(intake),
             new JointCommand( // Go to charging station
                 new FollowerCommand(drive, I_TO_Icc),
-                new LiftCommand(lift, Heights.STOWED)
+                new LiftCommand(elevator, Heights.STOWED)
             ),
                 new FollowerCommand(drive, Icc_TO_BM),
             new AutobalanceCommand(drive) // Auto balance
