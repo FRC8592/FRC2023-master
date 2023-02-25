@@ -268,7 +268,7 @@ public class Robot extends LoggedRobot {
      * - Additional Programmer Notes:
      *  - Possibly make it so that when a certain button is held the robot switches to robot-centric for manually lining up using a camera
      *  - Negative left trigger is equal to positive right trigger axis on some controllers
-     * 
+     *
      * - Additional Driver Notes:
      *  - Going to a pre-set elevator position automatically sets the pivot to the corresponding tilt
      *  - Make sure to turn on the robot and disable the robot with the all mechanisms back to starting configuration
@@ -294,11 +294,22 @@ public class Robot extends LoggedRobot {
 
     if (operatorController.getPOV() == 270) { // DPAD Left
       coneVision = true;
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       // Set LED's to cone attention
     } else if (operatorController.getPOV() == 90) { // DPAD Right
       coneVision = false;
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
       // Set LED's to cube attention
+    } else if (operatorController.getPOV() == 180) { // DPAD Down
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      // Set LED's to april tag
+    } else if (operatorController.getPOV() == 0) { // DPAD Up
+      // Set LED's to retro-tape
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
     }
+
+    // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
+    // SmartDashboard.putNumber("Current Pipeline", pipeline);
 
     if (driverController.getRightBumper()) {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
@@ -316,14 +327,7 @@ public class Robot extends LoggedRobot {
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
     } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
-      if (coneVision) {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      } else {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      }
-
       // set LED to targetlock
-
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
           driveSpeeds.vxMetersPerSecond,
@@ -331,24 +335,39 @@ public class Robot extends LoggedRobot {
           gameObjectVision.turnRobot(
             1.0,
             turnPID,
-            8.0
+            3.0
           )
+        );
+      } else {
+        driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          driveScaler.scale(joystickDeadband(translateX)),
+          driveScaler.scale(joystickDeadband(translateY)),
+          joystickDeadband(rotate),
+          drive.getGyroscopeRotation()
         );
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      if (coneVision) {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      } else {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      }
+      // if (coneVision) {
+      //   NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      // } else {
+      //   NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      // }
 
       // set LED to targetlock
-
-      driveSpeeds = new ChassisSpeeds(
-        driveSpeeds.vxMetersPerSecond,
-        0,
-        driveSpeeds.omegaRadiansPerSecond
-      );
+      if (gameObjectVision.targetValid) {
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond,
+          gameObjectVision.turnRobot(1.0, strafePID, 1.0),
+          driveSpeeds.omegaRadiansPerSecond
+        );
+      } else {
+        driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          driveScaler.scale(joystickDeadband(translateX)),
+          driveScaler.scale(joystickDeadband(translateY)),
+          joystickDeadband(rotate),
+          drive.getGyroscopeRotation()
+        );
+      }
     } else { // Normal drive
       driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
         driveScaler.scale(joystickDeadband(translateX)),
@@ -359,7 +378,6 @@ public class Robot extends LoggedRobot {
     }
 
     if (driverController.getBButton()) { // Wheels locked
-      
       drive.setWheelLock();
     } else if (shouldBalance){
       autoPark.balance(drive);
@@ -374,8 +392,6 @@ public class Robot extends LoggedRobot {
     // ===================== \\
     // ======= Wrist ======= \\
     // ===================== \\
-
-    // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
 
     if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
       intake.enableWrist(true);
