@@ -241,4 +241,8 @@ public class Elevator {
         }
         return (curRots/maxRots)*2;
     }
+
+    public boolean atReference() {
+        return Math.abs(liftEncoder.getPosition() - desiredHeight.getHeight()) <= 3;
+    }
 }

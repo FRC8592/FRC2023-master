@@ -8,11 +8,19 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.ConfigRun.AutoOptions;
 import frc.robot.Elevator.Heights;
+import frc.robot.autonomous.AutoDrive;
+import frc.robot.autonomous.AutonomousSelector;
+import frc.robot.autonomous.autons.BaseAuto;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.XboxController;
 
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import java.rmi.registry.LocateRegistry;
@@ -37,17 +45,15 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
 public class Robot extends LoggedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
   public XboxController driverController;
   public XboxController operatorController;
   public Drivetrain drive;
@@ -64,10 +70,15 @@ public class Robot extends LoggedRobot {
   private boolean coneVision = true;
   // public Power power;
 
+  private BaseAuto selectedAuto;
+  private AutonomousSelector selector;
   public Autopark autoPark;
 
+  public static Field2d FIELD = new Field2d();
+
   /**
-   * This function is run when the robot is first started up and should be used for any
+   * This function is run when the robot is first started up and should be used
+   * for any
    * initialization code.
    */
   @Override
@@ -90,9 +101,6 @@ public class Robot extends LoggedRobot {
     Logger.getInstance().start();
     
     
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     operatorController = new XboxController(1);
@@ -106,15 +114,18 @@ public class Robot extends LoggedRobot {
     strafePID = new PIDController(-0.2, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
-    // intake.reset();
-    // lift.reset();
+    SmartDashboard.putData(FIELD);
+    selector = new AutonomousSelector();
   }
 
   /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
+   * This function is called every 20 ms, no matter the mode. Use this for items
+   * like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and
    * SmartDashboard integrated updating.
    */
   @Override
@@ -124,44 +135,52 @@ public class Robot extends LoggedRobot {
   }
 
   /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
+   * This autonomous (along with the chooser code above) shows how to select
+   * between different
+   * autonomous modes using the dashboard. The sendable chooser code works with
+   * the Java
+   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the
+   * chooser code and
+   * uncomment the getString line to get the auto name from the text box below the
+   * Gyro
    *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using the SendableChooser make sure to add them to the
+   * <p>
+   * You can add additional auto modes by adding additional comparisons to the
+   * switch structure
+   * below with additional strings. If using the SendableChooser make sure to add
+   * them to the
    * chooser code above as well.
    */
   @Override
   public void autonomousInit() {
+    selectedAuto = selector.getSelectedAutonomous();
+    selectedAuto.addModules(drive, elevator, intake); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.initialize();
+    selectedAuto.addDelay(selector.getDelay());
+    
+    if (!isReal()) {
+      selectedAuto.setInitialSimulationPose();
+    } else {
+      drive.zeroGyroscope();
+      drive.resetEncoder();
+      drive.resetPose(selectedAuto.getStartPose());
+    }
+
+    // SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
     coneVision = true;
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
     wasZeroed = true;
-    drive.zeroGyroscope();
     drive.resetSteerAngles();
     autoPark = new Autopark();
-
-    /*SET LIMIT ON AUTO - LIAM M */
     drive.setAutoCurrentLimit();
-    autoPark = new Autopark();
   }
   
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    // switch (m_autoSelected) {
-    //   case kCustomAuto:
-    //   // Put custom auto code here
-    //   break;
-    //   case kDefaultAuto:
-    //   default:
-    //   // Put default auto code here
-    //   break;
-    // }
-    autoPark.balance(drive);
+    selectedAuto.periodic();
+    // lift.periodic();
+    // ledStrips.upAndDown();
+    // autoPark.balance(drive);
     elevator.update();
   }
   
@@ -252,6 +271,14 @@ public class Robot extends LoggedRobot {
     // ========================== \\
     // ======= Drivetrain ======= \\
     // ========================== \\
+    boolean shouldBalance = false;
+    if (driverController.getStartButton()){
+      shouldBalance = true;
+    }else{
+      shouldBalance = false;
+    }
+
+    
 
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
@@ -324,8 +351,11 @@ public class Robot extends LoggedRobot {
     }
 
     if (driverController.getBButton()) { // Wheels locked
+      
       drive.setWheelLock();
-    } else {
+    } else if (shouldBalance){
+      autoPark.balance(drive);
+    }else {
       drive.drive(driveSpeeds);
     }
 
@@ -378,21 +408,21 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+  }
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-    // 0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    // //                                                          // opposite of controller direct
-    // drive.setWheelLock();
-  
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+        0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+    // // opposite of controller direct
   }
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   public void testPeriodic() {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
@@ -477,12 +507,13 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
-
+  public void simulationPeriodic() {
+  }
 
   public double joystickDeadband(double inputJoystick) {
     if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
