@@ -44,11 +44,11 @@ public class Power {
     // Periodically post power data to the dashboard
     //
     public void powerPeriodic() {
+        current = revPDH.getTotalCurrent();
         // Get parameters from the PDH
         
         temp    = revPDH.getTemperature();
         voltage = revPDH.getVoltage();
-        current = revPDH.getTotalCurrent();
         power   = revPDH.getTotalPower();
         energy  = revPDH.getTotalEnergy();
         
@@ -58,7 +58,7 @@ public class Power {
 
         // SmartDashboard.putNumber("Temperature", temp);
         // SmartDashboard.putNumber("Voltage", voltage);
-        // SmartDashboard.putNumber("Current", current);
+        SmartDashboard.putNumber("Current", current);
         // SmartDashboard.putNumber("Power", power);
         // SmartDashboard.putNumber("Energy", energy);
 

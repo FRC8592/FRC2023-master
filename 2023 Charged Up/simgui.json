@@ -1,45 +1,52 @@
 {
   "HALProvider": {
-    "Addressable LEDs": {
-      "0": {
-        "columns": 1,
-        "order": 1,
-        "start": 1
-      },
-      "window": {
-        "visible": true
-      }
-    },
     "Other Devices": {
-      "navX-Sensor[0]": {
+      "SPARK MAX [0]": {
         "header": {
           "open": true
         }
-      }
-    },
-    "PowerDistributions": {
-      "window": {
-        "visible": true
-      }
-    },
-    "RoboRIO": {
-      "RoboRIO Input": {
-        "open": true
       },
-      "window": {
-        "visible": true
+      "SPARK MAX [15]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [1]": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Auto choices": "String Chooser"
     }
   },
   "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "Retained Values": {
+      "open": false
+    },
     "transitory": {
       "SmartDashboard": {
+        "Auto choices": {
+          "open": true
+        },
+        "Elevator": {
+          "open": true
+        },
+        "Intake": {
+          "open": true
+        },
         "open": true
       }
     }
