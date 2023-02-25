@@ -66,6 +66,8 @@ public class Robot extends LoggedRobot {
 
   public Autopark autoPark;
 
+  private DriveScaler driveScaler;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -108,6 +110,8 @@ public class Robot extends LoggedRobot {
     intake = new Intake();
     // intake.reset();
     // lift.reset();
+
+    driveScaler = new DriveScaler();
   }
 
   /**
@@ -178,6 +182,8 @@ public class Robot extends LoggedRobot {
 
     drive.setTeleopCurrentLimit();
     autoPark = new Autopark();
+
+    SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
   }
   
   /** This function is called periodically during operator control. */
@@ -316,9 +322,9 @@ public class Robot extends LoggedRobot {
       );
     } else { // Normal drive
       driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        joystickDeadband(translateX), 
-        joystickDeadband(translateY),
-        joystickDeadband(rotate), 
+        driveScaler.scale(joystickDeadband(translateX)),
+        driveScaler.scale(joystickDeadband(translateY)),
+        joystickDeadband(rotate),
         drive.getGyroscopeRotation()
       );
     }

@@ -84,9 +84,9 @@ public final class Constants {
     public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
     public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 51.25;
+    public static final double WRIST_INTAKE_ROTATIONS = 51.25 / 4.0;
     public static final double WRIST_STOWED_ROTATIONS = 0;
-    public static final double WRIST_SCORING_ROTATIONS = 52;
+    public static final double WRIST_SCORING_ROTATIONS = 52 / 4.0;
     public static final double WRIST_MAX_ROTATIONS = 58;
 
     //
