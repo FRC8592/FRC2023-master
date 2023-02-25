@@ -84,9 +84,9 @@ public final class Constants {
     public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
     public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 50;
+    public static final double WRIST_INTAKE_ROTATIONS = 51.25;
     public static final double WRIST_STOWED_ROTATIONS = 0;
-    public static final double WRIST_SCORING_ROTATIONS = 52;
+    public static final double WRIST_SCORING_ROTATIONS = 52.0;
     public static final double WRIST_MAX_ROTATIONS = 58;
 
     //
@@ -107,9 +107,12 @@ public final class Constants {
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
     public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
-    public static final double TILT_MAX_ROTATIONS = -21.0;
+    public static final double TILT_MAX_ROTATIONS = -23.0;
     public static final double LIFT_MAX_ROTATIONS = -80;
+    public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
+    public static final double TILT_THRESHOLD_TO_LIFT = -18;
+    public static final double LIFT_THRESHOLD_TO_STOW = -10;
 
 
     //
@@ -184,8 +187,6 @@ public final class Constants {
     public static double BALL_ROTATE_KD        = -0.01;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
     public static String LIMELIGHT_VISION       = "limelight-vision";
-
-    public static final double OBJECT_GRAB_DISTANCE      = 36.0;
 
     public static double CLOSE_BALL_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
     public static double CLOSE_BALL_ROTATE_KI  = 0.0;
@@ -296,8 +297,8 @@ public final class Constants {
     public static final double ANGLE_B = -55;
     public static final double ANGLE_C = 24;
 
-    public static final int CUBE_PIPELINE = 1;
-    public static final int CONE_PIPELINE = 0;
+    public static final int CUBE_PIPELINE = 0;
+    public static final int CONE_PIPELINE = 1;
     public static final int APRILTAG_PIPELINE = 2;
     public static final int RETROTAPE_PIPELINE = 3;
 

@@ -53,6 +53,8 @@ public class Intake {
 
         beamCone = new BeamSensor(Constants.BEAM_BREAK_CONE_ID);
         beamCube = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
+
+        SmartDashboard.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS);
     }
 
     public void reset() {
@@ -62,44 +64,45 @@ public class Intake {
 
     public void writeToSmartDashboard() {
         double rawWristPosition = wristEncoder.getPosition(); // rotations
-        double rawWristVelocity = wristEncoder.getVelocity(); // RPM
-        double rawRollerVelocity = rollerEncoder.getVelocity(); // RPM
         
-        SmartDashboard.putNumber("Wrist/Position (Rotations)", rawWristPosition);
-        SmartDashboard.putNumber("Wrist/Position (Degrees)", rawWristPosition * 360.0 * Constants.WRIST_GEAR_RATIO);
-        SmartDashboard.putNumber("Wrist/Current", wristMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Wrist/Velocity (Degrees per Second)", rawWristVelocity * 60.0 * Constants.WRIST_GEAR_RATIO);
-        SmartDashboard.putNumber("Roller/Velocity (Degrees per Second)", rawRollerVelocity * 60.0 * Constants.ROLLER_GEAR_RATIO);
+        SmartDashboard.putNumber("Wrist position", rawWristPosition);
+        SmartDashboard.putNumber("Wrist current", wristMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Roller current", rollerMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Roller velocity", rollerEncoder.getVelocity());
+        SmartDashboard.putBoolean("Cone beam broken", beamCone.isBroken());
+        SmartDashboard.putBoolean("Cone beam broken", beamCube.isBroken());
     }
 
-    public void stow() {
-        wristCtrl.setReference(Constants.WRIST_STOWED_ROTATIONS, ControlType.kSmartMotion);
-        rollerMotor.set(0.0);
+    public void intakeRoller() {
+        // if (beamCone.isBroken() && beamCube.isBroken()) {
+        //     rollerMotor.set(0.8);
+        // } else {
+        //     rollerMotor.set(0.0);
+        // }
+        rollerMotor.set(0.8);
     }
 
-    public void intake() {
-        // wristCtrl.setReference(Constants.WRIST_INTAKE_ROTATIONS, ControlType.kSmartMotion);
-        if (beamCone.isBroken() && beamCube.isBroken()) {
-            rollerMotor.set(0.8);
-        } else {
-            rollerMotor.set(0.0);
-        }
-    }
-
-    public void outtake() {
+    public void outtakeRoller() {
         rollerMotor.set(-0.8);
     }
 
-    public void score() {
-        wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
-        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_MAX_ROTATIONS) <= 5){
-            outtake();
+    public void scoreRoller() {
+        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS) <= 5.0){
+            outtakeRoller();
+        } else {
+            stopRoller();
         }
+
+        SmartDashboard.putNumber("Wrist Error", Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS));
+    }
+
+    public void spinRollers(double pct) {
+        rollerMotor.set(pct);
     }
 
     public void enableWrist(boolean enable) {
         if (enable) {
-            wristCtrl.setReference(Constants.WRIST_SCORING_ROTATIONS, ControlType.kSmartMotion);
+            wristCtrl.setReference(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS), ControlType.kSmartMotion);
         } else {
             wristCtrl.setReference(0.0, ControlType.kSmartMotion);
         }
@@ -107,5 +110,9 @@ public class Intake {
 
     public void stopRoller() {
         rollerMotor.set(0.0);
+    }
+
+    public boolean hasPiece() { // Beam break not tested yet
+        return beamCone.isBroken() || beamCube.isBroken();
     }
 }
