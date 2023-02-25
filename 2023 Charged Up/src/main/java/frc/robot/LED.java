@@ -26,11 +26,13 @@ public class LED {
     private Timer lowVoltTimer = new Timer();
     private Timer LVPulseTimer = new Timer();
     private Timer snakeTimer = new Timer();
+    private Timer blinkTimer = new Timer();
+    private Timer lockTimer = new Timer();
     private Vision vision;
     private Power power;
 
     //Settings
-    private LEDPattern mode = LEDPattern.OFF;
+    private LEDMode mode = LEDMode.OFF;
     private double brightnessMultiplier = 1;
 
     //Dymanic/UpAndDown
@@ -52,7 +54,7 @@ public class LED {
     private int binaryIndex;
     
     //Dynamic/Other
-    String lastFunction="";
+    private double timeout;
     
     //Constants
     private static final int LED_LENGTH = 42;
@@ -86,14 +88,31 @@ public class LED {
         }
     }
 
-    public enum LEDPattern {
+    // public enum LEDPattern {
+    //     SOLID,
+    //     UP_AND_DOWN,
+    //     BINARY,
+    //     FIRE,
+    //     WAVES,
+    //     TARGET_LOCK,
+    //     SNAKE,
+    //     OFF;
+    // }
+    public enum LEDMode{
+        CUBE,
+        CONE,
+        TARGETLOCK,
+        STOPPLACING,
+        ATTENTION,
         SOLID,
+        BLINK,
         UP_AND_DOWN,
         BINARY,
         FIRE,
         WAVES,
         TARGET_LOCK,
         SNAKE,
+        DEFAULT,
         OFF;
     }
     /**Construct an LED controller
@@ -126,6 +145,8 @@ public class LED {
 
         LVPulseTimer.start();
         snakeTimer.start();
+        blinkTimer.start();
+        lockTimer.start();
     }
     /**Update the LEDs
      * @param testLow A boolean for whether to force the LEDs to act as if the battery voltage is low.
@@ -134,39 +155,45 @@ public class LED {
         //Update the Power object
         power.powerPeriodic();
         switch(mode){
+            case CONE:
+                setUpAndDown(PresetColor.YELLOW, PresetColor.OFF);
+                break;
+            case CUBE:
+                setUpAndDown(PresetColor.PURPLE, PresetColor.OFF);
+                break;
+            case TARGETLOCK:
+                setTargetLock();
+                break;
+            case STOPPLACING:
+                setBlink(PresetColor.RED, 15);
+            case ATTENTION:
+                setUpAndDown(PresetColor.CYAN, PresetColor.ORANGE);
             case UP_AND_DOWN:
                 setUpAndDown(col1, col2);
-                lastFunction = "uad";
                 break;
             case FIRE:
                 setFire(true);
-                lastFunction="fire";
                 break;
             case BINARY:
                 setBinary();
-                lastFunction="binary";
                 break;
             case WAVES:
                 setWaves(col1, col2);
-                lastFunction="waves";
                 break;
             case TARGET_LOCK:
                 setTargetLock();
-                lastFunction="targetlock";
                 break;
             case SNAKE:
                 setSnake(col1);
                 break;
             case SOLID:
                 setSolid(col1);
-                lastFunction="solid";
                 break;
             case OFF:
                 setOff();
-                lastFunction="off";
                 break;
         }
-        if(mode != LEDPattern.FIRE && mode != LEDPattern.OFF && fireBlobs.size() > 0){
+        if(mode != LEDMode.FIRE && mode != LEDMode.OFF && fireBlobs.size() > 0){
             fireBlobs=new ArrayList<Blob>();
         }
         //If we have low voltage
@@ -389,6 +416,14 @@ public class LED {
             setColor(i, col1);
         }
     }
+    public void setBlink(PresetColor col1, int speed){
+        if(((int)blinkTimer.get()*speed)%2==0){
+            setSolid(col1);
+        }
+        else{
+            setSolid(PresetColor.OFF);
+        }
+    }
     public void setOff(){
         setFire(false);
     }
@@ -403,12 +438,19 @@ public class LED {
      * @param col1 {@code PresetColor} for the first color. Can be null for binary, fire, and off.
      * @param col2 {@code PresetColor} for the second color. Can be null for binary, fire, and off.
      */
-    public void set(LEDPattern p, PresetColor col1, PresetColor col2) {
-        this.mode = p;
-        this.col1 = col1;
-        this.col2 = col2;
+    public void set(LEDMode m, PresetColor col1, PresetColor col2) {
+        if(lockTimer.get()>timeout){
+            this.mode = m;
+            this.col1 = col1;
+            this.col2 = col2;
+            if(m==LEDMode.CONE){
+                setLockTimer(2.0);
+            }
+        }
     }
-
+    public void set(LEDMode m){
+        set(m, PresetColor.OFF, PresetColor.OFF);
+    }
     /**
      * Sets the brightness level for LEDS
      * 
@@ -443,7 +485,11 @@ public class LED {
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
     }
-
+    private void setLockTimer(double timeout){
+        lockTimer.reset();
+        lockTimer.start();
+        this.timeout=timeout;
+    }
 
     /*||||||||||||||||||||||||||||||||||||||||||||||||||||||PRIVATE CLASS|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
 

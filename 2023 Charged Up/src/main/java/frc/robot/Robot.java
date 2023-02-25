@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.LED.LEDPattern;
+import frc.robot.LED.LEDMode;
 import frc.robot.LED.PresetColor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -250,29 +250,31 @@ public class Robot extends LoggedRobot {
     
     drive.getCurrentPos();
 
-    if (shooterController.getXButtonPressed()){
+    if (shooterController.getXButton()){
       currentPiecePipeline = "CUBE";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.set(LEDPattern.SOLID, PresetColor.PURPLE, null);
+      ledStrips.set(LEDMode.CUBE);
     }
-    
-    if (shooterController.getYButtonPressed()){
+    else if (shooterController.getYButton()){
       currentPiecePipeline = "CONE";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.set(LEDPattern.SOLID, PresetColor.YELLOW, null);
+      ledStrips.set(LEDMode.CONE);
     }
     //TODO:don't know if the buttons are already in use
-    if (shooterController.getAButtonPressed()){
+    else if (shooterController.getAButton()){
       currentPiecePipeline = "APRILTAG";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      ledStrips.set(LEDPattern.SOLID, PresetColor.ORANGE, null);
+      ledStrips.set(LEDMode.TARGETLOCK);
     }
-
-    if (shooterController.getBButtonPressed()){
+    else if (shooterController.getBButton()){
       currentPiecePipeline = "RETROTAPE";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      ledStrips.set(LEDPattern.SOLID, PresetColor.BLUE, null);
+      ledStrips.set(LEDMode.TARGETLOCK);
     }
+    else{
+        ledStrips.set(LEDMode.OFF);
+    }
+    ledStrips.updatePeriodic(false);
 
     if (driverController.getLeftTriggerAxis() >= 0.1) {
       intake.enableWrist(true);
@@ -320,25 +322,21 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    // drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-    // 0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    // //                                                          // opposite of controller direct
-    // drive.setWheelLock();
     ledStrips.updatePeriodic(false);
     if (shooterController.getYButton()) {
-      ledStrips.set(LEDPattern.UP_AND_DOWN, PresetColor.YELLOW, PresetColor.PURPLE);
+      ledStrips.set(LEDMode.CONE);
     }
     else if (shooterController.getXButton()) {
-      ledStrips.set(LEDPattern.SNAKE, PresetColor.RED, null);
+      ledStrips.set(LEDMode.CUBE);
     }
     else if (shooterController.getAButton()){
-        ledStrips.set(LEDPattern.FIRE, null, null);
+        ledStrips.set(LEDMode.BINARY, null, null);
     }
     else if (shooterController.getBButton()){
-        ledStrips.set(LEDPattern.WAVES, PresetColor.BLUE, PresetColor.OFF);
+        ledStrips.set(LEDMode.WAVES, PresetColor.BLUE, PresetColor.OFF);
     }
     else {
-      ledStrips.set(LEDPattern.BINARY, PresetColor.BLUE, PresetColor.OFF);
+      ledStrips.set(LEDMode.OFF);
     }
   }
 
