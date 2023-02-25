@@ -86,7 +86,7 @@ public final class Constants {
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
     public static final double WRIST_INTAKE_ROTATIONS = 51.25;
     public static final double WRIST_STOWED_ROTATIONS = 0;
-    public static final double WRIST_SCORING_ROTATIONS = 52;
+    public static final double WRIST_SCORING_ROTATIONS = 52.0;
     public static final double WRIST_MAX_ROTATIONS = 58;
 
     //
@@ -294,10 +294,10 @@ public final class Constants {
     public static final double ANGLE_B = -55;
     public static final double ANGLE_C = 24;
 
-    public static final int CUBE_PIPELINE = 1;
-    public static final int CONE_PIPELINE = 0;
+    public static final int CUBE_PIPELINE = 0;
+    public static final int CONE_PIPELINE = 1;
     public static final int APRILTAG_PIPELINE = 2;
-    public static final int RETROTAPE_PIPELINE = 3;
+    public static final int RETROTAPE_PIPELINE = 4;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;
