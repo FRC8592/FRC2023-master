@@ -84,7 +84,7 @@ public final class Constants {
     public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
     public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 50;
+    public static final double WRIST_INTAKE_ROTATIONS = 51.25;
     public static final double WRIST_STOWED_ROTATIONS = 0;
     public static final double WRIST_SCORING_ROTATIONS = 52;
     public static final double WRIST_MAX_ROTATIONS = 58;
@@ -107,9 +107,12 @@ public final class Constants {
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
     public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
-    public static final double TILT_MAX_ROTATIONS = -21.0;
+    public static final double TILT_MAX_ROTATIONS = -23.0;
     public static final double LIFT_MAX_ROTATIONS = -80;
+    public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
+    public static final double TILT_THRESHOLD_TO_LIFT = -18;
+    public static final double LIFT_THRESHOLD_TO_STOW = -10;
 
 
     //

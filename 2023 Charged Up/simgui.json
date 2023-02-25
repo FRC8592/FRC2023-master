@@ -16,14 +16,27 @@
           "open": true
         }
       },
+<<<<<<< HEAD
       "window": {
         "visible": false
+=======
+      "SPARK MAX [15]": {
+        "header": {
+          "open": true
+        }
+      },
+      "SPARK MAX [1]": {
+        "header": {
+          "open": true
+        }
+>>>>>>> main
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+<<<<<<< HEAD
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[45]": "PIDController",
@@ -57,11 +70,31 @@
           "visible": true
         }
       }
+=======
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/SmartDashboard/Auto choices": "String Chooser"
+>>>>>>> main
     }
   },
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+<<<<<<< HEAD
+=======
+        "Auto choices": {
+          "open": true
+        },
+        "Elevator": {
+          "open": true
+        },
+        "Intake": {
+          "open": true
+        },
+>>>>>>> main
         "open": true
       }
     }
