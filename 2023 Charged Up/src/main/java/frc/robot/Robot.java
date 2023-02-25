@@ -421,11 +421,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-        0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    // // opposite of controller direct
-  }
+  public void disabledPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
