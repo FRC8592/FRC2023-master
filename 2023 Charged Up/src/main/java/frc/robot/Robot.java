@@ -184,6 +184,10 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     selectedAuto.periodic();
+    SmartDashboard.putNumber("Pose X", drive.getCurrentPos().getX());
+    SmartDashboard.putNumber("Pose Y'", drive.getCurrentPos().getY());
+    SmartDashboard.putNumber("Gyro Rotation", drive.getGyroscopeRotation().getDegrees());
+    SmartDashboard.putNumber("Pose Rotation", drive.getCurrentPos().getRotation().getDegrees());
     // lift.periodic();
     // ledStrips.upAndDown();
     // autoPark.balance(drive);
@@ -451,9 +455,27 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
+    selectedAuto = selector.getSelectedAutonomous();
+    selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.initialize();
+    
+    if (!isReal()) {
+      selectedAuto.setInitialSimulationPose();
+    } else {
+      drive.zeroGyroscope();
+      drive.resetEncoder();
+      drive.resetPose(selectedAuto.getStartPose());
+    }
+
+    SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
+    drive.resetSteerAngles();
   }
 
   public void testPeriodic() {
+    selectedAuto.periodic();
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
 
