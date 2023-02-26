@@ -105,7 +105,6 @@ public class LED {
         STOPPLACING,
         ATTENTION,
         SOLID,
-        BLINK,
         UP_AND_DOWN,
         BINARY,
         FIRE,
@@ -157,17 +156,24 @@ public class LED {
         switch(mode){
             case CONE:
                 setUpAndDown(PresetColor.YELLOW, PresetColor.OFF);
+                timeout=3;
                 break;
             case CUBE:
                 setUpAndDown(PresetColor.PURPLE, PresetColor.OFF);
+                timeout=3;
                 break;
             case TARGETLOCK:
                 setTargetLock();
+                timeout=-1;
                 break;
             case STOPPLACING:
                 setBlink(PresetColor.RED, 15);
+                timeout=2;
+                break;
             case ATTENTION:
                 setUpAndDown(PresetColor.CYAN, PresetColor.ORANGE);
+                timeout=3;
+                break;
             case UP_AND_DOWN:
                 setUpAndDown(col1, col2);
                 break;
@@ -189,15 +195,19 @@ public class LED {
             case SOLID:
                 setSolid(col1);
                 break;
+            case DEFAULT:
+                setOff();
+                timeout=0.01;
+                break;
             case OFF:
                 setOff();
                 break;
         }
-        if(mode != LEDMode.FIRE && mode != LEDMode.OFF && fireBlobs.size() > 0){
+        if(mode != LEDMode.FIRE && mode != LEDMode.OFF && fireBlobs.size() > 0 && mode != LEDMode.DEFAULT){
             fireBlobs=new ArrayList<Blob>();
         }
         //If we have low voltage
-        if ((power.voltage < MINIMUM_VOLTAGE || lowVolts || testLow) && power.voltage>0) {
+        if ((power.voltage < MINIMUM_VOLTAGE || lowVolts || testLow) /*&& power.voltage>0*/) {
             lowVoltTimer.start();
             lowVolts = true;
             if((int)(LVPulseTimer.get()*3)%2==0){
@@ -213,6 +223,11 @@ public class LED {
                 lowVoltTimer.reset();
                 lowVolts = false;
             }
+        }
+        if(lockTimer.get()>timeout){
+            set(LEDMode.DEFAULT);
+            lockTimer.reset();
+            lockTimer.stop();
         }
         updateLEDs();
     }
@@ -439,14 +454,11 @@ public class LED {
      * @param col2 {@code PresetColor} for the second color. Can be null for binary, fire, and off.
      */
     public void set(LEDMode m, PresetColor col1, PresetColor col2) {
-        if(lockTimer.get()>timeout){
-            this.mode = m;
-            this.col1 = col1;
-            this.col2 = col2;
-            if(m==LEDMode.CONE){
-                setLockTimer(2.0);
-            }
-        }
+        this.mode = m;
+        this.col1 = col1;
+        this.col2 = col2;
+        lockTimer.reset();
+        lockTimer.start();
     }
     public void set(LEDMode m){
         set(m, PresetColor.OFF, PresetColor.OFF);
@@ -484,11 +496,6 @@ public class LED {
     private void updateLEDs(){
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-    }
-    private void setLockTimer(double timeout){
-        lockTimer.reset();
-        lockTimer.start();
-        this.timeout=timeout;
     }
 
     /*||||||||||||||||||||||||||||||||||||||||||||||||||||||PRIVATE CLASS|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/

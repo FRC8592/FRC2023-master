@@ -4,18 +4,14 @@
       "0": {
         "columns": 2,
         "order": 1,
-        "start": 3
+        "serpentine": true,
+        "start": 1
       },
       "window": {
         "visible": true
       }
     },
     "Other Devices": {
-      "navX-Sensor[0]": {
-        "header": {
-          "open": true
-        }
-      },
       "SPARK MAX [15]": {
         "header": {
           "open": true
@@ -25,6 +21,26 @@
         "header": {
           "open": true
         }
+      },
+      "navX-Sensor[0]": {
+        "header": {
+          "open": true
+        }
+      }
+    },
+    "PowerDistributions": {
+      "1": {
+        "PowerDistribution[1]": {
+          "open": true
+        }
+      }
+    },
+    "RoboRIO": {
+      "RoboRIO Input": {
+        "open": true
+      },
+      "window": {
+        "visible": true
       }
     }
   },
@@ -36,9 +52,11 @@
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
+      "/Shuffleboard/Auton Configuration/Choose Autonomous": "String Chooser",
       "/Shuffleboard/Drive Configuration/Choose Autonomous": "String Chooser",
       "/Shuffleboard/Drive Configuration/Choose Drive Scaling": "String Chooser",
-      "/SmartDashboard/Auto choices": "String Chooser"
+      "/SmartDashboard/Auto choices": "String Chooser",
+      "/SmartDashboard/Field": "Field2d"
     }
   },
   "NetworkTables": {
@@ -52,8 +70,7 @@
         },
         "Intake": {
           "open": true
-        },
-        "open": true
+        }
       }
     }
   }

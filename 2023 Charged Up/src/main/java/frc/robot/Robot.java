@@ -72,7 +72,7 @@ public class Robot extends LoggedRobot {
   public PIDController strafePID;
   public boolean wasZeroed = false;
   private boolean coneVision = true;
-  // public Power power;
+  public Power power;
 
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
@@ -91,18 +91,10 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     //AdvantageKit logging code
     Logger.getInstance().recordMetadata("ProjectName", "MyProject"); // Set a metadata value
-    if (isReal()) {
+    if (true) {
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
-    }
-    else {
-      if (isReal()) { // Doesn't work in simulation; redundant code to allow simulation to not crash
-        setUseTiming(false); // Run as fast as possible
-        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-        Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
-        Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-      }
     }
     Logger.getInstance().start();
     
@@ -110,9 +102,8 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     operatorController = new XboxController(1);
-    // power = new Power();
+    power = new Power();
     drive = new Drivetrain(logger);
-    //ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
@@ -122,7 +113,7 @@ public class Robot extends LoggedRobot {
     intake = new Intake();
     // intake.reset();
     // lift.reset();
-
+    ledStrips = new LED(power, gameObjectVision);
     driveScaler = new DriveScaler();
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
@@ -426,9 +417,16 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-        0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-    // // opposite of controller direct
+    if(operatorController.getAButton()){
+        ledStrips.set(LEDMode.CONE);
+    }
+    if(operatorController.getBButton()){
+        ledStrips.set(LEDMode.CUBE);
+    }
+    if(operatorController.getXButton()){
+        ledStrips.set(LEDMode.FIRE);
+    }
+    ledStrips.updatePeriodic(true);
   }
 
   /** This function is called once when test mode is enabled. */
