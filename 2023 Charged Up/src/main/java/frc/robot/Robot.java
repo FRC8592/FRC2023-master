@@ -279,6 +279,7 @@ public class Robot extends LoggedRobot {
     // ========================== \\
     // ======= Drivetrain ======= \\
     // ========================== \\
+
     boolean shouldBalance = false;
     if (driverController.getStartButton()){
       shouldBalance = true;
@@ -424,6 +425,8 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
         0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+           intake.logBeamBreaks();
+
     // // opposite of controller direct
   }
 
