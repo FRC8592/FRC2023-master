@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -164,7 +165,7 @@ public class LED {
                 break;
             case STOPPLACING:
                 // setBlink(PresetColor.RED, 0.5);
-                setWaves(PresetColor.PINK);
+                setWaves(PresetColor.RED);
                 timeout=2;
                 break;
             case ATTENTION:
@@ -325,7 +326,9 @@ public class LED {
         if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
             delayTimer.start();
             if (delayTimer.get() > 0.5) {
-                PresetColor color = PresetColor.RED;
+                int pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getNumber(-1).intValue();
+                // set the color of the proximity to purple if a cube or apriltag is seen, and yellow if a cone or retroreflective tape is seen
+                PresetColor color = (pipeline == Constants.CUBE_PIPELINE || pipeline == Constants.APRILTAG_PIPELINE) ? PresetColor.PURPLE : PresetColor.YELLOW;
                 // Formula to calculate how many LEDs to set in each strip
                 // max = max distance before LEDs start lighting up
                 // min = distance until piece is "in range"
