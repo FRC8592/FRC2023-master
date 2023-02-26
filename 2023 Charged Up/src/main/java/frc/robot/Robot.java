@@ -419,9 +419,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledPeriodic() {
     ledStrips.updatePeriodic();
-    if(operatorController.getAButton()){
-        ledStrips.set(LEDMode.STOPPLACING);
-    }
+    ledStrips.set(LEDMode.STOPPLACING);
     // else if(operatorController.getBButton()){
     //     ledStrips.set(LEDMode.TARGETLOCK);
     // }

@@ -59,7 +59,7 @@ public class LED {
     private double timeout;
     
     //Constants
-    private static final int LED_LENGTH = 42;
+    private static final int LED_LENGTH = 8;
 
     /**
      * Premade color presets
@@ -197,6 +197,7 @@ public class LED {
             fireBlobs=new ArrayList<Blob>();
         }
 
+        SmartDashboard.putNumber("LED Power Voltage", power.voltage);
         //If we have low voltage
         if ((power.voltage < Constants.MINIMUM_VOLTAGE || lowVolts) && power.voltage > 0) {
             SmartDashboard.putBoolean("Low Voltage", true);
