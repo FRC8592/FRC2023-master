@@ -74,12 +74,12 @@ public class Intake {
     }
 
     public void intakeRoller() {
-        // if (beamCone.isBroken() && beamCube.isBroken()) {
-        //     rollerMotor.set(0.8);
-        // } else {
-        //     rollerMotor.set(0.0);
-        // }
-        rollerMotor.set(0.8);
+        if (!beamCone.isBroken() && !beamCube.isBroken()) {
+            rollerMotor.set(0.8);
+        } else {
+            rollerMotor.set(0.0);
+        }
+        // rollerMotor.set(0.8);
     }
 
     public void outtakeRoller() {
