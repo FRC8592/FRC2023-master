@@ -66,7 +66,7 @@ public class Robot extends LoggedRobot {
   public PIDController turnPID;
   public PIDController strafePID;
   public boolean wasZeroed = false;
-  // public Power power;
+  public Power power;
 
   private Timer timer = new Timer();
 
@@ -82,7 +82,7 @@ public class Robot extends LoggedRobot {
     if (isReal()) {
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        powerDist = new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
+        // powerDist = new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
     }
     else {
       if (isReal()) {
@@ -101,12 +101,12 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    // power = new Power();
+    power = new Power();
     drive = new Drivetrain(logger);
-    ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
+     ledStrips = new LED(power, gameObjectVision);
     
 
      turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -251,25 +251,21 @@ public class Robot extends LoggedRobot {
     if (shooterController.getXButtonPressed()){
       currentPiecePipeline = "CUBE";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.setFullPurple();
     }
     
     if (shooterController.getYButtonPressed()){
       currentPiecePipeline = "CONE";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.setFullYellow();
     }
     //TODO:don't know if the buttons are already in use
     if (shooterController.getAButtonPressed()){
       currentPiecePipeline = "APRILTAG";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      ledStrips.setFullOrange();
     }
 
     if (shooterController.getBButtonPressed()){
       currentPiecePipeline = "RETROTAPE";
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      ledStrips.setFullBlue();
     }
 
 
@@ -288,6 +284,7 @@ public class Robot extends LoggedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
     0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     //       
+
     ledStrips.updatePeriodic();
     ledStrips.setState(LEDMode.WAVES);
   }

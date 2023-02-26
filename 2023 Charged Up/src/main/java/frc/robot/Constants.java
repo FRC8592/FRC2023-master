@@ -224,7 +224,7 @@ public final class Constants {
     // LED Constants
     public static final double MINIMUM_VOLTAGE = 9.0;
     public static final int VOLTAGE_TIME = 5;
-    public static final int PULSE_METHOD_SPEED = 4;
+    public static final int PULSE_METHOD_SPEED = 8;
     public static final int PULSE_SIZE = 3; 
     public static final double PROXIMITY_MAX_DISTANCE = 80.0;
 

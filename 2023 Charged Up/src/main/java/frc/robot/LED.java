@@ -30,7 +30,7 @@ public class LED {
     private int indexOn = 0;
     private int waveCounter = 0;
 
-    final int LED_LENGTH = 20;
+    final int LED_LENGTH = 8;
 
     /**
      * Premade color presets
