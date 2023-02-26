@@ -23,17 +23,18 @@ public enum AutonomousPositions {
     GRID_H(1.664 + 0.6, 1.579 - 0.1),
     GRID_I(1.664 + 0.6, 0.384 + 0.5),
     
-    BALANCE_CABLE_COVER(5.292, 1.902, Rotation2d.fromDegrees(180)), // Consider pushing x position out to not bump into charging station
+    BALANCE_CABLE_COVER(5.292, 1.902, Rotation2d.fromDegrees(0)), // Consider pushing x position out to not bump into charging station
     BALANCE_MIDDLE(5.292 - 0.75 + 0.75, 2.682 - 0.2 + 0.5, Rotation2d.fromDegrees(0)),
-    BALANCE_LOADING_ZONE(5.292, 3.523, Rotation2d.fromDegrees(180)), // Consider pushing x position out to not bump into charging station
+    BALANCE_LOADING_ZONE(5.292, 3.523, Rotation2d.fromDegrees(0)), // Consider pushing x position out to not bump into charging station
 
     // Positions all mixed up for intermediary
-    INTERMEDIARY_LOADING_ZONE(4.985, 5.013 - 0.05), // Changed to parallel with Grid_A 
+    INTERMEDIARY_LOADING_ZONE(4.985, 5.013 - 0.5), // Changed to parallel with Grid_A 
     INTERMEDIARY_CABLE_COVER(4.985, 0.884), // Changed to parallel with Grid_H
     INTERMEDIARY_BALANCE(4.985, 2.727 + 0.5),
 
     // Additional points for helping with proper spline building
-    COMMUNITY_LOADING_ZONE(3.284 - 0.2, 4.684),
+    // COMMUNITY_LOADING_ZONE(3.284 - 0.2, 4.684),
+    COMMUNITY_LOADING_ZONE(3.284 - 0.2, 4.0),
     COMMUNITY_CABLE_COVER(3.284 - 0.2, 0.646 + 0.5),
 
     GAME_PIECE_1(7.169 - 0.5, 4.615 + 0.4 - 0.4),

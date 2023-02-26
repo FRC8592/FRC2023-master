@@ -20,22 +20,30 @@ public class LoadingZonePreloadParkAuto extends BaseAuto {
     
      @Override
     public void initialize() {
-        SwerveTrajectory FIRST_LEG = generateTrajectoryFromPoints(
+        SwerveTrajectory C_TO_BM = generateTrajectoryFromPoints(
             config,
-            GRID_A.getPose(),
-            INTERMEDIARY_LOADING_ZONE.getPose(),
-            BALANCE_MIDDLE.translate(0.0, 1.0, Rotation2d.fromDegrees(-90.0))
+            GRID_C.getPose(),
+            INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.0),
+            INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.0),
+            BALANCE_MIDDLE.translate(0.5, 1.0, Rotation2d.fromDegrees(-90.0)),
+            BALANCE_MIDDLE.rotate(Rotation2d.fromDegrees(-90.0))
         );
 
         queue = new CommandQueue(
-            new LiftCommand(elevator, Heights.HIGH), // Lifts to high position
-            new ScoreCommand(intake), // Pull out the intake and score the pre-loaded piece
-            new LiftCommand(elevator, Heights.PRIME), // Retracts the elevator and moves while it stows
-            new JointCommand( // Retracts the tilt and moves towards charging station from the outside
-                new LiftCommand(elevator, Heights.STOWED),
-                new FollowerCommand(drive, FIRST_LEG)
+            new LiftCommand(elevator, Heights.PRIME), // Lifts to high position
+            new JointCommand(
+                new ScoreCommand(intake), // Pull out the intake and score the pre-loaded piece
+                new LiftCommand(elevator, Heights.HIGH)
             ),
-            new AutobalanceCommand(drive) // Balances on charging station
+            new LiftCommand(elevator, Heights.STOWED), // Retracts the elevator and moves while it stows
+            new FollowerCommand(drive, C_TO_BM),
+            new AutobalanceCommand(drive)
+            // new JointCommand( // Retracts the tilt and moves towards charging station from the outside
+            //     new LiftCommand(elevator, Heights.STOWED),
+            //     new FollowerCommand(drive, FIRST_LEG)
+            // ),
+            // new LiftCommand(elevator, Heights.STOWED),
+            // new AutobalanceCommand(drive) // Balances on charging station
         );
     }
     @Override
