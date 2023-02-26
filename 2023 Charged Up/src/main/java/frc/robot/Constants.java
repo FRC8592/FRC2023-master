@@ -289,8 +289,9 @@ public final class Constants {
 
     // LED Constants
     public static final double MINIMUM_VOLTAGE = 9.0;
-    public static final int PULSE_METHOD_SPEED = 7;
+    public static final int PULSE_METHOD_SPEED = 5;
     public static final int PULSE_SIZE = 2; 
+    public static final int PULSE_GAP = 5;
 
 
     //Constants for our starting position in autonomous

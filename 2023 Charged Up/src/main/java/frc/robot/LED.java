@@ -1,13 +1,8 @@
 package frc.robot;
 
-import javax.xml.validation.SchemaFactory;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
-import edu.wpi.first.hal.simulation.RoboRioDataJNI;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -29,7 +24,6 @@ public class LED {
     private AddressableLEDBuffer liftBuffer;
     private Timer uadTimer = new Timer();
     private Timer visionTimer = new Timer();
-    private Timer lowVoltTimer = new Timer();
     private Timer LVPulseTimer = new Timer();
     private Timer snakeTimer = new Timer();
     private Timer blinkTimer = new Timer();
@@ -65,9 +59,6 @@ public class LED {
     
     //Constants
     private static final int LED_LENGTH = 42;
-    private static final double MINIMUM_VOLTAGE = 9.0;
-    private static final int PULSE_METHOD_SPEED = 4;
-    private static final int PULSE_SIZE = 3; 
 
     /**
      * Premade color presets
@@ -83,6 +74,7 @@ public class LED {
         ORANGE (255, 70, 0),
         WHITE (255, 255, 255),
         BROWN (74, 23, 0),
+        PINK (255, 0, 255),
         OFF (0, 0, 0),
         GRAY (80,80,80);
         public final int red;
@@ -146,7 +138,6 @@ public class LED {
 
         LVPulseTimer.start();
         snakeTimer.start();
-        blinkTimer.start();
         lockTimer.start();
     }
 
@@ -172,7 +163,8 @@ public class LED {
                 timeout=-1;
                 break;
             case STOPPLACING:
-                setBlink(PresetColor.RED, 5);
+                // setBlink(PresetColor.RED, 0.5);
+                setWaves(PresetColor.PINK);
                 timeout=2;
                 break;
             case ATTENTION:
@@ -383,6 +375,7 @@ public class LED {
         }
     }
 
+    //UPDATE FOR 2023
     public void setBinary(){
         binaryIndex++;
         for(int i = 0; i < 21; i++){
@@ -391,6 +384,7 @@ public class LED {
         }
     }
 
+    //UPDATE FOR 2023
     public void setSnake(PresetColor col1){
         Color color = new Color(col1.red, col1.green, col1.blue);
         int location;
@@ -420,7 +414,7 @@ public class LED {
                 }
                 else {
                     setColor(21-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
-                    setColor(LED_LENGTH-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
+                    setColor(LED_LENGTH - 1 -((location+i)-21),getColorAtBrightness(color, 0.0666*i));
                 }
             }
         }
@@ -438,12 +432,21 @@ public class LED {
         }
     }
 
-    public void setBlink(PresetColor col1, int speed){
-        if(((int)blinkTimer.get()*speed)%2==0){
+    /**
+     * Sets the LEDs to a one color that blinks
+     * 
+     * @param col1      Color to set
+     * @param speed     blink speed (lower = faster)
+     */
+    public void setBlink(PresetColor col1, double speed){
+        blinkTimer.start();
+        if (blinkTimer.get() > speed) {
+            setOff();
+            if (blinkTimer.get() > speed * 2.0) {
+                blinkTimer.reset();
+            }
+        } else {
             setPct(100, col1);
-        }
-        else{
-            setPct(100, PresetColor.OFF);
         }
     }
     
@@ -460,7 +463,7 @@ public class LED {
     private void setWaves(PresetColor color) {
         waveCounter++;
         for(int i = 0; i < LED_LENGTH / 2; i++) {
-            if(Math.abs(LED_LENGTH / 2 + i - indexOn) % 5 < Constants.PULSE_SIZE) {
+            if(Math.abs(LED_LENGTH / 2 + i - indexOn) % Constants.PULSE_GAP < Constants.PULSE_SIZE) {
                 setColor((LED_LENGTH / 2 + i), color);
                 setColor((LED_LENGTH / 2 - 1 - i), color);
             } else {

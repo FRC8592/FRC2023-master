@@ -420,17 +420,17 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     ledStrips.updatePeriodic();
     if(operatorController.getAButton()){
-        ledStrips.set(LEDMode.BINARY);
-    }
-    else if(operatorController.getBButton()){
-        ledStrips.set(LEDMode.SNAKE);
-    }
-    else if(operatorController.getXButton()){
         ledStrips.set(LEDMode.STOPPLACING);
-    } 
-    else if (operatorController.getYButton()) {
-      ledStrips.set(LEDMode.ATTENTION);
     }
+    // else if(operatorController.getBButton()){
+    //     ledStrips.set(LEDMode.TARGETLOCK);
+    // }
+    // else if(operatorController.getXButton()){
+    //     ledStrips.set(LEDMode.UP_AND_DOWN);
+    // } 
+    // else if (operatorController.getYButton()) {
+    //   ledStrips.set(LEDMode.WAVES);
+    // }
   }
 
   /** This function is called once when test mode is enabled. */
