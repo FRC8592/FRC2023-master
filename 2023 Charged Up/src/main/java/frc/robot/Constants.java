@@ -86,7 +86,7 @@ public final class Constants {
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
     public static final double WRIST_INTAKE_ROTATIONS = 51.25;
     public static final double WRIST_STOWED_ROTATIONS = 0;
-    public static final double WRIST_SCORING_ROTATIONS = 52;
+    public static final double WRIST_SCORING_ROTATIONS = 52.0;
     public static final double WRIST_MAX_ROTATIONS = 58;
 
     //
@@ -187,8 +187,6 @@ public final class Constants {
     public static double BALL_ROTATE_KD        = -0.01;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
     public static String LIMELIGHT_VISION       = "limelight-vision";
-
-    public static final double OBJECT_GRAB_DISTANCE      = 36.0;
 
     public static double CLOSE_BALL_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
     public static double CLOSE_BALL_ROTATE_KI  = 0.0;
@@ -301,8 +299,8 @@ public final class Constants {
     public static final double ANGLE_B = -55;
     public static final double ANGLE_C = 24;
 
-    public static final int CUBE_PIPELINE = 1;
-    public static final int CONE_PIPELINE = 0;
+    public static final int CUBE_PIPELINE = 0;
+    public static final int CONE_PIPELINE = 1;
     public static final int APRILTAG_PIPELINE = 2;
     public static final int RETROTAPE_PIPELINE = 3;
 

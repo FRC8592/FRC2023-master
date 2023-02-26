@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
-
 public class FRCLogger {
     private boolean log;
     private String logFolder;
@@ -159,3 +158,4 @@ public class FRCLogger {
         }
     }
 }
+/*********************************/
