@@ -113,7 +113,7 @@ public class Robot extends LoggedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-    strafePID = new PIDController(-0.2, 0, 0);
+    strafePID = new PIDController(-0.05, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
     // intake.reset();
