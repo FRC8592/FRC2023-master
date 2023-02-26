@@ -108,7 +108,7 @@ public class Robot extends LoggedRobot {
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-    ledStrips = new LED(gameObjectVision, power);
+    ledStrips = new LED(power, gameObjectVision);
     strafePID = new PIDController(-0.2, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
@@ -418,16 +418,19 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    ledStrips.updatePeriodic();
     if(operatorController.getAButton()){
-        ledStrips.set(LEDMode.CONE);
+        ledStrips.set(LEDMode.BINARY);
     }
-    if(operatorController.getBButton()){
-        ledStrips.set(LEDMode.CUBE);
+    else if(operatorController.getBButton()){
+        ledStrips.set(LEDMode.SNAKE);
     }
-    if(operatorController.getXButton()){
-        ledStrips.set(LEDMode.FIRE);
+    else if(operatorController.getXButton()){
+        ledStrips.set(LEDMode.STOPPLACING);
+    } 
+    else if (operatorController.getYButton()) {
+      ledStrips.set(LEDMode.ATTENTION);
     }
-    ledStrips.updatePeriodic(true);
   }
 
   /** This function is called once when test mode is enabled. */

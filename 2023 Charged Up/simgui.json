@@ -1,6 +1,12 @@
 {
   "HALProvider": {
     "Addressable LEDs": {
+      "0": {
+        "columns": 2,
+        "order": 1,
+        "serpentine": true,
+        "start": 1
+      },
       "window": {
         "visible": true
       }
@@ -36,16 +42,6 @@
       "window": {
         "visible": true
       }
-    },
-    "PowerDistributions": {
-      "0": {
-        "PowerDistribution[0]": {
-          "open": true
-        }
-      },
-      "window": {
-        "visible": true
-      }
     }
   },
   "NTProvider": {
@@ -74,7 +70,8 @@
         },
         "Intake": {
           "open": true
-        }
+        },
+        "open": true
       }
     }
   }
