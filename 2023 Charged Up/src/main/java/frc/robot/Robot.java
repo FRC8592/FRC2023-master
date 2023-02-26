@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.LED.LEDMode;
+import frc.robot.LED.PresetColor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.ConfigRun.AutoOptions;
 import frc.robot.Elevator.Heights;
@@ -417,21 +418,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-    ledStrips.updatePeriodic();
-    if(operatorController.getAButton()){
-        ledStrips.set(LEDMode.STOPPLACING);
-    }
-    // else if(operatorController.getBButton()){
-    //     ledStrips.set(LEDMode.TARGETLOCK);
-    // }
-    // else if(operatorController.getXButton()){
-    //     ledStrips.set(LEDMode.UP_AND_DOWN);
-    // } 
-    // else if (operatorController.getYButton()) {
-    //   ledStrips.set(LEDMode.WAVES);
-    // }
-  }
+  public void disabledPeriodic() {  }
 
   /** This function is called once when test mode is enabled. */
   @Override

@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -58,7 +59,7 @@ public class LED {
     private double timeout;
     
     //Constants
-    private static final int LED_LENGTH = 42;
+    private static final int LED_LENGTH = 100;
 
     /**
      * Premade color presets
@@ -163,8 +164,7 @@ public class LED {
                 timeout=-1;
                 break;
             case STOPPLACING:
-                // setBlink(PresetColor.RED, 0.5);
-                setWaves(PresetColor.PINK);
+                setWaves(PresetColor.RED);
                 timeout=2;
                 break;
             case ATTENTION:
@@ -252,7 +252,7 @@ public class LED {
                     setColor(i, colorA);
                 }
                  else  {
-                     setColor(i, colorB);
+                    setColor(i, colorB);
                 }
             }
         }
@@ -297,7 +297,6 @@ public class LED {
         //Clear the LED list
         for(int i = 0; i < LED_LENGTH; i++){
             setColor(i,new Color(0,0,0));
-            setColor(LED_LENGTH - 1 - i,new Color(0,0,0));
         }
 
         //                                              For all fireBlobs,
@@ -305,10 +304,9 @@ public class LED {
             //                                          for all indexes in the blob (aka for the area the blob covers)
             for(int j : fireBlobs.get(i).getIndexes()){
                 //                                      if the index is actually on the LEDs in real life,
-                if(j>-1){
+                if(j>-1&&j<LED_LENGTH){
                     //                                  assign the LED at the index to the color of the blob
                     setColor(j, fireBlobs.get(i).getColor());
-                    setColor(LED_LENGTH - 1 - j, fireBlobs.get(i).getColor());
                 }
             }
         }
@@ -325,7 +323,8 @@ public class LED {
         if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
             delayTimer.start();
             if (delayTimer.get() > 0.5) {
-                PresetColor color = PresetColor.RED;
+                int pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getNumber(-1).intValue();
+                PresetColor color = (pipeline == Constants.CUBE_PIPELINE || pipeline == Constants.APRILTAG_PIPELINE) ? PresetColor.PURPLE : PresetColor.YELLOW;
                 // Formula to calculate how many LEDs to set in each strip
                 // max = max distance before LEDs start lighting up
                 // min = distance until piece is "in range"
@@ -378,9 +377,8 @@ public class LED {
     //UPDATE FOR 2023
     public void setBinary(){
         binaryIndex++;
-        for(int i = 0; i < 21; i++){
-            setColor(20-i,binary[(binaryIndex/6+i)%90]);
-            setColor(22+i,binary[(binaryIndex/6+i)%90]);
+        for(int i = 0; i < LED_LENGTH; i++){
+            setColor(LED_LENGTH-i-1,binary[(binaryIndex/6+i)%90]);
         }
     }
 
@@ -389,44 +387,41 @@ public class LED {
         Color color = new Color(col1.red, col1.green, col1.blue);
         int location;
         int direction;
-        double speed = 50;
-        if(snakeTimer.get()*speed<21){
+        double speed = 15;
+        int length = 5;
+        if(snakeTimer.get()*speed<LED_LENGTH){
             location = (int)(snakeTimer.get()*speed);
             direction=0;
         }
-        else if (snakeTimer.get()*speed<LED_LENGTH){
-            location = 21-(((int)(snakeTimer.get()*speed))-21);
+        else if (snakeTimer.get()*speed<LED_LENGTH*2){
+            location = LED_LENGTH-(((int)(snakeTimer.get()*speed))-LED_LENGTH)-1;
             direction=1;
         }
         else{
             snakeTimer.reset();
-            location=1;
+            location=0;
             direction=0;
         }
         for(int i = 0; i < LED_LENGTH; i++){
             setColor(i,PresetColor.OFF);
         }
         if(direction==0){
-            for(int i = 0; i < 15; i++){
-                if(location+i<21){
-                    setColor(location+i,getColorAtBrightness(color, 0.0666*i));
-                    setColor(21+location+i,getColorAtBrightness(color, 0.0666*i));
+            for(int i = 0; i < length; i++){
+                if(location+i<LED_LENGTH){
+                    setColor(location+i,getColorAtBrightness(color, i*(1.0/length)));
                 }
                 else {
-                    setColor(21-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
-                    setColor(LED_LENGTH - 1 -((location+i)-21),getColorAtBrightness(color, 0.0666*i));
+                    setColor(LED_LENGTH-((location+i)-LED_LENGTH)-1,getColorAtBrightness(color, i*(1.0/length)));
                 }
             }
         }
         else{
-            for(int i = 0; i < 15; i++){
+            for(int i = 0; i < length; i++){
                 if(location-i>0){
-                    setColor(location-i,getColorAtBrightness(color, 0.0666*i));
-                    setColor(21+location-i,getColorAtBrightness(color, 0.0666*i));
+                    setColor(location-i,getColorAtBrightness(color, i*(1.0/length)));
                 }
                 else{
-                    setColor(-(location-i),getColorAtBrightness(color, 0.0666*i));
-                    setColor(21-(location-i),getColorAtBrightness(color, 0.0666*i));
+                    setColor(-(location-i),getColorAtBrightness(color, i*(1.0/length)));
                 }
             }
         }
@@ -558,8 +553,9 @@ public class LED {
         }
         public int updateBlob(int index){
             //If we're at the top, decrease the height (the height determines the bottom of the blob, not the top)
-            if(location>21){
+            if(location>=LED_LENGTH){
                 height-=speed;
+                location=LED_LENGTH-1;
             }
             //Otherwise if the blob is low or small, move up
             else if (location < 8||height<7){
