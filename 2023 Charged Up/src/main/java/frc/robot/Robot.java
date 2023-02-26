@@ -215,6 +215,7 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
+    double rotateToAngle;
 
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
 
@@ -320,6 +321,36 @@ public class Robot extends LoggedRobot {
         NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       } else {
         NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+        
+        
+      // System.out.println("Pitch " + drive.getPitch());
+    }
+    else{
+      rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
+      * rotatePower; // Right joystick
+      translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+      rotateToAngle = driverController.getPOV();
+      // is
+      // forward
+      // Direction,
+                                                                                                                            // Forward
+                                                                                                                            // on
+                                                                                                                            // Joystick
+                                                                                                                            // is
+                                                                                                                            // Y
+        translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+  
+        //
+        // Normal teleop drive
+        //
+        if (rotateToAngle != -1){
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+              drive.turnToAngle(rotateToAngle) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, drive.getGyroscopeRotation()));
+
+        }else {
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+              -joystickDeadband(rotate), drive.getGyroscopeRotation()));
+        }
       }
 
       // set LED to targetlock

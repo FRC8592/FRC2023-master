@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
+
 
 import static frc.robot.Constants.*;
 
@@ -37,7 +39,7 @@ public class Drivetrain {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
-    
+    private PIDController turnToPID = new PIDController(Constants.TURN_TO_kP, TURN_TO_kI, TURN_TO_kD);
     private FRCLogger logger;
 
     private final double kWheelCircumference = 4*Math.PI;
@@ -160,6 +162,7 @@ public class Drivetrain {
         );
 
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
+        turnToPID.enableContinuousInput(-180, 180);
     }
 
     /**
@@ -254,6 +257,23 @@ public class Drivetrain {
         m_frontRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
         m_backLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
         m_backRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
+    }
+
+    public double turnToAngle(double targetDegrees){
+        double yaw = getYaw();
+
+        if (targetDegrees > 180) {
+            targetDegrees -= 360;
+        }
+
+        // double targetDifference = yaw - targetDegrees;
+
+        SmartDashboard.putNumber("Current Yaw", yaw);
+        SmartDashboard.putNumber("Target Degrees", targetDegrees);
+        SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
+        SmartDashboard.putNumber("TurnTo PID", turnToPID.calculate(yaw, targetDegrees));
+        
+        return -turnToPID.calculate(yaw, targetDegrees);
     }
 
     public void getSwervePositions() {
