@@ -251,7 +251,9 @@ public class Drivetrain {
         setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
         setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
         setModule(m_backRightModule, states[3].angle.getRadians(), metersPerSecondToTicks(states[3].speedMetersPerSecond));
-        updatePose(vision.getPoseFromLimelight());
+        // if (vision.targetValid) {
+        //     updatePose(vision.getPoseFromLimelight());
+        // }
         this.odometry.update(
             getGyroscopeRotation(), 
             new SwerveModulePosition[] {
@@ -368,5 +370,4 @@ public class Drivetrain {
     public Pose2d getPosEstimate(){
         return this.poseEstimate.getEstimatedPosition();
     }
-
 }

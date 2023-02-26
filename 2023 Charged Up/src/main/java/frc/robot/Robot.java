@@ -68,6 +68,8 @@ public class Robot extends LoggedRobot {
   public PIDController strafePID;
   public boolean wasZeroed = false;
   private boolean coneVision = true;
+  private boolean isLiningUp = false;
+  private boolean prevIsLiningUp = false;
   // public Power power;
 
   private BaseAuto selectedAuto;
@@ -76,7 +78,11 @@ public class Robot extends LoggedRobot {
 
   private DriveScaler driveScaler;
 
+  private AutoDrive autoDrive;
+
   public static Field2d FIELD = new Field2d();
+
+  private Pose2d limelightPose;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -107,17 +113,24 @@ public class Robot extends LoggedRobot {
     driverController = new XboxController(0);
     operatorController = new XboxController(1);
     // power = new Power();
-    drive = new Drivetrain(logger);
+    drive = new Drivetrain(logger, gameObjectVision);
     ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
-    strafePID = new PIDController(-0.2, 0, 0);
+    strafePID = new PIDController(-0.05, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
     // intake.reset();
     // lift.reset();
+
+    autoDrive = new AutoDrive(
+      2.0, 0.0, 0.0, 
+      2.0, 0.0, 0.0, 
+      0.5, 0.0, 0.0, 
+      0.5, 0.5, 0.1
+    );
 
     driveScaler = new DriveScaler();
     SmartDashboard.putData(FIELD);
@@ -386,11 +399,42 @@ public class Robot extends LoggedRobot {
       );
     }
 
-    if (driverController.getBButton()) { // Wheels locked
+    if (driverController.getYButton()) {
+      if (driverController.getPOV() == 270) { // DPAD Left
+        // go to left of april tag
+        isLiningUp = true;
+        Pose2d limelightPose = null;
+        if (isLiningUp != prevIsLiningUp) {
+          limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), false);
+        }
+        // driveSpeeds = autoDrive.driveToRetroTape(drive.getCurrentPos(), limelightPose, true);
+      } else if (driverController.getPOV() == 90) { // DPAD Right
+        isLiningUp = true;
+        if (isLiningUp != prevIsLiningUp) {
+          limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), true);
+        }
+        // driveSpeeds = autoDrive.moveTo(autoDrive., limelightPose)
+      } else if (driverController.getPOV() == 0) { // DPAD Up
+        isLiningUp = true;
+        Pose2d limelightPose = null;
+        if (isLiningUp != prevIsLiningUp) {
+          limelightPose = autoDrive.getRelativePoseFromLimelight();
+        }
+        // driveSpeeds = autoDrive.driveToAprilTag(drive.getCurrentPos(), limelightPose);
+      } else {
+        isLiningUp = false;
+        drive.drive(driveSpeeds);
+      }
+
+    drive.drive(driveSpeeds);
+    } else if (driverController.getBButton()) { // Wheels locked
+      isLiningUp = false;
       drive.setWheelLock();
     } else if (shouldBalance){
+      isLiningUp = false;
       autoPark.balance(drive);
     }else {
+      isLiningUp = false;
       drive.drive(driveSpeeds);
     }
 
@@ -437,6 +481,8 @@ public class Robot extends LoggedRobot {
     } else { // Stall at current height
       elevator.set(Heights.STALL);
     }
+
+    prevIsLiningUp = isLiningUp;
   }
 
   /** This function is called once when the robot is disabled. */
@@ -456,7 +502,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void testInit() {
     selectedAuto = selector.getSelectedAutonomous();
-    selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.addModules(drive, elevator, intake); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
     
     if (!isReal()) {
@@ -466,11 +512,6 @@ public class Robot extends LoggedRobot {
       drive.resetEncoder();
       drive.resetPose(selectedAuto.getStartPose());
     }
-
-    SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
     drive.resetSteerAngles();
   }
 

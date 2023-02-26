@@ -2,7 +2,11 @@ package frc.robot.autonomous;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.Drivetrain;
+import frc.robot.LimelightHelpers;
+
 import java.util.ArrayList;
 import java.lang.Math;
 
@@ -30,6 +34,9 @@ public class AutoDrive {
     PIDController pidVelocityControlY;
     PIDController pidOmegaControl;
     SmoothingFilter sf = new SmoothingFilter(5, 5, 5);
+
+    private double finalXMeters = 0.55;
+    private double finalYMeters = 0.57; // Plus or minus
 
     private ArrayList<Pose2d> waypoints;
     /**
@@ -145,5 +152,37 @@ public class AutoDrive {
 
     public Pose2d getLastWaypoint(){
         return this.waypoints.get(this.waypoints.size() - 1);
+    }
+
+    public Pose2d getRelativePoseFromLimelight() {
+        if (LimelightHelpers.getCameraPose_TargetSpace("limelight-vision") == null) {
+            return null;
+        }
+        double[] pose = LimelightHelpers.getCameraPose_TargetSpace("limelight-vision");
+        return new Pose2d(pose[2], pose[0], new Rotation2d(Math.toRadians(pose[5])));
+    }
+
+    public Pose2d driveToRetroTape(Pose2d robotPose, Pose2d limelightPose, boolean left) {
+        if (limelightPose == null) {
+            // return new ChassisSpeeds();
+            return robotPose;
+        }
+        double x = robotPose.getX() + limelightPose.getX() + finalXMeters;
+        double y = robotPose.getY() + limelightPose.getY() + (left ? -finalYMeters : finalYMeters);
+        Rotation2d rot = limelightPose.getRotation().times(-1);
+        return new Pose2d(x, y, new Rotation2d());
+        // return moveTo(new Pose2d(x, y, new Rotation2d()), new Pose2d());
+    }
+
+    public Pose2d driveToAprilTag(Pose2d robotPose, Pose2d limelightPose) {
+        if (limelightPose == null) {
+            // return new ChassisSpeeds();
+            return robotPose;
+        }
+        double x = robotPose.getX() + limelightPose.getX() + finalXMeters;
+        double y = robotPose.getY() + limelightPose.getY();
+        Rotation2d rot = limelightPose.getRotation().times(-1);
+        return new Pose2d(x, y, new Rotation2d());
+        // return moveTo(new Pose2d(x, y, new Rotation2d()), new Pose2d());
     }
 }
