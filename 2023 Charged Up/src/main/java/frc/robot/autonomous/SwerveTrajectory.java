@@ -28,7 +28,7 @@ public class SwerveTrajectory {
     public SwerveTrajectory(Trajectory trajectory) {
         mXPID = new PIDController(0.5, 0, 0.0); // 0.1 0 -0.0002
         mYPID = new PIDController(0.5, 0, 0.0); // 0.1 0 -0.0002
-        mTurnPID = new ProfiledPIDController(-1.0, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mTurnPID = new ProfiledPIDController(0.2, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
@@ -36,7 +36,7 @@ public class SwerveTrajectory {
         mTurnPID.setTolerance(0.1, 0.1);
         mTurnPID.enableContinuousInput(-Math.PI, Math.PI); // Might need to change to degrees
 
-        mDrivePID.setTolerance(new Pose2d(0.1, 0.1, Rotation2d.fromDegrees(5)));
+        mDrivePID.setTolerance(new Pose2d(0.3, 0.3, Rotation2d.fromDegrees(5)));
 
         // rotation = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation();
         rotation = new Rotation2d();
@@ -98,8 +98,9 @@ public class SwerveTrajectory {
         // SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
        
         poseRobot = robotPose;
-       
-        return desired;
+        ChassisSpeeds test = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, 0);
+        // return desired;
+        return test;
     }
 
     public boolean isFinished(double time) {
@@ -107,9 +108,11 @@ public class SwerveTrajectory {
             // return mDrivePID.atReference() && time >= (mTrajectory.getTotalTimeSeconds());
             // return time >= (mTrajectory.getTotalTimeSeconds());
             return 
-                (Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.3) &&
-                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.2) && 
-                (Math.abs(rotation.getDegrees() - poseRobot.getRotation().getDegrees()) <= 5);
+                ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.5) &&
+                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.5)) ||
+                time >= mTrajectory.getTotalTimeSeconds() * 1.2;
+                // && 
+                // (Math.abs(rotation.getDegrees() - poseRobot.getRotation().getDegrees()) <= 5);
             // return mDrivePID.atReference();
         } else {
             // return mDrivePID.atReference();

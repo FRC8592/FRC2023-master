@@ -291,19 +291,17 @@ public class Robot extends LoggedRobot {
     }
 
     if (operatorController.getPOV() == 270) { // DPAD Left
-      coneVision = true;
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       // Set LED's to cone attention
     } else if (operatorController.getPOV() == 90) { // DPAD Right
-      coneVision = false;
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
       // Set LED's to cube attention
     } else if (operatorController.getPOV() == 180) { // DPAD Down
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
       // Set LED's to april tag
     } else if (operatorController.getPOV() == 0) { // DPAD Up
-      // Set LED's to retro-tape
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      // Set LED's to retro-tape
     }
 
     // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
@@ -343,13 +341,6 @@ public class Robot extends LoggedRobot {
             3.0
           )
         );
-      } else {
-        driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          driveScaler.scale(joystickDeadband(translateX)),
-          driveScaler.scale(joystickDeadband(translateY)),
-          joystickDeadband(rotate),
-          drive.getGyroscopeRotation()
-        );
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
       // if (coneVision) {
@@ -364,13 +355,6 @@ public class Robot extends LoggedRobot {
           driveSpeeds.vxMetersPerSecond,
           gameObjectVision.turnRobot(1.0, strafePID, 1.0),
           driveSpeeds.omegaRadiansPerSecond
-        );
-      } else {
-        driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          driveScaler.scale(joystickDeadband(translateX)),
-          driveScaler.scale(joystickDeadband(translateY)),
-          joystickDeadband(rotate),
-          drive.getGyroscopeRotation()
         );
       }
     } else { // Normal drive

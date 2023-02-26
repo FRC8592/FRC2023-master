@@ -1,10 +1,30 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "window": {
+        "visible": false
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Auton Configuration/Choose Autonomous": "String Chooser",
       "/Shuffleboard/Drive Configuration/Choose Drive Scaling": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/Shuffleboard/Auton Configuration/Choose Autonomous": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Field": {
+        "image": "C:\\Users\\Dell G7\\Pictures\\Saved Pictures\\2023-field.png",
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {

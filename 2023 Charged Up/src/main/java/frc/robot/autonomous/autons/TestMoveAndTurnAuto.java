@@ -14,21 +14,8 @@ public class TestMoveAndTurnAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 1);
     @Override
     public void initialize() {
-        SwerveTrajectory I5_TO_Icc = generateTrajectoryFromPoints(
-            // config.setStartVelocity(0.0).setEndVelocity(1.0),
-            config.setStartVelocity(0.0).setEndVelocity(0.0),
-            GRID_I.getPose(),
-            INTERMEDIARY_CABLE_COVER.getPose()
-        );
-
-        SwerveTrajectory Icc_TO_GP3 = generateTrajectoryFromPoints(
-            config.setStartVelocity(0.0).setEndVelocity(0.0),
-            INTERMEDIARY_CABLE_COVER.getPose(),
-            GAME_PIECE_3.getPose()
-        );
-
         SwerveTrajectory TEST_1 = generateTrajectoryFromPoints(
-            config.setStartVelocity(0.0).setEndVelocity(0.0),
+            config.setStartVelocity(0.0).setEndVelocity(0.0),//.setReversed(true),
             GRID_I.getPose(),
             GRID_I.translate(1, 0)
         );
@@ -36,13 +23,14 @@ public class TestMoveAndTurnAuto extends BaseAuto {
         SwerveTrajectory TEST_2 = generateTrajectoryFromPoints(
             config.setStartVelocity(0.0).setEndVelocity(0.0),
             GRID_I.translate(1, 0),
-            GRID_I.getPose()
+            GRID_I.translate(-1, 0)
         );
 
         queue = new CommandQueue(
             new DelayCommand(0.5),
-            new FollowerCommand(drive, TEST_1.addRotation(Rotation2d.fromDegrees(-90))),
-            new FollowerCommand(drive, TEST_2)
+            new FollowerCommand(drive, TEST_1)
+            // new FollowerCommand(drive, TEST_1.addRotation(Rotation2d.fromDegrees(-90)))
+            // new FollowerCommand(drive, TEST_2)
             // new FollowerCommand(drive, TEST_2.addRotation(Rotation2d.fromDegrees(90)))
             // new FollowerCommand(drive, I5_TO_Icc.addRotation(Rotation2d.fromDegrees(-90)))
                 // new FollowerCommand(drive, Icc_TO_GP3)

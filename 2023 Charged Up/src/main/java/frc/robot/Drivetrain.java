@@ -228,7 +228,6 @@ public class Drivetrain {
         // setDriveVelocity(metersPerSecondToTicks(states[2].speedMetersPerSecond), m_backLeftModule);
         // setDriveVelocity(metersPerSecondToTicks(states[3].speedMetersPerSecond), m_backRightModule);
 
-
         setModule(m_frontLeftModule, states[0].angle.getRadians(), metersPerSecondToTicks(states[0].speedMetersPerSecond));
         setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
         setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
