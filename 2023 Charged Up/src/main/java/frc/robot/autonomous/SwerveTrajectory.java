@@ -25,16 +25,22 @@ public class SwerveTrajectory {
     private TrajectoryConfig config = new TrajectoryConfig(0, 0).setEndVelocity(0).setStartVelocity(0);
     private Pose2d poseRobot = new Pose2d();
 
+    private PIDController turnPID;
+
     public SwerveTrajectory(Trajectory trajectory) {
-        mXPID = new PIDController(0.5, 0, 0.0); // 0.1 0 -0.0002
-        mYPID = new PIDController(0.5, 0, 0.0); // 0.1 0 -0.0002
-        mTurnPID = new ProfiledPIDController(0.2, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mXPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
+        mYPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
+        mTurnPID = new ProfiledPIDController(0.4, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
         mYPID.setTolerance(0.1, 0.1);
         mTurnPID.setTolerance(0.1, 0.1);
         mTurnPID.enableContinuousInput(-Math.PI, Math.PI); // Might need to change to degrees
+
+        turnPID = new PIDController(0.05, 0, 0);
+        turnPID.setTolerance(0.1);
+        // turnPID.enableContinuousInput(-Math.PI/2, Math.PI/2);
 
         mDrivePID.setTolerance(new Pose2d(0.3, 0.3, Rotation2d.fromDegrees(5)));
 
@@ -98,7 +104,10 @@ public class SwerveTrajectory {
         // SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
        
         poseRobot = robotPose;
-        ChassisSpeeds test = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, 0);
+
+        double turn = turnPID.calculate(0, getErrorAngle(robotPose, new Pose2d(0, 0, rotation)));
+        
+        ChassisSpeeds test = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, -turn);
         // return desired;
         return test;
     }
@@ -108,8 +117,8 @@ public class SwerveTrajectory {
             // return mDrivePID.atReference() && time >= (mTrajectory.getTotalTimeSeconds());
             // return time >= (mTrajectory.getTotalTimeSeconds());
             return 
-                ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.5) &&
-                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.5)) ||
+                ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.2) &&
+                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.2)) ||
                 time >= mTrajectory.getTotalTimeSeconds() * 1.2;
                 // && 
                 // (Math.abs(rotation.getDegrees() - poseRobot.getRotation().getDegrees()) <= 5);
@@ -119,6 +128,28 @@ public class SwerveTrajectory {
             return time >= mTrajectory.getTotalTimeSeconds();
         }
     }
+
+    private double getErrorAngle(Pose2d robot, Pose2d goal){
+        /*** Computation for currect rotate errors into waypoint ****/
+       double goalAngle = goal.getRotation().getDegrees();
+       double curAngle = robot.getRotation().getDegrees();
+       if (curAngle < 0) {
+            curAngle += 360;
+       }
+       double errorAngle = 0; 
+       //we only use angles between 0 and 2 PI so convert the angles to that range.
+       if(goalAngle < 0){
+                   goalAngle += 360;    
+       }
+       // find shortest angle difference error angle should allways be > -PI and <= PI
+       errorAngle = goalAngle - curAngle;   
+       if(errorAngle > 180){
+           errorAngle -= 360;
+       } else if(errorAngle <= -180){
+           errorAngle += 360;
+       } 
+       return errorAngle;
+   }
 
     /**
      * @return underlying WPILib {@code Trajectory} object that the current {@code SwerveTrajectory} is based on

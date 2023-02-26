@@ -321,8 +321,8 @@ public class Robot extends LoggedRobot {
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(translateX), 
-      driveScaler.scale(translateY), 
+      driveScaler.scale(-translateX), 
+      driveScaler.scale(-translateY), 
       driveScaler.scale(rotate), 
       drive.getGyroscopeRotation()
     );
@@ -359,8 +359,8 @@ public class Robot extends LoggedRobot {
       }
     } else { // Normal drive
       driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        driveScaler.scale(joystickDeadband(translateX)),
-        driveScaler.scale(joystickDeadband(translateY)),
+        driveScaler.scale(-joystickDeadband(translateX)),
+        driveScaler.scale(-joystickDeadband(translateY)),
         joystickDeadband(rotate),
         drive.getGyroscopeRotation()
       );
