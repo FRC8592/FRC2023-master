@@ -2,7 +2,10 @@ package frc.robot;
 
 import javax.xml.validation.SchemaFactory;
 
+import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
@@ -24,19 +27,17 @@ public class LED {
     private Timer blinkSpeedTimer;
     private BlinkSpeed blinkSpeed = BlinkSpeed.SOLID;
     private LEDMode mode = LEDMode.OFF;
-    private Vision vision = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
-    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-    Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD, new FRCLogger(true, "CustomLogs"));
+    private Vision vision;
 
     private int count = 0;
     private double brightnessMultiplier = 1;
     private boolean lowVolts = false;
     private Timer delayTimer = new Timer();
-    private Power power = new Power();
+    private Power power;
     private int indexOn = 0;
     private int waveCounter = 0;
 
-    final int LED_LENGTH = 21;
+    final int LED_LENGTH = 8;
 
     /**
      * Premade color presets
@@ -101,57 +102,60 @@ public class LED {
         OFF;
     }
 
-    public LED(){
+    public LED(Vision vision, Power power){
         liftNEOPIXELS = new AddressableLED(0);
         liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
         liftNEOPIXELS.setLength(LED_LENGTH);
         timer = new Timer();
         blinkSpeedTimer = new Timer();
+        this.vision = vision;
+        this.power = power;
     }
+
+    Timer lockTimer = new Timer();
+    double timeToReset = 0.0;
 
     /**
      * Periodically update the LEDs based on the current state
      */
     public void updatePeriodic() {
-        power.powerPeriodic();
         SmartDashboard.putString("LED Mode", mode.name());
+        power.powerPeriodic();
+        SmartDashboard.putNumber("LED Power voltage", power.voltage);
+        SmartDashboard.putNumber("LED PowerDist voltage", PowerDistributionDataJNI.getVoltage(0));
+        SmartDashboard.putNumber("lock timer reading", lockTimer.get());
         
         // Switch between the possible states of the LED
         switch (mode) {
             case CONE:
                 blinkSpeed = BlinkSpeed.SOLID;
-                upAndDown(Color.PURPLE, Color.OFF);
+                upAndDown(Color.YELLOW, Color.OFF);
+                timeToReset = 3.0;
                 break;
             case CUBE:
                 blinkSpeed = BlinkSpeed.SOLID;
-                upAndDown(Color.YELLOW, Color.OFF);
+                upAndDown(Color.PURPLE, Color.OFF);
+                timeToReset = 3.0;
                 break;
             case TARGETLOCK:
-            // //5m = 196.85
                 blinkSpeed = BlinkSpeed.SOLID;
-                vision.updateVision();
-                if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
-                    delayTimer.start();
-                    if (delayTimer.get() > 0.5) {
-                        setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
-                    }
-                } else {
-                    setPct(50, Color.ORANGE);
-                    delayTimer.reset();
-                    delayTimer.stop();
-                }
+                setProximity(vision.distanceToTarget() * Constants.INCHES_TO_METERS);
+                timeToReset = 0.0;
                 break;
             case STOPPLACING:
                 blinkSpeed = BlinkSpeed.SOLID;
                 upAndDown(Color.WHITE, Color.OFF);
+                timeToReset = 3.0;
                 break;
             case ATTENTION:
                 blinkSpeed = BlinkSpeed.SOLID;
                 upAndDown(Color.ORANGE, Color.BLUE);
+                timeToReset = 3.0;
                 break;
             case WAVES:
                 blinkSpeed = BlinkSpeed.SOLID;
                 setWaves(Color.BLUE);
+                timeToReset = 3.0;
                 break;
             case OFF:
                 blinkSpeed = BlinkSpeed.SOLID;
@@ -159,8 +163,15 @@ public class LED {
                 break;
         }
         
+        if (lockTimer.get() > timeToReset) {
+            lockTimer.reset();
+            lockTimer.stop();
+            mode = LEDMode.OFF;
+        }
+        
         //power var
-        if ((power.voltage < 9.0 || lowVolts)) {
+        if ((power.voltage < Constants.MINIMUM_VOLTAGE || lowVolts)) {
+            SmartDashboard.putBoolean("Low Voltage", true);
             delayTimer.start();
             lowVolts = true;
             lowVoltage();
@@ -169,6 +180,8 @@ public class LED {
                 delayTimer.stop();
                 lowVolts = false;
             } 
+        } else {
+            SmartDashboard.putBoolean("Low Voltage", false);
         }
         
         liftNEOPIXELS.setData(liftBuffer);
@@ -182,6 +195,8 @@ public class LED {
      */
     public void setState(LEDMode mode) {
         this.mode = mode;
+        lockTimer.reset();
+        lockTimer.start();
     }
     
     /**
@@ -250,17 +265,10 @@ public class LED {
                 
                 count++;
                 timer.reset();
-                if(count > LED_LENGTH){
-                    count = 0;
-                }
                 for(int i = 0; i < LED_LENGTH; i++){
                     if (Math.sin(1 * (double)(i + count))  > 0){
                         setColor(i, colorA);
-                    }
-               /*     else if(Math.sin((double)(i + count)) > -.5){
-                        liftBuffer.setRGB(i, 0, 255, 0);
-                    } */
-                     else  {
+                    } else  {
                         setColor(i, colorB);
                     }
                 }
@@ -283,29 +291,40 @@ public class LED {
      * @param distToTarget  the distance to the target (meters)
      */
     private void setProximity(double distToTarget) {
-        Color color = Color.RED;
-        // Formula to calculate how many LEDs to set in each strip
-        // max = max distance before LEDs start lighting up
-        // min = distance until piece is "in range"
-        double max = 2.0;
-        double min = 0.75;
-        double difference = max - min;
-        int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH));
-        
-        //If distance is at or closer to the max distance, set the color of LEDs to green and cap amount to turn on
-        if (numLEDs >= LED_LENGTH ) {
-            numLEDs = LED_LENGTH;
-            color = Color.GREEN;
-            timer.start();
-        }
+        if (vision.distanceToTarget() < 80 && vision.distanceToTarget() >= 0.0) {
+            delayTimer.start();
 
-        // loop through one side of the LEDs and set an amount of LEDs on depending on distance
-        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
-            if(ledIndex < numLEDs) {
-                setColor(ledIndex, color);
-            } else {
-                setColor(ledIndex, Color.OFF);
+            if (delayTimer.get() > 0.5) {
+                Color color = Color.RED;
+                // Formula to calculate how many LEDs to set in each strip
+                // max = max distance before LEDs start lighting up
+                // min = distance until piece is "in range"
+                double max = 2.0;
+                double min = 0.75;
+                double difference = max - min;
+                int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH));
+                
+                //If distance is at or closer to the max distance, set the color of LEDs to green and cap amount to turn on
+                if (numLEDs >= LED_LENGTH ) {
+                    numLEDs = LED_LENGTH;
+                    color = Color.GREEN;
+                    timer.start();
+                }
+        
+                // loop through one side of the LEDs and set an amount of LEDs on depending on distance
+                for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+                    if(ledIndex < numLEDs) {
+                        setColor(ledIndex, color);
+                    } else {
+                        setColor(ledIndex, Color.OFF);
+                    }
+                }
             }
+
+        } else {
+            delayTimer.reset();
+            delayTimer.stop();
+            setPct(50, Color.ORANGE);
         }
     }
 
@@ -318,7 +337,6 @@ public class LED {
         for(int i = 0; i < LED_LENGTH / 10; i++) {
             setColor(i, Color.RED);
         }
-        
     }
 
     private void setWaves(Color color) {

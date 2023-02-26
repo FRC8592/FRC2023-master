@@ -105,13 +105,12 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     operatorController = new XboxController(1);
-    // power = new Power();
     drive = new Drivetrain(logger);
-    ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    ledStrips = new LED(gameObjectVision, power);
     strafePID = new PIDController(-0.2, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
@@ -130,6 +129,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
     elevator.writeToSmartDashboard();
+    power.powerPeriodic();
   }
 
   /**
@@ -199,7 +199,6 @@ public class Robot extends LoggedRobot {
     double rotate;
 
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
-    ledStrips.updatePeriodic();
 
     drive.getCurrentPos();
     gameObjectVision.updateVision();
@@ -391,6 +390,7 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {
     timer.reset();
     timer.start();
+
   }
 
   /** This function is called periodically when disabled. */
@@ -401,6 +401,12 @@ public class Robot extends LoggedRobot {
     // //                                                          // opposite of controller direct
     // drive.setWheelLock();
   
+    ledStrips.updatePeriodic();
+    if (operatorController.getAButton()) {
+      ledStrips.setState(LEDMode.CONE);
+    } else if (operatorController.getBButton()) {
+      ledStrips.setState(LEDMode.CUBE);
+    }
   }
 
   /** This function is called once when test mode is enabled. */
