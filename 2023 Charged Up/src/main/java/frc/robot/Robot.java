@@ -400,33 +400,37 @@ public class Robot extends LoggedRobot {
     }
 
     if (driverController.getYButton()) {
+        
+
       if (driverController.getPOV() == 270) { // DPAD Left
         // go to left of april tag
-        isLiningUp = true;
-        Pose2d limelightPose = null;
-        if (isLiningUp != prevIsLiningUp) {
+        
+        if (!isLiningUp) {
           limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), false);
+          isLiningUp = true;
         }
         // driveSpeeds = autoDrive.driveToRetroTape(drive.getCurrentPos(), limelightPose, true);
       } else if (driverController.getPOV() == 90) { // DPAD Right
-        isLiningUp = true;
-        if (isLiningUp != prevIsLiningUp) {
+        if (!isLiningUp) {
           limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), true);
+          isLiningUp = true;
         }
         // driveSpeeds = autoDrive.moveTo(autoDrive., limelightPose)
       } else if (driverController.getPOV() == 0) { // DPAD Up
-        isLiningUp = true;
-        Pose2d limelightPose = null;
-        if (isLiningUp != prevIsLiningUp) {
-          limelightPose = autoDrive.getRelativePoseFromLimelight();
+        if (!isLiningUp) {
+          limelightPose = autoDrive.driveToAprilTag(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight());
+          isLiningUp = true;
         }
         // driveSpeeds = autoDrive.driveToAprilTag(drive.getCurrentPos(), limelightPose);
       } else {
         isLiningUp = false;
         drive.drive(driveSpeeds);
       }
-
-    drive.drive(driveSpeeds);
+      if(driverController.getPOV() != -1 && driverController.getPOV() != 180){
+      driveSpeeds = autoDrive.moveTo(limelightPose, drive.getCurrentPos());
+      }
+      drive.drive(driveSpeeds);
+      
     } else if (driverController.getBButton()) { // Wheels locked
       isLiningUp = false;
       drive.setWheelLock();
