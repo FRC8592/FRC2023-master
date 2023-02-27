@@ -334,8 +334,10 @@ public class Robot extends LoggedRobot {
       // set LED to targetlock
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
-          driveSpeeds.vxMetersPerSecond,
-          driveSpeeds.vyMetersPerSecond,
+          // driveSpeeds.vxMetersPerSecond,
+          // driveSpeeds.vyMetersPerSecond,
+          translateX,
+          translateY,
           gameObjectVision.turnRobot(
             1.0,
             turnPID,
@@ -387,6 +389,12 @@ public class Robot extends LoggedRobot {
       intake.enableWrist(true);
     } else if (operatorController.getLeftBumper()) {
       intake.enableWrist(false);
+    }
+
+    if (operatorController.getStartButtonPressed() && operatorController.getLeftTriggerAxis() >= 0.1) {
+      SmartDashboard.putNumber("Wrist Desired Rotations", SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS) - 0.25);
+    } else if (operatorController.getBackButtonPressed() && operatorController.getLeftTriggerAxis() >= 0.1) {
+      SmartDashboard.putNumber("Wrist Desired Rotations", SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS) + 0.25);
     }
 
     // ======================= \\
