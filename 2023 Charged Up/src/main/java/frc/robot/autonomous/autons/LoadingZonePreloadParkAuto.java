@@ -1,7 +1,6 @@
 package frc.robot.autonomous.autons;
 
 import frc.robot.Elevator.Heights;
-import frc.robot.autonomous.AutoDrive;
 import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
@@ -36,7 +35,7 @@ public class LoadingZonePreloadParkAuto extends BaseAuto {
                 new LiftCommand(elevator, Heights.HIGH)
             ),
             new LiftCommand(elevator, Heights.STOWED), // Retracts the elevator and moves while it stows
-            new FollowerCommand(drive, C_TO_BM),
+            new FollowerCommand(drive, C_TO_BM), // Go to charging station
             new AutobalanceCommand(drive)
             // new JointCommand( // Retracts the tilt and moves towards charging station from the outside
             //     new LiftCommand(elevator, Heights.STOWED),

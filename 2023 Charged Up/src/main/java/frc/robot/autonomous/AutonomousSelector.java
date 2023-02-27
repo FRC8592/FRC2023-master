@@ -11,11 +11,10 @@ import frc.robot.autonomous.autons.LoadingZoneThreePieceAuto;
 import frc.robot.autonomous.autons.LoadingZoneThreePieceParkAuto;
 import frc.robot.autonomous.autons.LoadingZoneTwoPieceAuto;
 import frc.robot.autonomous.autons.LoadingZoneTwoPieceParkAuto;
-import frc.robot.autonomous.autons.MiddleBalanceAuto;
+import frc.robot.autonomous.autons.MiddlePreloadBalanceAuto;
 import frc.robot.autonomous.autons.MiddlePreloadParkAuto;
 import frc.robot.autonomous.autons.MoveOutCommunityAuto;
 import frc.robot.autonomous.autons.LoadingZonePreloadParkAuto;
-import frc.robot.autonomous.autons.TestMoveAndTurnAuto;
 public class AutonomousSelector {
 
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
@@ -23,22 +22,13 @@ public class AutonomousSelector {
     private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-        // CableCoverTwoPieceParkAuto.class,
-        // CableCoverThreePieceAuto.class,
-        // LoadingZoneTwoPieceParkAuto.class,
-        // LoadingZoneThreePieceAuto.class,
-        // MiddlePreloadParkAuto.class,
-        // MoveOutCommunityAuto.class,
-        // LoadingZoneThreePieceParkAuto.class,
-        // TestMoveAndTurnAuto.class,
-        MiddleBalanceAuto.class,
+        MiddlePreloadBalanceAuto.class,
         LoadingZonePreloadParkAuto.class,
-        TestMoveAndTurnAuto.class,
         LoadingZoneTwoPieceAuto.class
     };
 
     public AutonomousSelector() {
-        autonChooser.setDefaultOption("DEFAULT", TestMoveAndTurnAuto.class);
+        autonChooser.setDefaultOption("DEFAULT", MoveOutCommunityAuto.class);
         for (Class<?> auto : autos) {
             autonChooser.addOption(auto.getSimpleName(), auto);
         }

@@ -27,6 +27,8 @@ public class SwerveTrajectory {
 
     private PIDController turnPID;
 
+    private double MAX_ANGULAR_VELOCITY_AUTONOMOUS = 2 * Math.PI;
+
     public SwerveTrajectory(Trajectory trajectory) {
         mXPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
         mYPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
@@ -107,9 +109,10 @@ public class SwerveTrajectory {
 
         double turn = turnPID.calculate(0, getErrorAngle(robotPose, new Pose2d(0, 0, rotation)));
         
-        ChassisSpeeds test = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, -turn);
-        // return desired;
-        return test;
+        desired = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, -turn);
+        // ChassisSpeeds test = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, -turn);
+        return desired;
+        // return test;
     }
 
     public boolean isFinished(double time) {

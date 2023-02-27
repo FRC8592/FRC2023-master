@@ -3,7 +3,7 @@ package frc.robot.autonomous.autons;
 import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
 
-public class MiddleBalanceAuto extends BaseAuto {
+public class MiddlePreloadBalanceAuto extends BaseAuto {
 
     @Override
     public void initialize() {
