@@ -72,9 +72,9 @@ public final class Constants {
     public static final double ROLLER_KI = 0.0;
     public static final double ROLLER_KD = 0.0;
     public static final double ROLLER_KF = 0.0;
-    public static final double WRIST_KP = 0.0001;
+    public static final double WRIST_KP = 0.0003;
     public static final double WRIST_KI = 0.0;
-    public static final double WRIST_KD = 0.0;
+    public static final double WRIST_KD = -0.00003;
     public static final double WRIST_KF = 0.0;
     public static final double ROLLER_GEAR_RATIO = 1.0;
     public static final double WRIST_GEAR_RATIO = 1.0 / 64.0;

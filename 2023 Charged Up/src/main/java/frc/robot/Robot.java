@@ -68,6 +68,9 @@ public class Robot extends LoggedRobot {
   public PIDController strafePID;
   public boolean wasZeroed = false;
   private boolean coneVision = true;
+  private boolean angleTapBool = false;
+
+  private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
   // public Power power;
 
   private BaseAuto selectedAuto;
@@ -317,8 +320,8 @@ public class Robot extends LoggedRobot {
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(-joystickDeadband(translateX)),
-      driveScaler.scale(-joystickDeadband(translateY)),
+      driveScaler.scale(joystickDeadband(translateX)),
+      driveScaler.scale(joystickDeadband(translateY)),
       joystickDeadband(rotate),
       drive.getGyroscopeRotation()
     );
@@ -359,12 +362,10 @@ public class Robot extends LoggedRobot {
       //   joystickDeadband(rotate),
       //   drive.getGyroscopeRotation()
       // );
-        if (rotateToAngle != -1){
-          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
-
-              drive.turnToAngle(rotateToAngle), drive.getGyroscopeRotation()));
-        } else {
-                                                                                                                            // Joystick
+      if (driverController.getPOV() != -1){
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+            drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
+      }
     }
 
     if (driverController.getBButton()) { // Wheels locked
@@ -393,10 +394,10 @@ public class Robot extends LoggedRobot {
       } else if (operatorController.getXButton()) {
         intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
       } else {
-        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+        intake.setWrist(currentWrist);
       }
     } else if (operatorController.getLeftBumper()) {
-      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+      intake.setWrist(currentWrist);
       // if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
       //   intake.outtakeRoller();
       // } else if (operatorController.getLeftTriggerAxis() >= 0.1) {
@@ -407,22 +408,37 @@ public class Robot extends LoggedRobot {
     } else if (operatorController.getRightBumper()) {
       intake.setWrist(0.0);
     } else {
-        if (operatorController.getAButton()) {
-          elevator.set(Heights.STOWED);
-          intake.setWrist(0.0);
-        } else if (operatorController.getBButton()) {
-          elevator.set(Heights.PRIME);
-          intake.setWrist(0.0);
-        } else if (operatorController.getXButton()) {
-          elevator.set(Heights.MID);
-          intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
-        } else if (operatorController.getYButton()) {
-          elevator.set(Heights.HIGH);
-          intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+        if (operatorController.getStartButton()) {
+          if (angleTapBool) {
+            if (operatorController.getPOV() == -1) {
+              angleTapBool = false;
+            }
+          } else if (operatorController.getPOV() == 0) {
+            angleTapBool = true;
+            currentWrist -= 0.25;
+            intake.setWrist(currentWrist);
+          } else if (operatorController.getPOV() == 180) {
+            angleTapBool = true;
+            currentWrist += 0.25;
+            intake.setWrist(currentWrist);
+          }
         } else {
-          elevator.set(Heights.STALL);
+          if (operatorController.getAButton()) {
+            elevator.set(Heights.STOWED);
+            intake.setWrist(0.0);
+          } else if (operatorController.getBButton()) {
+            elevator.set(Heights.PRIME);
+            intake.setWrist(0.0);
+          } else if (operatorController.getXButton()) {
+            elevator.set(Heights.MID);
+            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+          } else if (operatorController.getYButton()) {
+            elevator.set(Heights.HIGH);
+            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+          } else {
+            elevator.set(Heights.STALL);
+          }
         }
-
         if (operatorController.getPOV() == 90) {
           intake.intakeRoller();
         } else if (operatorController.getPOV() == 270) {
