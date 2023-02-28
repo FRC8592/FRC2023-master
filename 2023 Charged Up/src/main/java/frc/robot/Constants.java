@@ -306,5 +306,12 @@ public final class Constants {
     public static final double TURN_TO_kI = 0;
     public static final double TURN_TO_kD = 0.0;
 
+    public static final double MINIMUM_VOLTAGE = 9.0;
+    public static final int VOLTAGE_TIME = 5;
+    public static final int PULSE_METHOD_SPEED = 8;
+    public static final int PULSE_SIZE = 3; 
+    public static final double PROXIMITY_MAX_DISTANCE = 80.0;
+
+    public static final double INCHES_TO_METERS = 1.0 / 39.37;
 }
 

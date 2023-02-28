@@ -44,25 +44,22 @@ public class Power {
     // Periodically post power data to the dashboard
     //
     public void powerPeriodic() {
-        current = revPDH.getTotalCurrent();
-        // Get parameters from the PDH
-        /*
-        temp    = revPDH.getTemperature();
-        voltage = revPDH.getVoltage();
-        power   = revPDH.getTotalPower();
-        energy  = revPDH.getTotalEnergy();
-        */
+        // if (Robot.isReal()) {
+            // current = revPDH.getTotalCurrent();
+            // temp    = revPDH.getTemperature();
+            voltage = revPDH.getVoltage();
+            // power   = revPDH.getTotalPower();
+            // energy  = revPDH.getTotalEnergy();
 
-        // Place all parameters onto a dedicated Shuffleboard tab
-        // Shuffleboard.selectTab("Power");
-
-        // SmartDashboard.putNumber("Temperature", temp);
-        // SmartDashboard.putNumber("Voltage", voltage);
-        SmartDashboard.putNumber("Current", current);
-        // SmartDashboard.putNumber("Power", power);
-        // SmartDashboard.putNumber("Energy", energy);
-
-        // Shuffleboard.selectTab("SmartDashboard");   // Switch back to default
+            // Place all parameters onto a dedicated Shuffleboard tab
+            Shuffleboard.selectTab("Power");
+            // SmartDashboard.putNumber("Temperature", temp);
+            SmartDashboard.putNumber("Voltage", voltage);
+            // SmartDashboard.putNumber("Current", current);
+            // SmartDashboard.putNumber("Power", power);
+            // SmartDashboard.putNumber("Energy", energy);
+            Shuffleboard.selectTab("SmartDashboard");   // Switch back to default
+        // }
     }
 
 
