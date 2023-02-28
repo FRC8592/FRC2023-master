@@ -72,7 +72,7 @@ public final class Constants {
     public static final double ROLLER_KI = 0.0;
     public static final double ROLLER_KD = 0.0;
     public static final double ROLLER_KF = 0.0;
-    public static final double WRIST_KP = 0.0001;
+    public static final double WRIST_KP = 0.00025;
     public static final double WRIST_KI = 0.0;
     public static final double WRIST_KD = 0.0;
     public static final double WRIST_KF = 0.0;

@@ -122,9 +122,9 @@ public class Intake {
 
     public void enableWrist(boolean enable) {
         if (enable) {
-            wristCtrl.setReference(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS), ControlType.kSmartMotion);
+            wristCtrl.setReference(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS), ControlType.kSmartMotion, 0, 0.01);
         } else {
-            wristCtrl.setReference(0.0, ControlType.kSmartMotion);
+            wristCtrl.setReference(0.0, ControlType.kSmartMotion, 0, 0.01);
         }
     }
 

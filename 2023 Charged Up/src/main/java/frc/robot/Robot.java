@@ -68,6 +68,7 @@ public class Robot extends LoggedRobot {
   public PIDController strafePID;
   public boolean wasZeroed = false;
   private boolean coneVision = true;
+  private boolean angleTapBool = false;
   // public Power power;
 
   private BaseAuto selectedAuto;
@@ -401,6 +402,18 @@ public class Robot extends LoggedRobot {
       }
     } else if (operatorController.getRightBumper()) {
       intake.setWrist(0.0);
+    } else if (operatorController.getStartButton()) {
+      if (angleTapBool) {
+        if (operatorController.getPOV() == -1) {
+          angleTapBool = false;
+        }
+      } else if (operatorController.getPOV() == 0) {
+        angleTapBool = true;
+        intake.setWrist(rotate + 0.25);
+      } else if (operatorController.getPOV() == 180) {
+        angleTapBool = true;
+        intake.setWrist(rotate - 0.25);
+      }
     } else {
         if (operatorController.getAButton()) {
           elevator.set(Heights.STOWED);
