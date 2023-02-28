@@ -93,6 +93,7 @@ public class AutoDrive {
         
           velocityX = Math.max(Math.min(velocityX, maxVelocity), -maxVelocity);
           velocityY = Math.max(Math.min(velocityY, maxVelocity), -maxVelocity);
+          velocityX = -velocityX;
         }
 
         if(Math.abs(robot.getRotation().getRadians() - goal.getRotation().getRadians()) >= 0.04) { // Changed from less than to greater than
@@ -167,7 +168,7 @@ public class AutoDrive {
             // return new ChassisSpeeds();
             return robotPose;
         }
-        double x = robotPose.getX() + limelightPose.getX() + finalXMeters;
+        double x = (robotPose.getX() + limelightPose.getX() + finalXMeters);
         double y = robotPose.getY() + limelightPose.getY() + (left ? -finalYMeters : finalYMeters);
         Rotation2d rot = limelightPose.getRotation().times(-1);
         return new Pose2d(x, y, new Rotation2d());
@@ -179,7 +180,7 @@ public class AutoDrive {
             // return new ChassisSpeeds();
             return robotPose;
         }
-        double x = robotPose.getX() + limelightPose.getX() + finalXMeters;
+        double x = (robotPose.getX() + limelightPose.getX() + finalXMeters);
         double y = robotPose.getY() + limelightPose.getY();
         Rotation2d rot = limelightPose.getRotation().times(-1);
         return new Pose2d(x, y, new Rotation2d());

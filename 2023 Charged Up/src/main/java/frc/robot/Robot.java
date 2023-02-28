@@ -400,19 +400,19 @@ public class Robot extends LoggedRobot {
     }
 
     if (driverController.getYButton()) {
-        
+
 
       if (driverController.getPOV() == 270) { // DPAD Left
         // go to left of april tag
         
         if (!isLiningUp) {
-          limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), false);
+          limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), true);
           isLiningUp = true;
         }
         // driveSpeeds = autoDrive.driveToRetroTape(drive.getCurrentPos(), limelightPose, true);
       } else if (driverController.getPOV() == 90) { // DPAD Right
         if (!isLiningUp) {
-          limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), true);
+          limelightPose = autoDrive.driveToRetroTape(drive.getCurrentPos(), autoDrive.getRelativePoseFromLimelight(), false);
           isLiningUp = true;
         }
         // driveSpeeds = autoDrive.moveTo(autoDrive., limelightPose)
@@ -424,10 +424,12 @@ public class Robot extends LoggedRobot {
         // driveSpeeds = autoDrive.driveToAprilTag(drive.getCurrentPos(), limelightPose);
       } else {
         isLiningUp = false;
-        drive.drive(driveSpeeds);
       }
       if(driverController.getPOV() != -1 && driverController.getPOV() != 180){
-      driveSpeeds = autoDrive.moveTo(limelightPose, drive.getCurrentPos());
+      SmartDashboard.putString("LimeLight Waypoint", limelightPose.toString());
+      SmartDashboard.putNumber("LimeLight X", limelightPose.getX());
+      SmartDashboard.putNumber("LimeLight Y", limelightPose.getY());
+      driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(autoDrive.moveTo(limelightPose, drive.getCurrentPos()), drive.getGyroscopeRotation());
       }
       drive.drive(driveSpeeds);
       
@@ -500,6 +502,7 @@ public class Robot extends LoggedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
         0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
     // // opposite of controller direct
+    SmartDashboard.putNumber("POV", driverController.getPOV());
   }
 
   /** This function is called once when test mode is enabled. */
