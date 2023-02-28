@@ -66,7 +66,7 @@ public final class Constants {
     public static final int ROLLER_ID    = 18;
     public static final int BEAM_BREAK_CONE_ID      = 3;
     public static final int BEAM_BREAK_CUBE_ID      = 2;
-    public static final int ROLLER_MAX_CURRENT_AMPS = 10;
+    public static final int ROLLER_MAX_CURRENT_AMPS = 12;
     public static final int WRIST_MAX_CURRENT_AMPS = 20;
     public static final double ROLLER_KP = 0.00025;
     public static final double ROLLER_KI = 0.0;
@@ -84,7 +84,7 @@ public final class Constants {
     public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
     public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 51.25;
+    public static final double WRIST_INTAKE_ROTATIONS = 50.5;
     public static final double WRIST_STOWED_ROTATIONS = 0;
     public static final double WRIST_SCORING_ROTATIONS = 52.0;
     public static final double WRIST_MAX_ROTATIONS = 58;

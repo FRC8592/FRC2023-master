@@ -287,16 +287,14 @@ public class Robot extends LoggedRobot {
       shouldBalance = false;
     }
 
-    
-
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
 
-    if (operatorController.getPOV() == 270) { // DPAD Left
+    if (driverController.getYButton()) {
       coneVision = true;
       // Set LED's to cone attention
-    } else if (operatorController.getPOV() == 90) { // DPAD Right
+    } else if (driverController.getXButton()) {
       coneVision = false;
       // Set LED's to cube attention
     }
@@ -314,17 +312,23 @@ public class Robot extends LoggedRobot {
     translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      driveScaler.scale(joystickDeadband(translateX)),
+      driveScaler.scale(joystickDeadband(translateY)),
+      joystickDeadband(rotate),
+      drive.getGyroscopeRotation()
+    );
+
+    if (coneVision) {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    } else {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    }
+
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
     } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
-      if (coneVision) {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      } else {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      }
-
       // set LED to targetlock
-
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
           driveSpeeds.vxMetersPerSecond,
@@ -344,7 +348,6 @@ public class Robot extends LoggedRobot {
       }
 
       // set LED to targetlock
-
       driveSpeeds = new ChassisSpeeds(
         driveSpeeds.vxMetersPerSecond,
         0,
@@ -377,42 +380,83 @@ public class Robot extends LoggedRobot {
     // ===================== \\
 
     // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
-
-    if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
-      intake.enableWrist(true);
+    
+    if (operatorController.getLeftTriggerAxis() >= 0.1) {
+      intake.intakeRoller();
+      if (operatorController.getAButton()) {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+      } else if (operatorController.getXButton()) {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
+      } else if (operatorController.getYButton()) {
+        intake.setWrist(rotate);
+      }
     } else if (operatorController.getLeftBumper()) {
-      intake.enableWrist(false);
+      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+      if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
+        intake.outtakeRoller();
+      } else if (operatorController.getLeftTriggerAxis() >= 0.1) {
+        intake.intakeRoller();        
+      } else {
+        intake.stopRoller();
+      }
+    } else if (operatorController.getRightBumper()) {
+      intake.setWrist(0.0);
+    } else {
+        if (operatorController.getAButton()) {
+          elevator.set(Heights.STOWED);
+          intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+        } else if (operatorController.getBButton()) {
+          elevator.set(Heights.PRIME);
+          intake.setWrist(0.0);
+          intake.spinRollers(0.5);
+        } else if (operatorController.getXButton()) {
+          elevator.set(Heights.MID);
+          intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+        } else if (operatorController.getYButton()) {
+          elevator.set(Heights.HIGH);
+          intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+        } else {
+          elevator.set(Heights.STALL);
+        }
+
+        if (operatorController.getPOV() == 90) {
+          intake.intakeRoller();
+        } else if (operatorController.getPOV() == 270) {
+          intake.outtakeRoller();
+        } else {
+          intake.stopRoller();
+        }
     }
 
     // ======================= \\
     // ======= Rollers ======= \\
     // ======================= \\
 
-    if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
-      intake.intakeRoller();
-    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
-      intake.scoreRoller();
-    } else if (operatorController.getRightBumper()) { // Outtake game piece
-      intake.outtakeRoller();
-    } else { // Stop rollers
-      intake.stopRoller();
-    }
+    // if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
+    //   intake.intakeRoller();
+    // } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
+    //   intake.scoreRoller();
+    // } else if (operatorController.getRightBumper()) { // Outtake game piece
+    //   intake.outtakeRoller();
+    // } else { // Stop rollers
+    //   intake.stopRoller();
+    // }
 
     // ======================== \\
     // ======= Elevator ======= \\
     // ======================== \\
 
-    if (operatorController.getAButton()) { // Stowed height
-      elevator.set(Heights.STOWED);
-    } else if (operatorController.getXButton()) { // Mid height
-      elevator.set(Heights.MID);
-    } else if (operatorController.getYButton()) { // High height
-      elevator.set(Heights.HIGH);
-    } else if (driverController.getLeftBumper()) { // Prime
-      elevator.set(Heights.PRIME);
-    } else { // Stall at current height
-      elevator.set(Heights.STALL);
-    }
+    // if (operatorController.getAButton()) { // Stowed height
+    //   elevator.set(Heights.STOWED);
+    // } else if (operatorController.getXButton()) { // Mid height
+    //   elevator.set(Heights.MID);
+    // } else if (operatorController.getYButton()) { // High height
+    //   elevator.set(Heights.HIGH);
+    // } else if (driverController.getLeftBumper()) { // Prime
+    //   elevator.set(Heights.PRIME);
+    // } else { // Stall at current height
+    //   elevator.set(Heights.STALL);
+    // }
   }
 
   /** This function is called once when the robot is disabled. */

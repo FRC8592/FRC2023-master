@@ -128,6 +128,10 @@ public class Intake {
         }
     }
 
+    public void setWrist(double rotations) {
+        wristCtrl.setReference(rotations, ControlType.kSmartMotion);
+    }
+
     public void stopRoller() {
         rollerMotor.set(0.0);
     }
