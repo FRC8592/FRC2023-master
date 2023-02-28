@@ -138,6 +138,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
     elevator.writeToSmartDashboard();
+    ledStrips.upAndDown();
   }
 
   /**
@@ -292,11 +293,13 @@ public class Robot extends LoggedRobot {
     }
 
     if (driverController.getYButton()) {
-      coneVision = true;
-      // Set LED's to cone attention
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
     } else if (driverController.getXButton()) {
-      coneVision = false;
-      // Set LED's to cube attention
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    } else if (operatorController.getPOV() == 0) {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+    } else if (operatorController.getPOV() == 180) {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
     }
 
     if (driverController.getRightBumper()) {
@@ -313,17 +316,11 @@ public class Robot extends LoggedRobot {
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(joystickDeadband(translateX)),
-      driveScaler.scale(joystickDeadband(translateY)),
+      driveScaler.scale(-joystickDeadband(translateX)),
+      driveScaler.scale(-joystickDeadband(translateY)),
       joystickDeadband(rotate),
       drive.getGyroscopeRotation()
     );
-
-    if (coneVision) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-    } else {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-    }
 
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
@@ -341,25 +338,26 @@ public class Robot extends LoggedRobot {
         );
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      if (coneVision) {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      } else {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      }
-
       // set LED to targetlock
-      driveSpeeds = new ChassisSpeeds(
-        driveSpeeds.vxMetersPerSecond,
-        0,
-        driveSpeeds.omegaRadiansPerSecond
-      );
+      if (gameObjectVision.targetValid) {
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond,
+          gameObjectVision.turnRobot(
+            1.0,
+            strafePID,
+            8.0
+          ),
+          driveSpeeds.omegaRadiansPerSecond
+        );
+      }
+      
     } else { // Normal drive
-      driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        driveScaler.scale(joystickDeadband(translateX)),
-        driveScaler.scale(joystickDeadband(translateY)),
-        joystickDeadband(rotate),
-        drive.getGyroscopeRotation()
-      );
+      // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      //   driveScaler.scale(joystickDeadband(translateX)),
+      //   driveScaler.scale(joystickDeadband(translateY)),
+      //   joystickDeadband(rotate),
+      //   drive.getGyroscopeRotation()
+      // );
     }
 
     if (driverController.getBButton()) { // Wheels locked
@@ -384,31 +382,30 @@ public class Robot extends LoggedRobot {
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
       intake.intakeRoller();
       if (operatorController.getAButton()) {
-        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+        intake.setWrist(0.0);
       } else if (operatorController.getXButton()) {
         intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
-      } else if (operatorController.getYButton()) {
-        intake.setWrist(rotate);
+      } else {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
       }
     } else if (operatorController.getLeftBumper()) {
       intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
-      if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
-        intake.outtakeRoller();
-      } else if (operatorController.getLeftTriggerAxis() >= 0.1) {
-        intake.intakeRoller();        
-      } else {
-        intake.stopRoller();
-      }
+      // if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
+      //   intake.outtakeRoller();
+      // } else if (operatorController.getLeftTriggerAxis() >= 0.1) {
+      //   intake.intakeRoller();        
+      // } else {
+      //   intake.stopRoller();
+      // }
     } else if (operatorController.getRightBumper()) {
       intake.setWrist(0.0);
     } else {
         if (operatorController.getAButton()) {
           elevator.set(Heights.STOWED);
-          intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+          intake.setWrist(0.0);
         } else if (operatorController.getBButton()) {
           elevator.set(Heights.PRIME);
           intake.setWrist(0.0);
-          intake.spinRollers(0.5);
         } else if (operatorController.getXButton()) {
           elevator.set(Heights.MID);
           intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
@@ -423,6 +420,8 @@ public class Robot extends LoggedRobot {
           intake.intakeRoller();
         } else if (operatorController.getPOV() == 270) {
           intake.outtakeRoller();
+        } else if (operatorController.getBButton()) {
+          intake.spinRollers(0.5);
         } else {
           intake.stopRoller();
         }

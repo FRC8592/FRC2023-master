@@ -39,6 +39,7 @@ public class Intake {
         wristCtrl = wristMotor.getPIDController();
         wristMotor.setSmartCurrentLimit(Constants.WRIST_MAX_CURRENT_AMPS);
         wristMotor.setIdleMode(IdleMode.kBrake);
+        rollerMotor.setIdleMode(IdleMode.kBrake);
 
         rollerCtrl.setP(Constants.ROLLER_KP, 0);
         rollerCtrl.setI(Constants.ROLLER_KI, 0);
@@ -117,7 +118,24 @@ public class Intake {
     }
 
     public void spinRollers(double pct) {
-        rollerMotor.set(pct);
+        // rollerMotor.set(pct);
+        double currentTime = 0;
+        if (beamCone.isBroken() && beamCube.isBroken()) {
+            coneTimer.start();
+            rollerMotor.set(pct);
+        }else if (!beamCone.isBroken()){
+            currentTime = coneTimer.get();
+            if (coneTimer.get() - currentTime >= 0.75){
+
+                rollerMotor.set(0.0);
+                coneTimer.reset();
+                coneTimer.stop();
+            }
+        }else{
+            rollerMotor.set(0.0);
+            coneTimer.reset();
+            coneTimer.stop();
+        }
     }
 
     public void enableWrist(boolean enable) {
