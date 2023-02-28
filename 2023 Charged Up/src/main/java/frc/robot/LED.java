@@ -21,7 +21,7 @@ public class LED {
 
     private int count = 0;
 
-    final int LED_LENGTH = 45;
+    final int LED_LENGTH = 8;
 
     public void setColor(int i, Color color){
         liftBuffer.setRGB(i, color.red, color.green, color.blue);

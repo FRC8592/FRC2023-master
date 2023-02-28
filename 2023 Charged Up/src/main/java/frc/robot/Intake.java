@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake {
@@ -19,6 +20,12 @@ public class Intake {
     private RelativeEncoder rollerEncoder;
     private BeamSensor beamCone;
     private BeamSensor beamCube;
+    private Timer coneTimer;
+
+    public void logBeamBreaks(){
+        SmartDashboard.putBoolean("Cone Beam Break", !beamCone.isBroken());
+        SmartDashboard.putBoolean("Cube Beam Break", !beamCube.isBroken());
+    }
 
     public Intake() {
         rollerMotor = new CANSparkMax(Constants.ROLLER_ID, MotorType.kBrushless);
@@ -32,6 +39,7 @@ public class Intake {
         wristCtrl = wristMotor.getPIDController();
         wristMotor.setSmartCurrentLimit(Constants.WRIST_MAX_CURRENT_AMPS);
         wristMotor.setIdleMode(IdleMode.kBrake);
+        rollerMotor.setIdleMode(IdleMode.kBrake);
 
         rollerCtrl.setP(Constants.ROLLER_KP, 0);
         rollerCtrl.setI(Constants.ROLLER_KI, 0);
@@ -53,6 +61,7 @@ public class Intake {
 
         beamCone = new BeamSensor(Constants.BEAM_BREAK_CONE_ID);
         beamCube = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
+        coneTimer = new Timer();
 
         SmartDashboard.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS);
     }
@@ -74,16 +83,30 @@ public class Intake {
     }
 
     public void intakeRoller() {
+        // double currentTime = 0;
         // if (beamCone.isBroken() && beamCube.isBroken()) {
+        //     coneTimer.start();
         //     rollerMotor.set(0.8);
-        // } else {
+        // }else if (!beamCone.isBroken()){
+        //     currentTime = coneTimer.get();
+        //     if (coneTimer.get() - currentTime >= 0.75){
+
+        //         rollerMotor.set(0.0);
+        //         coneTimer.reset();
+        //         coneTimer.stop();
+        //     }
+        // }else{
         //     rollerMotor.set(0.0);
+        //     coneTimer.reset();
+        //     coneTimer.stop();
         // }
-        rollerMotor.set(0.8);
+        // rollerMotor.set(0.8);
+        spinRollers(0.8);
     }
 
     public void outtakeRoller() {
-        rollerMotor.set(-0.8);
+        // rollerMotor.set(-0.8);
+        spinRollers(-0.8);
     }
 
     public void scoreRoller() {
@@ -98,6 +121,23 @@ public class Intake {
 
     public void spinRollers(double pct) {
         rollerMotor.set(pct);
+        // double currentTime = 0;
+        // if (beamCone.isBroken() && beamCube.isBroken()) {
+        //     coneTimer.start();
+        //     rollerMotor.set(pct);
+        // }else if (!beamCone.isBroken()){
+        //     currentTime = coneTimer.get();
+        //     if (coneTimer.get() - currentTime >= 0.75){
+
+        //         rollerMotor.set(0.0);
+        //         coneTimer.reset();
+        //         coneTimer.stop();
+        //     }
+        // }else{
+        //     rollerMotor.set(0.0);
+        //     coneTimer.reset();
+        //     coneTimer.stop();
+        // }
     }
 
     public void enableWrist(boolean enable) {
@@ -108,11 +148,15 @@ public class Intake {
         }
     }
 
+    public void setWrist(double rotations) {
+        wristCtrl.setReference(rotations, ControlType.kSmartMotion, 0, 0.01);
+    }
+
     public void stopRoller() {
         rollerMotor.set(0.0);
     }
 
     public boolean hasPiece() { // Beam break not tested yet
-        return beamCone.isBroken() || beamCube.isBroken();
+        return !beamCone.isBroken() || !beamCube.isBroken();
     }
 }
