@@ -216,6 +216,7 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
+    double rotateToAngle;
 
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
 
@@ -358,6 +359,12 @@ public class Robot extends LoggedRobot {
       //   joystickDeadband(rotate),
       //   drive.getGyroscopeRotation()
       // );
+        if (rotateToAngle != -1){
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+
+              drive.turnToAngle(rotateToAngle), drive.getGyroscopeRotation()));
+        } else {
+                                                                                                                            // Joystick
     }
 
     if (driverController.getBButton()) { // Wheels locked
@@ -365,7 +372,7 @@ public class Robot extends LoggedRobot {
       drive.setWheelLock();
     } else if (shouldBalance){
       autoPark.balance(drive);
-    }else {
+    }else if (driverController.getPOV() == -1) {
       drive.drive(driveSpeeds);
     }
 
