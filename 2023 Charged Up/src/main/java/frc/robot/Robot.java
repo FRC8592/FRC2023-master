@@ -68,6 +68,9 @@ public class Robot extends LoggedRobot {
   public PIDController strafePID;
   public boolean wasZeroed = false;
   private boolean coneVision = true;
+  private boolean angleTapBool = false;
+
+  private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
   // public Power power;
 
   private BaseAuto selectedAuto;
@@ -138,6 +141,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
     elevator.writeToSmartDashboard();
+    ledStrips.upAndDown();
   }
 
   /**
@@ -215,6 +219,7 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
+    double rotateToAngle;
 
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
 
@@ -291,18 +296,14 @@ public class Robot extends LoggedRobot {
       drive.zeroGyroscope();
     }
 
-    if (operatorController.getPOV() == 270) { // DPAD Left
+    if (driverController.getYButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      // Set LED's to cone attention
-    } else if (operatorController.getPOV() == 90) { // DPAD Right
+    } else if (driverController.getXButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      // Set LED's to cube attention
-    } else if (operatorController.getPOV() == 180) { // DPAD Down
+    } else if (operatorController.getPOV() == 0) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      // Set LED's to april tag
-    } else if (operatorController.getPOV() == 0) { // DPAD Up
+    } else if (operatorController.getPOV() == 180) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      // Set LED's to retro-tape
     }
 
     // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
@@ -346,34 +347,37 @@ public class Robot extends LoggedRobot {
         );
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      // if (coneVision) {
-      //   NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      // } else {
-      //   NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      // }
-
       // set LED to targetlock
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
           driveSpeeds.vxMetersPerSecond,
-          gameObjectVision.turnRobot(1.0, strafePID, 1.0),
+          gameObjectVision.turnRobot(
+            1.0,
+            strafePID,
+            8.0
+          ),
           driveSpeeds.omegaRadiansPerSecond
         );
       }
+      
     } else { // Normal drive
-      driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        driveScaler.scale(-joystickDeadband(translateX)),
-        driveScaler.scale(-joystickDeadband(translateY)),
-        joystickDeadband(rotate),
-        drive.getGyroscopeRotation()
-      );
+      // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      //   driveScaler.scale(joystickDeadband(translateX)),
+      //   driveScaler.scale(joystickDeadband(translateY)),
+      //   joystickDeadband(rotate),
+      //   drive.getGyroscopeRotation()
+      // );
+      if (driverController.getPOV() != -1){
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+            drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
+      }
     }
 
     if (driverController.getBButton()) { // Wheels locked
       drive.setWheelLock();
     } else if (shouldBalance){
       autoPark.balance(drive);
-    }else {
+    }else if (driverController.getPOV() == -1) {
       drive.drive(driveSpeeds);
     }
 
@@ -385,10 +389,77 @@ public class Robot extends LoggedRobot {
     // ======= Wrist ======= \\
     // ===================== \\
 
-    if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
-      intake.enableWrist(true);
-    } else if (operatorController.getLeftBumper()) {
-      intake.enableWrist(false);
+    // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
+    
+    if (operatorController.getLeftTriggerAxis() >= 0.1) {
+      intake.intakeRoller();
+      if (operatorController.getAButton()) {
+        intake.setWrist(0.0);
+      } else if (operatorController.getXButton()) {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
+      } else {
+        intake.setWrist(currentWrist);
+      
+    
+      }
+    
+
+    
+    
+    } else if (operatorController.getRightTriggerAxis() >= 0.1){
+      intake.outtakeRoller();
+    }else if (operatorController.getLeftBumper()) {
+      intake.setWrist(currentWrist);
+      // if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
+      //   intake.outtakeRoller();
+      // } else if (operatorController.getLeftTriggerAxis() >= 0.1) {
+      //   intake.intakeRoller();        
+      // } else {
+      //   intake.stopRoller();
+      // }
+    } else if (operatorController.getRightBumper()) {
+      intake.setWrist(0.0);
+    } else {
+        if (operatorController.getStartButton()) {
+          if (angleTapBool) {
+            if (operatorController.getPOV() == -1) {
+              angleTapBool = false;
+            }
+          } else if (operatorController.getPOV() == 0) {
+            angleTapBool = true;
+            currentWrist -= 0.25;
+            intake.setWrist(currentWrist);
+          } else if (operatorController.getPOV() == 180) {
+            angleTapBool = true;
+            currentWrist += 0.25;
+            intake.setWrist(currentWrist);
+          }
+        } else {
+          if (operatorController.getAButton()) {
+            elevator.set(Heights.STOWED);
+            intake.setWrist(0.0);
+          } else if (operatorController.getBButton()) {
+            elevator.set(Heights.PRIME);
+            intake.setWrist(0.0);
+          } else if (operatorController.getXButton()) {
+            elevator.set(Heights.MID);
+            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+          } else if (operatorController.getYButton()) {
+            elevator.set(Heights.HIGH);
+            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+          } else {
+            elevator.set(Heights.STALL);
+          }
+        }
+        if (operatorController.getPOV() == 90) {
+          intake.intakeRoller();
+        } else if (operatorController.getPOV() == 270) {
+          intake.outtakeRoller();
+        } else if (operatorController.getBButton()) {
+          intake.spinRollers(0.5);
+        } else {
+          intake.stopRoller();
+        }
     }
 
     if (operatorController.getStartButtonPressed() && operatorController.getLeftTriggerAxis() >= 0.1) {
@@ -401,31 +472,31 @@ public class Robot extends LoggedRobot {
     // ======= Rollers ======= \\
     // ======================= \\
 
-    if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
-      intake.intakeRoller();
-    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
-      intake.scoreRoller();
-    } else if (operatorController.getRightBumper()) { // Outtake game piece
-      intake.outtakeRoller();
-    } else { // Stop rollers
-      intake.stopRoller();
-    }
+    // if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
+    //   intake.intakeRoller();
+    // } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
+    //   intake.scoreRoller();
+    // } else if (operatorController.getRightBumper()) { // Outtake game piece
+    //   intake.outtakeRoller();
+    // } else { // Stop rollers
+    //   intake.stopRoller();
+    // }
 
     // ======================== \\
     // ======= Elevator ======= \\
     // ======================== \\
 
-    if (operatorController.getAButton()) { // Stowed height
-      elevator.set(Heights.STOWED);
-    } else if (operatorController.getXButton()) { // Mid height
-      elevator.set(Heights.MID);
-    } else if (operatorController.getYButton()) { // High height
-      elevator.set(Heights.HIGH);
-    } else if (driverController.getLeftBumper()) { // Prime
-      elevator.set(Heights.PRIME);
-    } else { // Stall at current height
-      elevator.set(Heights.STALL);
-    }
+    // if (operatorController.getAButton()) { // Stowed height
+    //   elevator.set(Heights.STOWED);
+    // } else if (operatorController.getXButton()) { // Mid height
+    //   elevator.set(Heights.MID);
+    // } else if (operatorController.getYButton()) { // High height
+    //   elevator.set(Heights.HIGH);
+    // } else if (driverController.getLeftBumper()) { // Prime
+    //   elevator.set(Heights.PRIME);
+    // } else { // Stall at current height
+    //   elevator.set(Heights.STALL);
+    // }
   }
 
   /** This function is called once when the robot is disabled. */

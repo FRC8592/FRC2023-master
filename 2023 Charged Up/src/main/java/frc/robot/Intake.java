@@ -39,6 +39,7 @@ public class Intake {
         wristCtrl = wristMotor.getPIDController();
         wristMotor.setSmartCurrentLimit(Constants.WRIST_MAX_CURRENT_AMPS);
         wristMotor.setIdleMode(IdleMode.kBrake);
+        rollerMotor.setIdleMode(IdleMode.kBrake);
 
         rollerCtrl.setP(Constants.ROLLER_KP, 0);
         rollerCtrl.setI(Constants.ROLLER_KI, 0);
@@ -85,25 +86,27 @@ public class Intake {
         double currentTime = 0;
         if (beamCone.isBroken() && beamCube.isBroken()) {
             coneTimer.start();
-            rollerMotor.set(0.8);
+            spinRollers(0.8);
         }else if (!beamCone.isBroken()){
             currentTime = coneTimer.get();
             if (coneTimer.get() - currentTime >= 0.75){
 
-                rollerMotor.set(0.0);
+                spinRollers(0.0);
                 coneTimer.reset();
                 coneTimer.stop();
             }
         }else{
-            rollerMotor.set(0.0);
+            spinRollers(0.0);
             coneTimer.reset();
             coneTimer.stop();
         }
         // rollerMotor.set(0.8);
+        // spinRollers(0.8);
     }
 
     public void outtakeRoller() {
-        rollerMotor.set(-0.8);
+        // rollerMotor.set(-0.8);
+        spinRollers(-0.8);
     }
 
     public void scoreRoller() {
@@ -118,6 +121,23 @@ public class Intake {
 
     public void spinRollers(double pct) {
         rollerMotor.set(pct);
+        // double currentTime = 0;
+        // if (beamCone.isBroken() && beamCube.isBroken()) {
+        //     coneTimer.start();
+        //     rollerMotor.set(pct);
+        // }else if (!beamCone.isBroken()){
+        //     currentTime = coneTimer.get();
+        //     if (coneTimer.get() - currentTime >= 0.75){
+
+        //         rollerMotor.set(0.0);
+        //         coneTimer.reset();
+        //         coneTimer.stop();
+        //     }
+        // }else{
+        //     rollerMotor.set(0.0);
+        //     coneTimer.reset();
+        //     coneTimer.stop();
+        // }
     }
 
     public void enableWrist(boolean enable) {
@@ -126,6 +146,10 @@ public class Intake {
         } else {
             wristCtrl.setReference(0.0, ControlType.kSmartMotion);
         }
+    }
+
+    public void setWrist(double rotations) {
+        wristCtrl.setReference(rotations, ControlType.kSmartMotion, 0, 0.01);
     }
 
     public void stopRoller() {
