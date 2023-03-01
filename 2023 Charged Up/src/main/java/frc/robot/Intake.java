@@ -83,25 +83,25 @@ public class Intake {
     }
 
     public void intakeRoller() {
-        // double currentTime = 0;
-        // if (beamCone.isBroken() && beamCube.isBroken()) {
-        //     coneTimer.start();
-        //     rollerMotor.set(0.8);
-        // }else if (!beamCone.isBroken()){
-        //     currentTime = coneTimer.get();
-        //     if (coneTimer.get() - currentTime >= 0.75){
+        double currentTime = 0;
+        if (beamCone.isBroken() && beamCube.isBroken()) {
+            coneTimer.start();
+            spinRollers(0.8);
+        }else if (!beamCone.isBroken()){
+            currentTime = coneTimer.get();
+            if (coneTimer.get() - currentTime >= 0.75){
 
-        //         rollerMotor.set(0.0);
-        //         coneTimer.reset();
-        //         coneTimer.stop();
-        //     }
-        // }else{
-        //     rollerMotor.set(0.0);
-        //     coneTimer.reset();
-        //     coneTimer.stop();
-        // }
+                spinRollers(0.0);
+                coneTimer.reset();
+                coneTimer.stop();
+            }
+        }else{
+            spinRollers(0.0);
+            coneTimer.reset();
+            coneTimer.stop();
+        }
         // rollerMotor.set(0.8);
-        spinRollers(0.8);
+        // spinRollers(0.8);
     }
 
     public void outtakeRoller() {
