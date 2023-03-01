@@ -9,7 +9,7 @@ import frc.robot.commands.ScoreCommand;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class MoveOutCommunityAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(1, 1);
+    private TrajectoryConfig config = new TrajectoryConfig(2, 1);
 
     private SwerveTrajectory MOVE_OUT = generateTrajectoryFromPoints(
         config,

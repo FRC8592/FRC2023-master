@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.autonomous.autons.BaseAuto;
 import frc.robot.autonomous.autons.CableCoverThreePieceAuto;
 import frc.robot.autonomous.autons.CableCoverTwoPieceParkAuto;
+import frc.robot.autonomous.autons.LoadingZonePreloadMobility;
 import frc.robot.autonomous.autons.LoadingZoneThreePieceAuto;
 import frc.robot.autonomous.autons.LoadingZoneThreePieceParkAuto;
 import frc.robot.autonomous.autons.LoadingZoneTwoPieceAuto;
@@ -24,7 +25,8 @@ public class AutonomousSelector {
     public Class<?>[] autos = {
         MiddlePreloadBalanceAuto.class,
         LoadingZonePreloadParkAuto.class,
-        LoadingZoneTwoPieceAuto.class
+        LoadingZoneTwoPieceAuto.class,
+        LoadingZonePreloadMobility.class
     };
 
     public AutonomousSelector() {

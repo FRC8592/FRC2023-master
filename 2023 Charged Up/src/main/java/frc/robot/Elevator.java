@@ -252,11 +252,11 @@ public class Elevator {
     public boolean atReference() {
         boolean atTilt = false;
         if (desiredHeight == Heights.STOWED) {
-            atTilt = Math.abs(tiltEncoder.getPosition()) <= 0.5;
+            atTilt = Math.abs(tiltEncoder.getPosition()) <= 2.0;
         } else {
-            atTilt = Math.abs(tiltEncoder.getPosition() - Constants.TILT_MAX_ROTATIONS) <= 0.5;
+            atTilt = Math.abs(tiltEncoder.getPosition() - Constants.TILT_MAX_ROTATIONS) <= 2.0;
         }
-        return Math.abs(liftEncoder.getPosition() - desiredHeight.getHeight()) <= 0.5 && atTilt;
+        return Math.abs(liftEncoder.getPosition() - desiredHeight.getHeight()) <= 2.0 && atTilt;
                 
     }
 }
