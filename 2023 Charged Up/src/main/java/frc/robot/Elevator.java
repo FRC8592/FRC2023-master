@@ -198,7 +198,8 @@ public class Elevator {
                 tiltMotor.set(0.0);
                 break;
             case PRIME: // Prepare 4 bar without lifting elevator
-                liftMotor.set(0.0);
+                // liftMotor.set(0.0);
+                liftCtrl.setReference(0.0, ControlType.kSmartMotion);
                 tiltCtrl.setReference(maxTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
             case MANUAL:

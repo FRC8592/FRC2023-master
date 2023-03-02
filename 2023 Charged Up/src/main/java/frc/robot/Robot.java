@@ -278,7 +278,7 @@ public class Robot extends LoggedRobot {
      *  - Going to a pre-set elevator position automatically sets the pivot to the corresponding tilt
      *  - Make sure to turn on the robot and disable the robot with the all mechanisms back to starting configuration
      *  - Slow mode was changed from a toggle to a hold based on driver preference
-     *  - Activating cone/cube mode works for both intake and scoring target-lock
+     *  - Activating cone/cube mode works for both intake and scoring target-lock (*MIGHT CHANGE*)
      */
 
     // ========================== \\

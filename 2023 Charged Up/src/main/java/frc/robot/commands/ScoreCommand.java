@@ -38,7 +38,7 @@ public class ScoreCommand extends Command {
             // }
             intake.enableWrist(true);
             intake.scoreRoller();
-            return timer.get() >= 3.0;
+            return timer.get() >= 1.75;
         }
         return timer.get() >= 1.0;
     }

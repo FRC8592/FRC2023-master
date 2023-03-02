@@ -29,7 +29,7 @@ public enum AutonomousPositions {
 
     // Positions all mixed up for intermediary
     INTERMEDIARY_LOADING_ZONE(4.985, 5.013 - 0.5), // Changed to parallel with Grid_A 
-    INTERMEDIARY_CABLE_COVER(4.985, 0.884), // Changed to parallel with Grid_H
+    INTERMEDIARY_CABLE_COVER(4.985, 0.884 + 0.6), // Changed to parallel with Grid_H
     INTERMEDIARY_BALANCE(4.985, 2.727 + 0.5),
 
     // Additional points for helping with proper spline building
@@ -227,7 +227,7 @@ public enum AutonomousPositions {
                 config
             );
 
-            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config);//.addRotation(Rotation2d.fromDegrees(180));
+            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config).addRotation(Rotation2d.fromDegrees(180));
         } else {
             Pose2d startPose = poses[0];
             Pose2d endPose = poses[poses.length - 1];

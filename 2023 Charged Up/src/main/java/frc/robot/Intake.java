@@ -157,6 +157,6 @@ public class Intake {
     }
 
     public boolean hasPiece() { // Beam break not tested yet
-        return !beamCone.isBroken() || !beamCube.isBroken();
+        return beamCone.isBroken() || beamCube.isBroken();
     }
 }
