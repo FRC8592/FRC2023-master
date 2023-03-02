@@ -21,13 +21,13 @@ public class AutonomousSelector {
 
     public Class<?>[] autos = {
         MoveOutCommunityAuto.class, // Ready to test
-        MiddlePreloadBalanceAuto.class, // Ready to test
+        // MiddlePreloadBalanceAuto.class, // Ready to test
         LoadingZonePreloadMobilityAuto.class, // Ready to test
         LoadingZonePreloadBalanceAuto.class, // Ready to test
-        LoadingZoneTwoPieceAuto.class, // Ready to test
+        // LoadingZoneTwoPieceAuto.class,
         CableCoverPreloadMobilityAuto.class, // Ready to test
         CableCoverPreloadBalanceAuto.class, // Ready to test
-        CableCoverTwoPieceAuto.class // Ready to test
+        // CableCoverTwoPieceAuto.class
     };
 
     public AutonomousSelector() {
