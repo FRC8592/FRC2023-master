@@ -271,7 +271,8 @@ public class Drivetrain {
             targetDegrees -= 360;
         }
 
-        targetDegrees = 360 - targetDegrees;
+        // targetDegrees = 180 - targetDegrees;
+        // targetDegrees *= -1;
 
         // double targetDifference = yaw - targetDegrees;
         double turn = turnPID.calculate(0, getErrorAngle(getCurrentPos(), new Pose2d(0, 0, Rotation2d.fromDegrees(targetDegrees))));

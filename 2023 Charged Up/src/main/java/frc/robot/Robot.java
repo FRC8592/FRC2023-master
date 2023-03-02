@@ -368,7 +368,7 @@ public class Robot extends LoggedRobot {
       //   drive.getGyroscopeRotation()
       // );
       if (driverController.getPOV() != -1){
-        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(joystickDeadband(translateX), joystickDeadband(translateY),
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
             drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
       }
     }
@@ -436,7 +436,7 @@ public class Robot extends LoggedRobot {
           if (operatorController.getAButton()) {
             elevator.set(Heights.STOWED);
             intake.setWrist(0.0);
-          } else if (operatorController.getBButton()) {
+          } else if (operatorController.getBButton() || driverController.getLeftBumper()) {
             elevator.set(Heights.PRIME);
             intake.setWrist(0.0);
           } else if (operatorController.getXButton()) {
@@ -454,12 +454,12 @@ public class Robot extends LoggedRobot {
         } else if (operatorController.getPOV() == 270) {
           intake.outtakeRoller();
         } else if (operatorController.getBButton()) {
-          intake.spinRollers(0.5);
+          intake.spinRollers(0.2);
         } else {
           intake.stopRoller();
         }
     }
-    
+
     // ======================= \\
     // ======= Rollers ======= \\
     // ======================= \\
