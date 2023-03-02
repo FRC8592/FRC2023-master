@@ -198,7 +198,8 @@ public class Elevator {
                 tiltMotor.set(0.0);
                 break;
             case PRIME: // Prepare 4 bar without lifting elevator
-                liftMotor.set(0.0);
+                // liftMotor.set(0.0);
+                liftCtrl.setReference(0.0, ControlType.kSmartMotion);
                 tiltCtrl.setReference(maxTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 break;
             case MANUAL:
@@ -250,6 +251,13 @@ public class Elevator {
     }
 
     public boolean atReference() {
-        return Math.abs(liftEncoder.getPosition() - desiredHeight.getHeight()) <= 3;
+        boolean atTilt = false;
+        if (desiredHeight == Heights.STOWED) {
+            atTilt = Math.abs(tiltEncoder.getPosition()) <= 2.0;
+        } else {
+            atTilt = Math.abs(tiltEncoder.getPosition() - Constants.TILT_MAX_ROTATIONS) <= 2.0;
+        }
+        return Math.abs(liftEncoder.getPosition() - desiredHeight.getHeight()) <= 2.0 && atTilt;
+                
     }
 }

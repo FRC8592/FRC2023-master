@@ -1,55 +1,60 @@
 {
   "HALProvider": {
     "Addressable LEDs": {
-      "0": {
-        "columns": 2,
-        "order": 1,
-        "start": 3
-      },
       "window": {
         "visible": true
       }
     },
     "Other Devices": {
-      "navX-Sensor[0]": {
-        "header": {
-          "open": true
-        }
-      },
-<<<<<<< HEAD
       "window": {
         "visible": false
-=======
-      "SPARK MAX [15]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [1]": {
-        "header": {
-          "open": true
-        }
->>>>>>> main
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-<<<<<<< HEAD
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[10]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[11]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[12]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[13]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[14]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[15]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[16]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[17]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[18]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[19]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[20]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[21]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[22]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[23]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[24]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[25]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[26]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[27]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[28]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[29]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[45]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[46]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[47]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[48]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[49]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[50]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[30]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[31]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[32]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[33]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[34]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[35]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[36]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/Shuffleboard/Auton Configuration/Choose Autonomous": "String Chooser",
-      "/Shuffleboard/Auton Configuration/Choose Delay": "String Chooser",
-      "/Shuffleboard/Auton Configuration/Field": "Field2d",
-      "/SmartDashboard/Auto choices": "String Chooser",
+      "/Shuffleboard/Drive Configuration/Choose Drive Scaling": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
@@ -59,44 +64,16 @@
         }
       },
       "/SmartDashboard/Field": {
-        "Robot": {
-          "image": "C:\\Users\\Dell G7\\Pictures\\Saved Pictures\\254.jpg",
-          "length": 0.6290000081062317,
-          "style": "Box/Image",
-          "width": 0.5778499841690063
-        },
-        "image": "C:\\Users\\Dell G7\\PathWeaver\\Games\\2023\\2023-field.png",
+        "image": "C:\\Users\\Dell G7\\Pictures\\Saved Pictures\\2023-field.png",
         "window": {
           "visible": true
         }
       }
-=======
-      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
-      "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
-      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
-      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
-      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
-      "/Shuffleboard/Drive Configuration/Choose Autonomous": "String Chooser",
-      "/Shuffleboard/Drive Configuration/Choose Drive Scaling": "String Chooser",
-      "/SmartDashboard/Auto choices": "String Chooser"
->>>>>>> main
     }
   },
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
-<<<<<<< HEAD
-=======
-        "Auto choices": {
-          "open": true
-        },
-        "Elevator": {
-          "open": true
-        },
-        "Intake": {
-          "open": true
-        },
->>>>>>> main
         "open": true
       }
     }

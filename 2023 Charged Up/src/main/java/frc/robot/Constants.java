@@ -58,7 +58,7 @@ public final class Constants {
 
 
     public static final double LEVEL_PITCH = 3.0;
-    public static final double PITCH_MULTIPLIER = 1.0 / 40.0;
+    public static final double PITCH_MULTIPLIER = 1.0 / 50.0;
     //
     // CAN IDs for intake hardware (NEEDS SETTING)
     //
@@ -107,7 +107,7 @@ public final class Constants {
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
     public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
-    public static final double TILT_MAX_ROTATIONS = -23.0;
+    public static final double TILT_MAX_ROTATIONS = -23.5;
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
@@ -184,7 +184,7 @@ public final class Constants {
     public static double BALL_TARGET_HEIGHT    = 4.75;
     public static double BALL_ROTATE_KP        = -0.1; //0.15;           // Proportional constant for turret rotate speed
     public static double BALL_ROTATE_KI        = 0.0;
-    public static double BALL_ROTATE_KD        = -0.01;   
+    public static double BALL_ROTATE_KD        = 0.0;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
     public static String LIMELIGHT_VISION       = "limelight-vision";
 
@@ -297,7 +297,7 @@ public final class Constants {
     public static final int CUBE_PIPELINE = 0;
     public static final int CONE_PIPELINE = 1;
     public static final int APRILTAG_PIPELINE = 2;
-    public static final int RETROTAPE_PIPELINE = 3;
+    public static final int RETROTAPE_PIPELINE = 4;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;

@@ -273,12 +273,12 @@ public class Robot extends LoggedRobot {
      * - Additional Programmer Notes:
      *  - Possibly make it so that when a certain button is held the robot switches to robot-centric for manually lining up using a camera
      *  - Negative left trigger is equal to positive right trigger axis on some controllers
-     * 
+     *
      * - Additional Driver Notes:
      *  - Going to a pre-set elevator position automatically sets the pivot to the corresponding tilt
      *  - Make sure to turn on the robot and disable the robot with the all mechanisms back to starting configuration
      *  - Slow mode was changed from a toggle to a hold based on driver preference
-     *  - Activating cone/cube mode works for both intake and scoring target-lock
+     *  - Activating cone/cube mode works for both intake and scoring target-lock (*MIGHT CHANGE*)
      */
 
     // ========================== \\
@@ -306,6 +306,9 @@ public class Robot extends LoggedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
     }
 
+    // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
+    // SmartDashboard.putNumber("Current Pipeline", pipeline);
+
     if (driverController.getRightBumper()) {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
       rotatePower = ConfigRun.ROTATE_POWER_SLOW;
@@ -320,9 +323,9 @@ public class Robot extends LoggedRobot {
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(joystickDeadband(translateX)),
-      driveScaler.scale(joystickDeadband(translateY)),
-      joystickDeadband(rotate),
+      driveScaler.scale(-translateX), 
+      driveScaler.scale(-translateY), 
+      driveScaler.scale(rotate), 
       drive.getGyroscopeRotation()
     );
 
@@ -332,12 +335,14 @@ public class Robot extends LoggedRobot {
       // set LED to targetlock
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
-          driveSpeeds.vxMetersPerSecond,
-          driveSpeeds.vyMetersPerSecond,
+          // driveSpeeds.vxMetersPerSecond,
+          // driveSpeeds.vyMetersPerSecond,
+          translateX,
+          translateY,
           gameObjectVision.turnRobot(
             1.0,
             turnPID,
-            8.0
+            3.0
           )
         );
       }
@@ -369,7 +374,6 @@ public class Robot extends LoggedRobot {
     }
 
     if (driverController.getBButton()) { // Wheels locked
-      
       drive.setWheelLock();
     } else if (shouldBalance){
       autoPark.balance(drive);
@@ -400,8 +404,6 @@ public class Robot extends LoggedRobot {
       }
     
 
-    
-    
     } else if (operatorController.getRightTriggerAxis() >= 0.1){
       intake.outtakeRoller();
     }else if (operatorController.getLeftBumper()) {
@@ -457,7 +459,7 @@ public class Robot extends LoggedRobot {
           intake.stopRoller();
         }
     }
-
+    
     // ======================= \\
     // ======= Rollers ======= \\
     // ======================= \\
