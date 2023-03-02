@@ -459,13 +459,7 @@ public class Robot extends LoggedRobot {
           intake.stopRoller();
         }
     }
-
-    if (operatorController.getStartButtonPressed() && operatorController.getLeftTriggerAxis() >= 0.1) {
-      SmartDashboard.putNumber("Wrist Desired Rotations", SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS) - 0.25);
-    } else if (operatorController.getBackButtonPressed() && operatorController.getLeftTriggerAxis() >= 0.1) {
-      SmartDashboard.putNumber("Wrist Desired Rotations", SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS) + 0.25);
-    }
-
+    
     // ======================= \\
     // ======= Rollers ======= \\
     // ======================= \\
