@@ -111,6 +111,7 @@ public class LED {
     public void updatePeriodic() {
         power.powerPeriodic();
         SmartDashboard.putString("LED Mode", mode.name());
+
         
         // Switch between the possible states of the LED
         switch (mode) {
@@ -146,7 +147,7 @@ public class LED {
                 break;
             case WAVES:
                 blinkSpeed = BlinkSpeed.SOLID;
-                setWaves(Color.CYAN);
+                setWaves(Color.BLUE);
                 break;
             case OFF:
                 blinkSpeed = BlinkSpeed.SOLID;
@@ -286,7 +287,7 @@ public class LED {
     private void setWaves(Color color) {
         waveCounter++;
         for(int i = 0; i < LED_LENGTH / 2; i++) {
-            if(Math.abs(LED_LENGTH / 2 + i - indexOn) % 5 < Constants.PULSE_SIZE) {
+            if(Math.abs(LED_LENGTH / 2 + i - indexOn) % 4 < Constants.PULSE_SIZE) {
                 setColor((LED_LENGTH / 2 + i), color);
                 setColor((LED_LENGTH / 2 - 1 - i), color);
             } else {
