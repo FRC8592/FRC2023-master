@@ -25,7 +25,7 @@ public class Autopark {
     
     public boolean balance(Drivetrain drivetrain){
         double pitch = drivetrain.getRoll();
-        System.out.println(currentState.toString() + " " + pitch);
+        // System.out.println(currentState.toString() + " " + pitch);
         
         switch (currentState){
             

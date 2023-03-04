@@ -404,7 +404,7 @@ public class Robot extends LoggedRobot {
       }
     
 
-    } else if (operatorController.getRightTriggerAxis() >= 0.1){
+    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
     }else if (operatorController.getLeftBumper()) {
       intake.setWrist(currentWrist);
