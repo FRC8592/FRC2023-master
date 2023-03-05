@@ -12,7 +12,7 @@ import frc.robot.commands.LiftCommand;
 import frc.robot.commands.ScoreCommand;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class MiddlePreloadBalanceAuto extends BaseAuto {
+public class MiddleBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.3, 1);
 
     @Override
@@ -25,16 +25,7 @@ public class MiddlePreloadBalanceAuto extends BaseAuto {
         );
         
         queue = new CommandQueue(
-            new LiftCommand(elevator, Heights.PRIME), // Tilt up
-            new JointCommand( // Lift to high height and score pre-load piece
-              new LiftCommand(elevator, Heights.HIGH),
-              new ScoreCommand(intake)  
-            ),
-            new LiftCommand(elevator, Heights.PRIME),
-            new JointCommand(
-                new FollowerCommand(drive, E_TO_BM), // Drive to gain mobility over charging station
-                new LiftCommand(elevator, Heights.STOWED)
-            ),
+            new FollowerCommand(drive, E_TO_BM), // Drive to gain mobility over charging station
             new AutobalanceCommand(drive) // Balance
         );
     }

@@ -104,9 +104,20 @@ public class Intake {
         // spinRollers(0.8);
     }
 
+    public void coneIntakeRoller(){
+        rollerMotor.setSmartCurrentLimit(40);
+        rollerMotor.set(0.7);
+    }
+
+    public void cubeIntakeRoller(){
+        rollerMotor.setSmartCurrentLimit(60);
+        rollerMotor.set(0.7);
+    }
+
     public void outtakeRoller() {
         // rollerMotor.set(-0.8);
-        spinRollers(-1.0);
+        rollerMotor.setSmartCurrentLimit(40);
+        rollerMotor.set(-1.0);
     }
 
     public void scoreRoller() {

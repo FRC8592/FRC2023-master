@@ -392,19 +392,26 @@ public class Robot extends LoggedRobot {
     // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
     
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
-      intake.intakeRoller();
-      if (operatorController.getAButton()) {
-        intake.setWrist(0.0);
-      } else if (operatorController.getXButton()) {
-        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
-      } else {
-        intake.setWrist(currentWrist);
+     
+      // if (operatorController.getAButton()) {
+      //   intake.setWrist(0.0);
+      // } else if (operatorController.getXButton()) {
+      //   intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
+      // } else {
+      //   intake.setWrist(currentWrist);
       
     
-      }
-    
+      // }
+      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+      intake.coneIntakeRoller();
 
-    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
+    
+        
+
+    } else if (operatorController.getLeftBumper()){
+      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+      intake.cubeIntakeRoller();
+    }else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
     }else if (operatorController.getLeftBumper()) {
       intake.setWrist(currentWrist);
