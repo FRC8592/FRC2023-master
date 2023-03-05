@@ -66,7 +66,7 @@ public final class Constants {
     public static final int ROLLER_ID    = 18;
     public static final int BEAM_BREAK_CONE_ID      = 3;
     public static final int BEAM_BREAK_CUBE_ID      = 2;
-    public static final int ROLLER_MAX_CURRENT_AMPS = 11;
+    public static final int ROLLER_MAX_CURRENT_AMPS = 30;
     public static final int WRIST_MAX_CURRENT_AMPS = 30;
     public static final double ROLLER_KP = 0.00025;
     public static final double ROLLER_KI = 0.0;

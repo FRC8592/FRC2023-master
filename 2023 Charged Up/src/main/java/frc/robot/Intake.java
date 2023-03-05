@@ -100,14 +100,12 @@ public class Intake {
         //     coneTimer.reset();
         //     coneTimer.stop();
         // }
-        rollerMotor.setSmartCurrentLimit(10);
         rollerMotor.set(0.7);
         // spinRollers(0.8);
     }
 
     public void outtakeRoller() {
         // rollerMotor.set(-0.8);
-        rollerMotor.setSmartCurrentLimit(14);
         spinRollers(-1.0);
     }
 

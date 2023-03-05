@@ -87,9 +87,9 @@ public class Elevator {
         liftCtrl.setD(0.0, PID_DOWN_SLOT_LIFT);
         liftCtrl.setFF(0.000391419, PID_DOWN_SLOT_LIFT);
 
-        tiltCtrl.setP(0.0003, PID_TILT_UP_SLOT);
+        tiltCtrl.setP(0.00025, PID_TILT_UP_SLOT);
         tiltCtrl.setI(0.0, PID_TILT_UP_SLOT);
-        tiltCtrl.setD(-0.00001, PID_TILT_UP_SLOT);
+        tiltCtrl.setD(0.00000, PID_TILT_UP_SLOT);
 
         tiltCtrl.setP(0.00001, PID_TILT_DOWN_SLOT);
         tiltCtrl.setI(0.0, PID_TILT_DOWN_SLOT);
@@ -245,6 +245,9 @@ public class Elevator {
         double curRots = tiltEncoder.getPosition();
         double maxRots = Constants.TILT_MAX_ROTATIONS;
         if (up) {
+            if (curRots >= Constants.TILT_MAX_ROTATIONS * 0.6) {
+                return -12.0;
+            }
             return -((maxRots-curRots)/maxRots*12);
         }
         return (curRots/maxRots)*2;
