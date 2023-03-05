@@ -226,6 +226,7 @@ public class Robot extends LoggedRobot {
     drive.getCurrentPos();
     gameObjectVision.updateVision();
     elevator.update();
+    SmartDashboard.putNumber("Current Wrist", currentWrist);
 
     /*
      * Controls:
@@ -402,14 +403,10 @@ public class Robot extends LoggedRobot {
       
     
       // }
-      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+      intake.setWrist(currentWrist);
       intake.coneIntakeRoller();
-
-    
-        
-
     } else if (operatorController.getLeftBumper()){
-      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+      intake.setWrist(currentWrist);
       intake.cubeIntakeRoller();
     }else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
@@ -460,8 +457,6 @@ public class Robot extends LoggedRobot {
           intake.intakeRoller();
         } else if (operatorController.getPOV() == 270) {
           intake.outtakeRoller();
-        } else if (operatorController.getBButton()) {
-          intake.spinRollers(0.2);
         } else {
           intake.stopRoller();
         }
