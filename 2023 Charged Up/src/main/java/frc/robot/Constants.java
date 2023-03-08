@@ -81,7 +81,7 @@ public final class Constants {
     public static final int ROLLER_PID_SLOT = 0;
     public static final int WRIST_PID_SLOT = 0;
     public static final double ROLLER_MAX_ACCELERATION = 1.0; // Rotations per minute per second
-    public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
+    public static final double ROLLER_MAX_VELOCITY = 1000.0; // Rotations per minute
     public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
     public static final double WRIST_INTAKE_ROTATIONS = 52.0;

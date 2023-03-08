@@ -250,6 +250,14 @@ public class Elevator {
         return (curRots/maxRots)*2;
     }
 
+    public boolean tiltAtReference() {
+        if (desiredHeight == Heights.STOWED) {
+            return Math.abs(tiltEncoder.getPosition()) <= 2.0;
+        } else {
+            return Math.abs(tiltEncoder.getPosition() - Constants.TILT_MAX_ROTATIONS) <= 2.0;
+        }
+    }
+
     public boolean atReference() {
         boolean atTilt = false;
         if (desiredHeight == Heights.STOWED) {

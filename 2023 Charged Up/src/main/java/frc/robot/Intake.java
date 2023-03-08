@@ -83,30 +83,31 @@ public class Intake {
     }
 
     public void intakeRoller() {
-        double currentTime = 0;
-        if (beamCone.isBroken() && beamCube.isBroken()) {
-            coneTimer.start();
-            spinRollers(0.8);
-        }else if (!beamCone.isBroken()){
-            currentTime = coneTimer.get();
-            if (coneTimer.get() - currentTime >= 0.75){
+        spinRollers(0.8);
+        // double currentTime = 0;
+        // if (beamCone.isBroken() && beamCube.isBroken()) {
+        //     coneTimer.start();
+        //     spinRollers(0.8);
+        // }else if (!beamCone.isBroken()){
+        //     currentTime = coneTimer.get();
+        //     if (coneTimer.get() - currentTime >= 0.75){
 
-                spinRollers(0.0);
-                coneTimer.reset();
-                coneTimer.stop();
-            }
-        }else{
-            spinRollers(0.0);
-            coneTimer.reset();
-            coneTimer.stop();
-        }
+        //         spinRollers(0.0);
+        //         coneTimer.reset();
+        //         coneTimer.stop();
+        //     }
+        // }else{
+        //     spinRollers(0.0);
+        //     coneTimer.reset();
+        //     coneTimer.stop();
+        // }
         // rollerMotor.set(0.8);
         // spinRollers(0.8);
     }
 
     public void outtakeRoller() {
         // rollerMotor.set(-0.8);
-        spinRollers(-0.8);
+        spinRollers(-1.0);
     }
 
     public void scoreRoller() {
@@ -120,7 +121,8 @@ public class Intake {
     }
 
     public void spinRollers(double pct) {
-        rollerMotor.set(pct);
+        // rollerMotor.set(pct);
+        rollerCtrl.setReference(pct*Constants.ROLLER_MAX_VELOCITY, ControlType.kSmartVelocity);
         // double currentTime = 0;
         // if (beamCone.isBroken() && beamCube.isBroken()) {
         //     coneTimer.start();

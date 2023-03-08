@@ -441,14 +441,19 @@ public class Robot extends LoggedRobot {
             intake.setWrist(0.0);
           } else if (operatorController.getXButton()) {
             elevator.set(Heights.MID);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            if (elevator.tiltAtReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
           } else if (operatorController.getYButton()) {
             elevator.set(Heights.HIGH);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            if (elevator.tiltAtReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
           } else {
             elevator.set(Heights.STALL);
           }
         }
+
         if (operatorController.getPOV() == 90) {
           intake.intakeRoller();
         } else if (operatorController.getPOV() == 270) {

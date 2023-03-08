@@ -267,6 +267,8 @@ public class Drivetrain {
     public double turnToAngle(double targetDegrees){
         double yaw = getYaw();
 
+        targetDegrees = 180 - targetDegrees;
+
         if (targetDegrees > 180) {
             targetDegrees -= 360;
         }
