@@ -4,30 +4,31 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import frc.robot.autonomous.autons.BaseAuto;
-import frc.robot.autonomous.autons.MoveOutCommunityAuto;
-import frc.robot.autonomous.autons.cablecover.CableCoverPreloadBalanceAuto;
-import frc.robot.autonomous.autons.cablecover.CableCoverPreloadMobilityAuto;
-import frc.robot.autonomous.autons.cablecover.CableCoverTwoPieceAuto;
-import frc.robot.autonomous.autons.loadingzone.LoadingZonePreloadBalanceAuto;
-import frc.robot.autonomous.autons.loadingzone.LoadingZonePreloadMobilityAuto;
-import frc.robot.autonomous.autons.loadingzone.LoadingZoneTwoPieceAuto;
-import frc.robot.autonomous.autons.middle.MiddlePreloadBalanceAuto;
-public class AutonomousSelector {
+import frc.robot.autonomous.autons.*;
+import frc.robot.autonomous.autons.cablecover.*;
+import frc.robot.autonomous.autons.loadingzone.*;
+import frc.robot.autonomous.autons.middle.*;
+import frc.robot.autonomous.autons.other.*;
 
+public class AutonomousSelector {
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
     private SendableChooser<Class<?>> autonChooser = new SendableChooser<>();
     private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-        MoveOutCommunityAuto.class, // Ready to test
-        // MiddlePreloadBalanceAuto.class, // Ready to test
-        LoadingZonePreloadMobilityAuto.class, // Ready to test
-        LoadingZonePreloadBalanceAuto.class, // Ready to test
-        // LoadingZoneTwoPieceAuto.class,
-        CableCoverPreloadMobilityAuto.class, // Ready to test
-        CableCoverPreloadBalanceAuto.class, // Ready to test
-        // CableCoverTwoPieceAuto.class
+        MoveOutCommunityAuto.class,
+        PreloadHighMobilityAuto.class,
+        PreloadLowMobilityAuto.class,
+
+        MiddlePreloadBalanceAuto.class,
+
+        LoadingZonePreloadMobilityAuto.class,
+        LoadingZonePreloadBalanceAuto.class,
+        LoadingZonePreloadCubeAuto.class,
+
+        CableCoverPreloadMobilityAuto.class,
+        CableCoverPreloadBalanceAuto.class,
+        CableCoverPreloadGrabPieceBalanceAuto.class
     };
 
     public AutonomousSelector() {
