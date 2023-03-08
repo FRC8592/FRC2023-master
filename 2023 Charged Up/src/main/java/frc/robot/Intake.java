@@ -83,30 +83,41 @@ public class Intake {
     }
 
     public void intakeRoller() {
-        double currentTime = 0;
-        if (beamCone.isBroken() && beamCube.isBroken()) {
-            coneTimer.start();
-            spinRollers(0.8);
-        }else if (!beamCone.isBroken()){
-            currentTime = coneTimer.get();
-            if (coneTimer.get() - currentTime >= 0.75){
+        // double currentTime = 0;
+        // if (beamCone.isBroken() && beamCube.isBroken()) {
+        //     coneTimer.start();
+        //     spinRollers(0.8);
+        // }else if (!beamCone.isBroken()){
+        //     currentTime = coneTimer.get();
+        //     if (coneTimer.get() - currentTime >= 0.75){
 
-                spinRollers(0.0);
-                coneTimer.reset();
-                coneTimer.stop();
-            }
-        }else{
-            spinRollers(0.0);
-            coneTimer.reset();
-            coneTimer.stop();
-        }
-        // rollerMotor.set(0.8);
+        //         spinRollers(0.0);
+        //         coneTimer.reset();
+        //         coneTimer.stop();
+        //     }
+        // }else{
+        //     spinRollers(0.0);
+        //     coneTimer.reset();
+        //     coneTimer.stop();
+        // }
+        rollerMotor.set(0.7);
         // spinRollers(0.8);
+    }
+
+    public void coneIntakeRoller(){
+        rollerMotor.setSmartCurrentLimit(80);
+        rollerMotor.set(0.7);
+    }
+
+    public void cubeIntakeRoller(){
+        rollerMotor.setSmartCurrentLimit(60);
+        rollerMotor.set(0.7);
     }
 
     public void outtakeRoller() {
         // rollerMotor.set(-0.8);
-        spinRollers(-0.8);
+        rollerMotor.setSmartCurrentLimit(40);
+        rollerMotor.set(-1.0);
     }
 
     public void scoreRoller() {

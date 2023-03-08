@@ -23,12 +23,12 @@ public class MoveOutCommunityAuto extends BaseAuto {
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new LiftCommand(elevator, Heights.PRIME), // Tilt up
-            new JointCommand( // Lift to high and score pre-load
-                new ScoreCommand(intake), 
-                new LiftCommand(elevator, Heights.HIGH)
-            ),
-            new LiftCommand(elevator, Heights.STOWED), // Retract the elevator
+            // new LiftCommand(elevator, Heights.PRIME), // Tilt up
+            // new JointCommand( // Lift to high and score pre-load
+            //     new ScoreCommand(intake), 
+            //     new LiftCommand(elevator, Heights.HIGH)
+            // ),
+            // new LiftCommand(elevator, Heights.STOWED), // Retract the elevator
             new FollowerCommand(drive, MOVE_OUT)
         );
     }
