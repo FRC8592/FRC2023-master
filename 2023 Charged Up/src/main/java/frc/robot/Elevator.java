@@ -87,9 +87,9 @@ public class Elevator {
         liftCtrl.setD(0.0, PID_DOWN_SLOT_LIFT);
         liftCtrl.setFF(0.000391419, PID_DOWN_SLOT_LIFT);
 
-        tiltCtrl.setP(0.0003, PID_TILT_UP_SLOT);
+        tiltCtrl.setP(0.00025, PID_TILT_UP_SLOT);
         tiltCtrl.setI(0.0, PID_TILT_UP_SLOT);
-        tiltCtrl.setD(-0.00001, PID_TILT_UP_SLOT);
+        tiltCtrl.setD(0.00000, PID_TILT_UP_SLOT);
 
         tiltCtrl.setP(0.00001, PID_TILT_DOWN_SLOT);
         tiltCtrl.setI(0.0, PID_TILT_DOWN_SLOT);
@@ -230,11 +230,15 @@ public class Elevator {
         // tiltCtrl.setReference(tilt * , ControlType.kSmartVelocity, PID_UP_SLOT_LIFT);
     }
 
+    public void overrideStow() {
+        tiltCtrl.setReference(0.0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, 12.0);
+    }
+
     // Gets the amount we scale down the drivetrain speed if we are lifted passed a specific height and/or angle
     public double getDriveReduction() {
         double rawLift;
         if (Robot.isReal()) {
-            rawLift = liftEncoder.getPosition();
+            rawLift = liftEncoder.getPosition(); 
         } else {
             rawLift = liftMotor.getAnalog(Mode.kAbsolute).getPosition();
         }
@@ -245,9 +249,12 @@ public class Elevator {
         double curRots = tiltEncoder.getPosition();
         double maxRots = Constants.TILT_MAX_ROTATIONS;
         if (up) {
+            if (curRots >= Constants.TILT_MAX_ROTATIONS * 0.6) {
+                return -12.0;
+            }
             return -((maxRots-curRots)/maxRots*12);
         }
-        return (curRots/maxRots)*2;
+        return (curRots/maxRots)*2.5;
     }
 
     public boolean tiltAtReference() {

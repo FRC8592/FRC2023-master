@@ -18,7 +18,7 @@ public class CableCoverPreloadMobilityAuto extends BaseAuto {
         config,
         GRID_G.getPose(),
         INTERMEDIARY_CABLE_COVER.translate(-2.0, 0.5),
-        INTERMEDIARY_CABLE_COVER.translate(0.5, 0.5)
+        INTERMEDIARY_CABLE_COVER.translate(1.0, 0.5)
     );
     
     @Override

@@ -24,7 +24,7 @@ public enum AutonomousPositions {
     GRID_I(1.664 + 0.6, 0.384 + 0.5),
     
     BALANCE_CABLE_COVER(5.292, 1.902, Rotation2d.fromDegrees(0)), // Consider pushing x position out to not bump into charging station
-    BALANCE_MIDDLE(5.292 - 0.75 + 0.75, 2.682 - 0.2 + 0.5, Rotation2d.fromDegrees(0)),
+    BALANCE_MIDDLE(5.292 - 0.75 + 0.75 + 0.5, 2.682 - 0.2 + 0.5, Rotation2d.fromDegrees(0)),
     BALANCE_LOADING_ZONE(5.292, 3.523, Rotation2d.fromDegrees(0)), // Consider pushing x position out to not bump into charging station
 
     // Positions all mixed up for intermediary
