@@ -100,24 +100,26 @@ public class Intake {
         //     coneTimer.reset();
         //     coneTimer.stop();
         // }
-        rollerMotor.set(0.7);
+        // rollerMotor.set(0.7);
+        rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
         // spinRollers(0.8);
     }
 
     public void coneIntakeRoller(){
         rollerMotor.setSmartCurrentLimit(80);
-        rollerMotor.set(0.7);
+        // rollerMotor.set(0.7);
+        rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
     }
 
     public void cubeIntakeRoller(){
         rollerMotor.setSmartCurrentLimit(60);
-        rollerMotor.set(0.7);
+        rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
     }
 
     public void outtakeRoller() {
         // rollerMotor.set(-0.8);
         rollerMotor.setSmartCurrentLimit(40);
-        rollerMotor.set(-1.0);
+        rollerCtrl.setReference(-1000, ControlType.kSmartVelocity);
     }
 
     public void scoreRoller() {
