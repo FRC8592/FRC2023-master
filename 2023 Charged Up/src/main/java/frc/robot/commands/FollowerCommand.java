@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
+import frc.robot.SmartDash;
 import frc.robot.autonomous.SwerveTrajectory;
 
 public class FollowerCommand extends Command {
@@ -95,9 +96,9 @@ public class FollowerCommand extends Command {
         Trajectory traj = trajectory.trajectory();
         Robot.FIELD.setRobotPose(new Pose2d(pose.getTranslation(), traj.sample(traj.getTotalTimeSeconds()).poseMeters.getRotation()));
 
-        SmartDashboard.putNumber("Field Relative X Velocity", desiredSpeeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("Field Relative Y Velocity", desiredSpeeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("Field Relative Omega", desiredSpeeds.omegaRadiansPerSecond);
+        SmartDash.putNumber("Field Relative X Velocity", desiredSpeeds.vxMetersPerSecond, false);
+        SmartDash.putNumber("Field Relative Y Velocity", desiredSpeeds.vyMetersPerSecond, false);
+        SmartDash.putNumber("Field Relative Omega", desiredSpeeds.omegaRadiansPerSecond, false);
     }
 
     @Override

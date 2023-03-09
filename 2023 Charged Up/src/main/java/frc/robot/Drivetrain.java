@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 
 
@@ -211,9 +210,9 @@ public class Drivetrain {
 
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
-        SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
-        SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
-        SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
+        SmartDash.putNumber("Drive X (in)", pos.getX() * 39.3701, false); //meters to inches
+        SmartDash.putNumber("Drive Y (in)", pos.getY()  * 39.3701, false);
+        SmartDash.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees(), false);
         return pos;
     }
 
@@ -223,8 +222,8 @@ public class Drivetrain {
     
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
-        SmartDashboard.putNumber("Chassis Speeds X", chassisSpeeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
+        SmartDash.putNumber("Chassis Speeds X", chassisSpeeds.vxMetersPerSecond, false);
+        SmartDash.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond, false);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         // m_frontLeftModule.setModuleSteerAngle(states[0].angle.getRadians())
@@ -277,10 +276,10 @@ public class Drivetrain {
         // double targetDifference = yaw - targetDegrees;
         double turn = turnPID.calculate(0, getErrorAngle(getCurrentPos(), new Pose2d(0, 0, Rotation2d.fromDegrees(targetDegrees))));
 
-        SmartDashboard.putNumber("Current Yaw", yaw);
-        SmartDashboard.putNumber("Target Degrees", targetDegrees);
-        SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
-        SmartDashboard.putNumber("TurnTo PID", -turn);
+        SmartDash.putNumber("Current Yaw", yaw, true);
+        SmartDash.putNumber("Target Degrees", targetDegrees, true);
+        SmartDash.putNumber("Target Difference", yaw - targetDegrees, true);
+        SmartDash.putNumber("TurnTo PID", -turn, false);
 
         // return -turnToPID.calculate(yaw, targetDegrees);
         return -turn;
@@ -309,10 +308,10 @@ public class Drivetrain {
    }
 
     public void getSwervePositions() {
-        SmartDashboard.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
-        SmartDashboard.putNumber("Front Right Posiiton", m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
-        SmartDashboard.putNumber("Back Left Posiiton", m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
-        SmartDashboard.putNumber("Back Right Posiiton", m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        SmartDash.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters, false);
+        SmartDash.putNumber("Front Right Posiiton", m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters, false);
+        SmartDash.putNumber("Back Left Posiiton", m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters, false);
+        SmartDash.putNumber("Back Right Posiiton", m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters, false);
     }
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
@@ -350,7 +349,7 @@ public class Drivetrain {
         }else{
             velocityToApply = velocityMetersPerSecond;
         }
-        SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
+        SmartDash.putNumber("Velocity to Apply", velocityToApply, false);
         setDriveVelocity(velocityToApply, module);
     }
     /* WHEEL LOCK MODE FOR AUTOPARK - Liam M */

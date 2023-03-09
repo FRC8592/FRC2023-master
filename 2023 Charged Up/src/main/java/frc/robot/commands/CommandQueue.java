@@ -5,6 +5,7 @@ import java.util.Queue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.SmartDash;
 
 public class CommandQueue {
     private Queue<Command> queue;
@@ -42,7 +43,7 @@ public class CommandQueue {
      */
     public void run() {
         if (!isFinished()) {
-            SmartDashboard.putString("Current Running Command", queue.peek().tag() == "" ? "DEFAULT COMMAND" : queue.peek().tag());
+            SmartDash.putString("Current Running Command", queue.peek().tag() == "" ? "DEFAULT COMMAND" : queue.peek().tag(), false);
 
             //if command has been executed reset and get ready for the next command
             if (queue.peek().execute()) {
@@ -53,7 +54,7 @@ public class CommandQueue {
                 if (queue.size() != 0) {
                     queue.peek().initialize();
                 } else {
-                    SmartDashboard.putString("Current Running Command", "NO COMMAND");
+                    SmartDash.putString("Current Running Command", "NO COMMAND", false);
                 }
             }
         }

@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.SmartDash;
 
 /**
  * Custom Trajectory generator class based on the WPILib {@code Trajectory} class
@@ -86,18 +87,18 @@ public class SwerveTrajectory {
             );
 
             // desired = ChassisSpeeds.fromFieldRelativeSpeeds(desired, robotPose.getRotation());
-            SmartDashboard.putNumber("Current Heading", robotPose.getRotation().getDegrees());
+            SmartDash.putNumber("Current Heading", robotPose.getRotation().getDegrees(), false);
         }
 
-        SmartDashboard.putNumber("Error X", getEndingPose().getX() - robotPose.getX());
-        SmartDashboard.putNumber("Error Y", getEndingPose().getY() - robotPose.getY());
-        SmartDashboard.putNumber("Error Theta", rotation.getDegrees() - robotPose.getRotation().getDegrees());
+        SmartDash.putNumber("Error X", getEndingPose().getX() - robotPose.getX(), false);
+        SmartDash.putNumber("Error Y", getEndingPose().getY() - robotPose.getY(), false);
+        SmartDash.putNumber("Error Theta", rotation.getDegrees() - robotPose.getRotation().getDegrees(), false);
 
-        SmartDashboard.putNumber("Ending X", getEndingPose().getX());
-        SmartDashboard.putNumber("Ending Y", getEndingPose().getY());
-        SmartDashboard.putNumber("Ending Theta", rotation.getDegrees());
+        SmartDash.putNumber("Ending X", getEndingPose().getX(), false);
+        SmartDash.putNumber("Ending Y", getEndingPose().getY(), false);
+        SmartDash.putNumber("Ending Theta", rotation.getDegrees(), false);
 
-        SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
+        SmartDash.putBoolean("AT SETPOINT", mDrivePID.atReference(), false);
 
         // SmartDashboard.putNumber("Desired X", desired.vxMetersPerSecond);
         // SmartDashboard.putNumber("Desired Y", desired.vyMetersPerSecond);

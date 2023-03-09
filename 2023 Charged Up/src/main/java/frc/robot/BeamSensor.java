@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Arrays;
 
@@ -29,8 +28,8 @@ public class BeamSensor {
 		// If a debounce time was requested
 		if(mFilter != null) {
 			mFilter.addNumber(mBeamInput.get() ? 1.0 :0.0);
-			SmartDashboard.putNumber("average: ", mFilter.getAverage());
-			SmartDashboard.putNumber("num added: ", mBeamInput.get() ? 1.0 : 0.0);
+			SmartDash.putNumber("average: ", mFilter.getAverage(), false);
+			SmartDash.putNumber("num added: ", mBeamInput.get() ? 1.0 : 0.0, false);
 			return mFilter.getAverage() <= 0.5;
 		} else {
 			return mBeamInput.get();

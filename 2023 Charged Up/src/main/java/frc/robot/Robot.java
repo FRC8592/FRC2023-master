@@ -208,7 +208,7 @@ public class Robot extends LoggedRobot {
     drive.setTeleopCurrentLimit();
     autoPark = new Autopark();
 
-    SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
+    SmartDash.putNumber("Desired Scale", driveScaler.scale(0.5), false);
   }
   
   /** This function is called periodically during operator control. */
@@ -226,7 +226,7 @@ public class Robot extends LoggedRobot {
     drive.getCurrentPos();
     gameObjectVision.updateVision();
     elevator.update();
-    SmartDashboard.putNumber("Current Wrist", currentWrist);
+    SmartDash.putNumber("Current Wrist", currentWrist, false);
 
     /*
      * Controls:
@@ -516,8 +516,8 @@ public class Robot extends LoggedRobot {
   }
 
   public void testPeriodic() {
-    SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
-    SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    SmartDash.putString("Yaw", drive.getGyroscopeRotation().toString(), false);
+    SmartDash.putNumber("Yaw Number", drive.getYaw(), false);
 
     // if (operatorController.getLeftTriggerAxis() >= 0.1) {
     //   intake.enableWrist(true);
@@ -546,8 +546,8 @@ public class Robot extends LoggedRobot {
     //   lift.set(Heights.STALL);
     // }
 
-    SmartDashboard.putNumber("Left Trigger", operatorController.getLeftTriggerAxis());
-    SmartDashboard.putNumber("Right Trigger", operatorController.getRightTriggerAxis());
+    SmartDash.putNumber("Left Trigger", operatorController.getLeftTriggerAxis(), false);
+    SmartDash.putNumber("Right Trigger", operatorController.getRightTriggerAxis(), false);
 
     // ======================= \\
     // ======= Rollers ======= \\

@@ -56,11 +56,11 @@ public class Power {
         // Place all parameters onto a dedicated Shuffleboard tab
         // Shuffleboard.selectTab("Power");
 
-        // SmartDashboard.putNumber("Temperature", temp);
-        // SmartDashboard.putNumber("Voltage", voltage);
-        SmartDashboard.putNumber("Current", current);
-        // SmartDashboard.putNumber("Power", power);
-        // SmartDashboard.putNumber("Energy", energy);
+        // SmartDash.putNumber("Temperature", temp);
+        // SmartDash.putNumber("Voltage", voltage);
+        SmartDash.putNumber("Current", current, false);
+        // SmartDash.putNumber("Power", power);
+        // SmartDash.putNumber("Energy", energy);
 
         // Shuffleboard.selectTab("SmartDashboard");   // Switch back to default
     }

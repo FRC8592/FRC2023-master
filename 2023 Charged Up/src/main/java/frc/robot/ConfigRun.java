@@ -18,6 +18,7 @@ public final class ConfigRun {
 
     public static final boolean WAYPOINT = false;
     
+    public static final boolean IS_COMPEITION = false;
     //
     // Driving Power
     //

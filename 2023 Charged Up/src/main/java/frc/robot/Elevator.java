@@ -128,7 +128,7 @@ public class Elevator {
         liftCtrl.setSmartMotionAllowedClosedLoopError(0.1, PID_UP_SLOT_LIFT);
         liftCtrl.setSmartMotionAllowedClosedLoopError(0.1, PID_DOWN_SLOT_LIFT);
 
-        SmartDashboard.putNumber("Desired Max Tilt", Constants.TILT_MAX_ROTATIONS);
+        SmartDash.putNumber("Desired Max Tilt", Constants.TILT_MAX_ROTATIONS, false);
     }
 
     // Logs values to SmartDashboard
@@ -156,14 +156,14 @@ public class Elevator {
                 errorTilt = Constants.TILT_MAX_ROTATIONS - rawTilt;
         }
 
-        SmartDashboard.putNumber("Elevator Rotations", rawLift);
-        SmartDashboard.putNumber("Elevator Current", liftMotor.getOutputCurrent());
-        SmartDashboard.putString("Elevator State", desiredHeight.name());
-        SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
+        SmartDash.putNumber("Elevator Rotations", rawLift, false);
+        SmartDash.putNumber("Elevator Current", liftMotor.getOutputCurrent(), false);
+        SmartDash.putString("Elevator State", desiredHeight.name(), false);
+        SmartDash.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift, false);
 
-        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
-        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
+        SmartDash.putNumber("Tilt Rotations", rawTilt, false);
+        SmartDash.putNumber("Tilt Current", tiltMotor.getOutputCurrent(), false);
+        SmartDash.putNumber("Tilt Error Rotations", errorTilt, false);
     }
 
     // Resets encoders and potentially other sensors to desired start angle

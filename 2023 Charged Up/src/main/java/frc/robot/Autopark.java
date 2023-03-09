@@ -4,7 +4,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Autopark {
@@ -25,6 +24,7 @@ public class Autopark {
     
     public boolean balance(Drivetrain drivetrain){
         double pitch = drivetrain.getRoll();
+        
         // System.out.println(currentState.toString() + " " + pitch);
         
         switch (currentState){
@@ -37,7 +37,7 @@ public class Autopark {
                 }
                 else {
                     drivetrain.drive(new ChassisSpeeds(-0.7, 0, 0)); //the slower the better
-                    SmartDashboard.putNumber("Movement speed", 0.7);
+                    SmartDash.putNumber("Movement speed", 0.7, false);
                 }
                 break;
             
@@ -48,7 +48,7 @@ public class Autopark {
                 }
                 else{
                     drivetrain.drive(new ChassisSpeeds(-(pitch * Constants.PITCH_MULTIPLIER), 0, 0));
-                    SmartDashboard.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER);
+                    SmartDash.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER, false);
                 }
                 break;
 
@@ -58,7 +58,7 @@ public class Autopark {
                 }
                 // drivetrain.drive(new ChassisSpeeds(0, 0, 0));
                 drivetrain.setWheelLock();
-                SmartDashboard.putNumber("Movement speed", 0.0);
+                SmartDash.putNumber("Movement speed", 0.0, false);
                 break;  
                 }
             

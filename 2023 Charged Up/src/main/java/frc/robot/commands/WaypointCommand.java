@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Drivetrain;
+import frc.robot.SmartDash;
 import frc.robot.autonomous.AutoDrive;
 import frc.robot.autonomous.SmoothingFilter;
 // import frc.robot.autonomous.Waypoint;
@@ -130,18 +131,18 @@ public class WaypointCommand extends Command {
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(autoDrive.moveToWayPoint(drive.getCurrentPos()), drive.getGyroscopeRotation());
         drive.drive(filter == null ? speeds : filter.smooth(speeds));
 
-        SmartDashboard.putNumber("Auto/Speed X", speeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("Auto/Speed Y", speeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("Auto/Speed Omega", speeds.omegaRadiansPerSecond);
+        SmartDash.putNumber("Auto/Speed X", speeds.vxMetersPerSecond, false);
+        SmartDash.putNumber("Auto/Speed Y", speeds.vyMetersPerSecond, false);
+        SmartDash.putNumber("Auto/Speed Omega", speeds.omegaRadiansPerSecond, false);
 
         return autoDrive.finishedAllWaypoints() && autoDrive.getDistance(drive.getCurrentPos(), poses.get(poses.size() - 1)) <= ACCEPTANCE_RADIUS;
     }
 
     @Override
     public void shutdown() {
-        SmartDashboard.putNumber("Auto/Speed X", 0d);
-        SmartDashboard.putNumber("Auto/Speed Y", 0d);
-        SmartDashboard.putNumber("Auto/Speed Omega", 0d);
+        SmartDash.putNumber("Auto/Speed X", 0d, false);
+        SmartDash.putNumber("Auto/Speed Y", 0d, false);
+        SmartDash.putNumber("Auto/Speed Omega", 0d, false);
         drive.drive(new ChassisSpeeds(0, 0, 0));
     }
 

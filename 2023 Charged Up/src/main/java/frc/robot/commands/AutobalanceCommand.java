@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Autopark;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
+import frc.robot.SmartDash;
 
 public class AutobalanceCommand extends Command {
     private Drivetrain drive;
@@ -68,9 +69,9 @@ public class AutobalanceCommand extends Command {
 
             boolean park = !autopark.balance(drive);
 
-            SmartDashboard.putBoolean("Distance Exceeded", distanceExceeded);
-            SmartDashboard.putBoolean("Cycles Exceeded", cyclesExceeded);
-            SmartDashboard.putBoolean("Park", park);
+            SmartDash.putBoolean("Distance Exceeded", distanceExceeded, false);
+            SmartDash.putBoolean("Cycles Exceeded", cyclesExceeded, false);
+            SmartDash.putBoolean("Park", park, false);
 
             prevPitch = pitch;
             return park || /*cyclesExceeded || */ distanceExceeded;

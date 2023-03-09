@@ -23,8 +23,8 @@ public class Intake {
     private Timer coneTimer;
 
     public void logBeamBreaks(){
-        SmartDashboard.putBoolean("Cone Beam Break", !beamCone.isBroken());
-        SmartDashboard.putBoolean("Cube Beam Break", !beamCube.isBroken());
+        SmartDash.putBoolean("Cone Beam Break", !beamCone.isBroken(), false);
+        SmartDash.putBoolean("Cube Beam Break", !beamCube.isBroken(), false);
     }
 
     public Intake() {
@@ -63,7 +63,7 @@ public class Intake {
         beamCube = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
         coneTimer = new Timer();
 
-        SmartDashboard.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS);
+        SmartDash.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS, false);
     }
 
     public void reset() {
@@ -74,12 +74,12 @@ public class Intake {
     public void writeToSmartDashboard() {
         double rawWristPosition = wristEncoder.getPosition(); // rotations
         
-        SmartDashboard.putNumber("Wrist position", rawWristPosition);
-        SmartDashboard.putNumber("Wrist current", wristMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Roller current", rollerMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Roller velocity", rollerEncoder.getVelocity());
-        SmartDashboard.putBoolean("Cone beam broken", beamCone.isBroken());
-        SmartDashboard.putBoolean("Cone beam broken", beamCube.isBroken());
+        SmartDash.putNumber("Wrist position", rawWristPosition, false);
+        SmartDash.putNumber("Wrist current", wristMotor.getOutputCurrent(), false);
+        SmartDash.putNumber("Roller current", rollerMotor.getOutputCurrent(), false);
+        SmartDash.putNumber("Roller velocity", rollerEncoder.getVelocity(), false);
+        SmartDash.putBoolean("Cone beam broken", beamCone.isBroken(), false);
+        SmartDash.putBoolean("Cone beam broken", beamCube.isBroken(), false);
     }
 
     public void intakeRoller() {
@@ -127,7 +127,7 @@ public class Intake {
             stopRoller();
         }
 
-        SmartDashboard.putNumber("Wrist Error", Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS));
+        SmartDash.putNumber("Wrist Error", Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS), false);
     }
 
     public void spinRollers(double pct) {
