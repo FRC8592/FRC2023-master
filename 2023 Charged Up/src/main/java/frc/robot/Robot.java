@@ -324,9 +324,9 @@ public class Robot extends LoggedRobot {
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(-translateX), 
-      driveScaler.scale(-translateY), 
-      driveScaler.scale(rotate), 
+      driveScaler.scale(-joystickDeadband(translateX)), 
+      driveScaler.scale(-joystickDeadband(translateY)), 
+      driveScaler.scale(joystickDeadband(rotate)), 
       drive.getGyroscopeRotation()
     );
 
@@ -368,17 +368,42 @@ public class Robot extends LoggedRobot {
       //   joystickDeadband(rotate),
       //   drive.getGyroscopeRotation()
       // );
-      if (driverController.getPOV() != -1){
-        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-            drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
+      // if (driverController.getPOV() != -1){
+      //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+      //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
+      // }
+
+      double turn;
+      switch(driverController.getPOV()) {
+        case 0:
+          turn = drive.turnToAngle(180.0);
+          break;
+        case 90:
+          turn = drive.turnToAngle(90.0);
+          break;
+        case 180:
+          turn = drive.turnToAngle(0.0);
+          break;
+        case 270:
+          turn = drive.turnToAngle(270.0);
+          break;
+        default:
+          turn = driveSpeeds.omegaRadiansPerSecond;
+          break;
       }
+
+      driveSpeeds = new ChassisSpeeds(
+        driveSpeeds.vxMetersPerSecond, 
+        driveSpeeds.vyMetersPerSecond,
+        turn
+      );
     }
 
     if (driverController.getBButton()) { // Wheels locked
       drive.setWheelLock();
     } else if (shouldBalance){
       autoPark.balance(drive);
-    }else if (driverController.getPOV() == -1) {
+    } else {
       drive.drive(driveSpeeds);
     }
 
