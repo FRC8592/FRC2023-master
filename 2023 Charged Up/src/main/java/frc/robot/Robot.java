@@ -437,9 +437,7 @@ public class Robot extends LoggedRobot {
             intake.setWrist(currentWrist);
           }
         } else {
-          if (operatorController.getBackButton()) {
-            elevator.overrideStow();
-          } else if (operatorController.getAButton()) {
+          if (operatorController.getAButton()) {
             elevator.set(Heights.STOWED);
             intake.setWrist(0.0);
           } else if (operatorController.getBButton() || driverController.getLeftBumper()) {
@@ -447,10 +445,14 @@ public class Robot extends LoggedRobot {
             intake.setWrist(0.0);
           } else if (operatorController.getXButton()) {
             elevator.set(Heights.MID);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
           } else if (operatorController.getYButton()) {
             elevator.set(Heights.HIGH);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
           } else {
             elevator.set(Heights.STALL);
           }
