@@ -58,7 +58,7 @@ public final class Constants {
 
 
     public static final double LEVEL_PITCH = 3.0;
-    public static final double PITCH_MULTIPLIER = 1.0 / 50.0;
+    public static final double PITCH_MULTIPLIER = 1.0 / 60.0;
     //
     // CAN IDs for intake hardware (NEEDS SETTING)
     //
@@ -66,8 +66,8 @@ public final class Constants {
     public static final int ROLLER_ID    = 18;
     public static final int BEAM_BREAK_CONE_ID      = 3;
     public static final int BEAM_BREAK_CUBE_ID      = 2;
-    public static final int ROLLER_MAX_CURRENT_AMPS = 12;
-    public static final int WRIST_MAX_CURRENT_AMPS = 20;
+    public static final int ROLLER_MAX_CURRENT_AMPS = 60;
+    public static final int WRIST_MAX_CURRENT_AMPS = 30;
     public static final double ROLLER_KP = 0.00025;
     public static final double ROLLER_KI = 0.0;
     public static final double ROLLER_KD = 0.0;
@@ -84,7 +84,7 @@ public final class Constants {
     public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
     public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 52.0;
+    public static final double WRIST_INTAKE_ROTATIONS = 51.5;
     public static final double WRIST_STOWED_ROTATIONS = 0;
     public static final double WRIST_SCORING_ROTATIONS = 52.0;
     public static final double WRIST_MAX_ROTATIONS = 58;
@@ -107,7 +107,7 @@ public final class Constants {
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
     public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
-    public static final double TILT_MAX_ROTATIONS = -23.5;
+    public static final double TILT_MAX_ROTATIONS = -25.5;
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;

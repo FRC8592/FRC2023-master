@@ -226,6 +226,7 @@ public class Robot extends LoggedRobot {
     drive.getCurrentPos();
     gameObjectVision.updateVision();
     elevator.update();
+    SmartDashboard.putNumber("Current Wrist", currentWrist);
 
     /*
      * Controls:
@@ -392,19 +393,22 @@ public class Robot extends LoggedRobot {
     // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
     
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
-      intake.intakeRoller();
-      if (operatorController.getAButton()) {
-        intake.setWrist(0.0);
-      } else if (operatorController.getXButton()) {
-        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
-      } else {
-        intake.setWrist(currentWrist);
+     
+      // if (operatorController.getAButton()) {
+      //   intake.setWrist(0.0);
+      // } else if (operatorController.getXButton()) {
+      //   intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
+      // } else {
+      //   intake.setWrist(currentWrist);
       
     
-      }
-    
-
-    } else if (operatorController.getRightTriggerAxis() >= 0.1){
+      // }
+      intake.setWrist(currentWrist);
+      intake.coneIntakeRoller();
+    } else if (operatorController.getLeftBumper()){
+      intake.setWrist(currentWrist);
+      intake.cubeIntakeRoller();
+    }else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
     }else if (operatorController.getLeftBumper()) {
       intake.setWrist(currentWrist);
@@ -433,7 +437,9 @@ public class Robot extends LoggedRobot {
             intake.setWrist(currentWrist);
           }
         } else {
-          if (operatorController.getAButton()) {
+          if (operatorController.getBackButton()) {
+            elevator.overrideStow();
+          } else if (operatorController.getAButton()) {
             elevator.set(Heights.STOWED);
             intake.setWrist(0.0);
           } else if (operatorController.getBButton() || driverController.getLeftBumper()) {
@@ -453,8 +459,6 @@ public class Robot extends LoggedRobot {
           intake.intakeRoller();
         } else if (operatorController.getPOV() == 270) {
           intake.outtakeRoller();
-        } else if (operatorController.getBButton()) {
-          intake.spinRollers(0.2);
         } else {
           intake.stopRoller();
         }

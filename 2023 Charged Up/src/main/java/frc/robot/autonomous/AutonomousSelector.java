@@ -16,19 +16,15 @@ public class AutonomousSelector {
     private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-        MoveOutCommunityAuto.class,
-        PreloadHighMobilityAuto.class,
-        PreloadLowMobilityAuto.class,
-
-        MiddlePreloadBalanceAuto.class,
-
-        LoadingZonePreloadMobilityAuto.class,
-        LoadingZonePreloadBalanceAuto.class,
-        LoadingZonePreloadCubeAuto.class,
-
-        CableCoverPreloadMobilityAuto.class,
-        CableCoverPreloadBalanceAuto.class,
-        CableCoverPreloadGrabPieceBalanceAuto.class
+        MoveOutCommunityAuto.class, // Ready to test
+        MiddlePreloadBalanceAuto.class, // Ready to test
+        MiddleBalanceAuto.class,
+        LoadingZonePreloadMobilityAuto.class, // Ready to test
+        LoadingZonePreloadBalanceAuto.class, // Ready to test
+        LoadingZoneTwoPieceAuto.class,
+        CableCoverPreloadMobilityAuto.class, // Ready to test
+        CableCoverPreloadBalanceAuto.class, // Ready to test
+        CableCoverTwoPieceAuto.class
     };
 
     public AutonomousSelector() {
