@@ -79,7 +79,7 @@ public class Intake {
         SmartDashboard.putNumber("Roller current", rollerMotor.getOutputCurrent());
         SmartDashboard.putNumber("Roller velocity", rollerEncoder.getVelocity());
         SmartDashboard.putBoolean("Cone beam broken", beamCone.isBroken());
-        SmartDashboard.putBoolean("Cone beam broken", beamCube.isBroken());
+        SmartDashboard.putBoolean("Cube beam broken", beamCube.isBroken());
     }
 
     public void intakeRoller() {
@@ -101,25 +101,29 @@ public class Intake {
         //     coneTimer.stop();
         // }
         // rollerMotor.set(0.7);
-        rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
-        // spinRollers(0.8);
+        // rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
+
+        spinRollers(0.7);
     }
 
     public void coneIntakeRoller(){
-        rollerMotor.setSmartCurrentLimit(80);
+        // rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
         // rollerMotor.set(0.7);
-        rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
+        rollerMotor.setSmartCurrentLimit(80);
+        spinRollers(0.7);
     }
 
     public void cubeIntakeRoller(){
+        // rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
         rollerMotor.setSmartCurrentLimit(60);
-        rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
+        spinRollers(0.7);
     }
 
     public void outtakeRoller() {
         // rollerMotor.set(-0.8);
+        // rollerCtrl.setReference(-1000, ControlType.kSmartVelocity);
         rollerMotor.setSmartCurrentLimit(40);
-        rollerCtrl.setReference(-1000, ControlType.kSmartVelocity);
+        spinRollers(-1.0);
     }
 
     public void scoreRoller() {
@@ -128,12 +132,11 @@ public class Intake {
         } else {
             stopRoller();
         }
-
-        SmartDashboard.putNumber("Wrist Error", Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS));
     }
 
     public void spinRollers(double pct) {
-        rollerMotor.set(pct);
+        rollerCtrl.setReference(pct*Constants.ROLLER_MAX_VELOCITY, ControlType.kSmartVelocity);
+        // rollerMotor.set(pct);
         // double currentTime = 0;
         // if (beamCone.isBroken() && beamCube.isBroken()) {
         //     coneTimer.start();

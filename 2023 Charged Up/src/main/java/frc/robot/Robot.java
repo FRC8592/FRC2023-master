@@ -505,7 +505,7 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
         0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-           intake.logBeamBreaks();
+          //  intake.logBeamBreaks();
 
     // // opposite of controller direct
   }
