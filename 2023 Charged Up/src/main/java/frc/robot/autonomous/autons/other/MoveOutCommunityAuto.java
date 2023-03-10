@@ -19,15 +19,6 @@ public class MoveOutCommunityAuto extends BaseAuto {
     @Override
     public void initialize() {
         queue = new CommandQueue(
-<<<<<<< HEAD:2023 Charged Up/src/main/java/frc/robot/autonomous/autons/other/MoveOutCommunityAuto.java
-=======
-            // new LiftCommand(elevator, Heights.PRIME), // Tilt up
-            // new JointCommand( // Lift to high and score pre-load
-            //     new ScoreCommand(intake), 
-            //     new LiftCommand(elevator, Heights.HIGH)
-            // ),
-            // new LiftCommand(elevator, Heights.STOWED), // Retract the elevator
->>>>>>> main:2023 Charged Up/src/main/java/frc/robot/autonomous/autons/MoveOutCommunityAuto.java
             new FollowerCommand(drive, MOVE_OUT)
         );
     }

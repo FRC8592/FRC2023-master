@@ -63,8 +63,8 @@ public class CableCoverPreloadGrabPieceBalanceAuto extends BaseAuto {
                 new IntakeCommand(intake, true),
                 new LiftCommand(elevator, Heights.STOWED)
             ),
-            new FollowerCommand(drive, GP1_TO_BM),
-            new AutobalanceCommand(drive)
+            new FollowerCommand(drive, GP1_TO_BM), // Drive to charging station
+            new AutobalanceCommand(drive) // Balance
         );
     }
 

@@ -16,14 +16,17 @@ public class AutonomousSelector {
     private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-        MoveOutCommunityAuto.class, // Ready to test
-        MiddlePreloadBalanceAuto.class, // Ready to test
+        MoveOutCommunityAuto.class,
+
+        MiddlePreloadBalanceAuto.class,
         MiddleBalanceAuto.class,
-        LoadingZonePreloadMobilityAuto.class, // Ready to test
-        LoadingZonePreloadBalanceAuto.class, // Ready to test
+
+        LoadingZonePreloadMobilityAuto.class,
+        LoadingZonePreloadBalanceAuto.class,
         LoadingZoneTwoPieceAuto.class,
-        CableCoverPreloadMobilityAuto.class, // Ready to test
-        CableCoverPreloadBalanceAuto.class, // Ready to test
+        
+        CableCoverPreloadMobilityAuto.class,
+        CableCoverPreloadBalanceAuto.class,
         CableCoverTwoPieceAuto.class
     };
 
