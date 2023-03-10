@@ -19,7 +19,7 @@ public class LoadingZonePreloadCubeAuto extends BaseAuto {
     private TrajectoryConfig slowConfig = new TrajectoryConfig(1, 2);
 
     private SwerveTrajectory A_TO_Ilz = generateTrajectoryFromPoints(
-        fastConfig
+        slowConfig
             .setStartVelocity(0.0)
             .setEndVelocity(1.0)
             .setReversed(false),

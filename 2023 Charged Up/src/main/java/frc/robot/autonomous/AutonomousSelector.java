@@ -24,6 +24,7 @@ public class AutonomousSelector {
         LoadingZonePreloadMobilityAuto.class,
         LoadingZonePreloadBalanceAuto.class,
         LoadingZoneTwoPieceAuto.class,
+        LoadingZonePreloadConeAuto.class,
         
         CableCoverPreloadMobilityAuto.class,
         CableCoverPreloadBalanceAuto.class,
