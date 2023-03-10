@@ -76,7 +76,7 @@ public final class Constants {
     public static final double WRIST_KI = 0.0;
     public static final double WRIST_KD = -0.00003;
     public static final double WRIST_KF = 0.0;
-    public static final double ROLLER_GEAR_RATIO = 1.0 / 2.0;
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 8.0;
     public static final double WRIST_GEAR_RATIO = 1.0 / 64.0;
     public static final int ROLLER_PID_SLOT = 0;
     public static final int WRIST_PID_SLOT = 0;
