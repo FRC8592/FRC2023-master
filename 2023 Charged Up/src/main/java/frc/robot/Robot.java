@@ -429,21 +429,21 @@ public class Robot extends LoggedRobot {
     
       // }
       intake.setWrist(currentWrist);
-      intake.coneIntakeRoller();
+      if (operatorController.getXButton()) {
+        intake.cubeIntakeRoller();
+      } else if (operatorController.getYButton()) {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS * 2 / 3);
+      } else {
+        intake.coneIntakeRoller();
+      }
     } else if (operatorController.getLeftBumper()){
-      intake.setWrist(currentWrist);
-      intake.cubeIntakeRoller();
-    }else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
+      // intake.setWrist(currentWrist);
+      // intake.cubeIntakeRoller();
+      intake.setWrist(0.0);
+      intake.spinRollers(0.075);
+      elevator.set(Heights.PRIME);
+    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
-    }else if (operatorController.getLeftBumper()) {
-      intake.setWrist(currentWrist);
-      // if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
-      //   intake.outtakeRoller();
-      // } else if (operatorController.getLeftTriggerAxis() >= 0.1) {
-      //   intake.intakeRoller();        
-      // } else {
-      //   intake.stopRoller();
-      // }
     } else if (operatorController.getRightBumper()) {
       intake.setWrist(0.0);
     } else {
@@ -530,7 +530,7 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
         0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-           intake.logBeamBreaks();
+          //  intake.logBeamBreaks();
 
     // // opposite of controller direct
   }
