@@ -94,19 +94,8 @@ public final class Constants {
     //
     public static final int ELEVATOR_LIFT_MOTOR_ID   = 16;
     public static final int ELEVATOR_TILT_MOTOR_ID   = 15;
-    public static final double ARM_ANGLE_OUT         = 30;
-    public static final double ARM_ANGLE_IN          = 90;
-    public static final double STOWED_HEIGHT_CONE    = 0;
-    public static final double LOW_HEIGHT_CONE       = 1;
-    public static final double MID_HEIGHT_CONE       = 2;
-    public static final double HIGH_HEIGHT_CONE      = 3;
-    public static final double STOWED_HEIGHT_CUBE    = 0;
-    public static final double LOW_HEIGHT_CUBE       = 1;
-    public static final double MID_HEIGHT_CUBE       = 2;
-    public static final double HIGH_HEIGHT_CUBE      = 3;
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
-    public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
     public static final double TILT_MAX_ROTATIONS = -23.5;
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
