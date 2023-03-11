@@ -16,7 +16,7 @@ public class MiddleBalanceAuto extends BaseAuto {
         SwerveTrajectory E_TO_BM = generateTrajectoryFromPoints(
             config,
             GRID_E.getPose(),
-            GRID_E.translate(4.0, 0.0)
+            GRID_E.translate(5.0, 0.0)
         );
         
         queue = new CommandQueue(
