@@ -31,14 +31,14 @@ public class Elevator {
     private final int PID_TILT_DOWN_SLOT = 1;
 
     // Acceleration in RPM per second
-    private final double MAX_ACCELERATION_UP_LIFT = 15000d;
-    private final double MAX_ACCELERATION_DOWN_LIFT = 15000d;
+    private final double MAX_ACCELERATION_UP_LIFT = 6000d;
+    private final double MAX_ACCELERATION_DOWN_LIFT = 6000d;
     private final double MAX_ACCELERATION_TILT_UP = 10000d;
     private final double MAX_ACCELERATION_TILT_DOWN = 5000d;
 
     // Velocity in RPM
-    private final double MAX_VELOCITY_UP_LIFT = 7500d;
-    private final double MAX_VELOCITY_DOWN_LIFT = 7500d;
+    private final double MAX_VELOCITY_UP_LIFT = 6000d;
+    private final double MAX_VELOCITY_DOWN_LIFT = 6000d;
     private final double MAX_VELOCITY_TILT_UP = 5000d;
     private final double MAX_VELOCITY_TILT_DOWN = 5000d;
 
@@ -89,7 +89,7 @@ public class Elevator {
 
         tiltCtrl.setP(0.0005, PID_TILT_UP_SLOT);
         tiltCtrl.setI(0.0, PID_TILT_UP_SLOT);
-        tiltCtrl.setD(0.0, PID_TILT_UP_SLOT);
+        tiltCtrl.setD(-0.000075, PID_TILT_UP_SLOT);
         // tiltCtrl.setFF(0.000075, PID_TILT_UP_SLOT);
 
         tiltCtrl.setP(0.0001, PID_TILT_DOWN_SLOT);

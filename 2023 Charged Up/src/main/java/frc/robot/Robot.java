@@ -472,10 +472,14 @@ public class Robot extends LoggedRobot {
             intake.setWrist(0.0);
           } else if (operatorController.getXButton()) {
             elevator.set(Heights.MID);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
           } else if (operatorController.getYButton()) {
             elevator.set(Heights.HIGH);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
           } else {
             elevator.set(Heights.STALL);
           }
