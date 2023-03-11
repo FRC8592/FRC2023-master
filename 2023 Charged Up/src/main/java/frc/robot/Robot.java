@@ -406,6 +406,8 @@ public class Robot extends LoggedRobot {
       intake.setWrist(currentWrist);
       if (operatorController.getXButton()) {
         intake.cubeIntakeRoller();
+      } else if (operatorController.getYButton()) {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS * 2 / 3);
       } else {
         intake.coneIntakeRoller();
       }
