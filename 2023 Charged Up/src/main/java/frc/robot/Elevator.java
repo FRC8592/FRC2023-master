@@ -37,8 +37,8 @@ public class Elevator {
     private final double MAX_ACCELERATION_TILT_DOWN = 5000d;
 
     // Velocity in RPM
-    private final double MAX_VELOCITY_UP_LIFT = 7500d;
-    private final double MAX_VELOCITY_DOWN_LIFT = 7500d;
+    private final double MAX_VELOCITY_UP_LIFT = 6000d;
+    private final double MAX_VELOCITY_DOWN_LIFT = 6000d;
     private final double MAX_VELOCITY_TILT_UP = 5000d;
     private final double MAX_VELOCITY_TILT_DOWN = 5000d;
 
