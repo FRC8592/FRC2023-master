@@ -206,6 +206,10 @@ public class Drivetrain {
     }
 
     public double getYaw(){
+        // double yaw = m_navx.getYaw();
+        // if (yaw < 0) {
+        //     yaw += 360;
+        // }
         return m_navx.getYaw();
     }
 
@@ -266,10 +270,11 @@ public class Drivetrain {
 
     public double turnToAngle(double targetDegrees){
         double yaw = getYaw();
+        // targetDegrees = 180 - targetDegrees;
 
-        if (targetDegrees > 180) {
-            targetDegrees -= 360;
-        }
+        // if (targetDegrees > 180) {
+        //     targetDegrees -= 360;
+        // }
 
         // targetDegrees = 180 - targetDegrees;
         // targetDegrees *= -1;
