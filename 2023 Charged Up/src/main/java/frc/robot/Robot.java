@@ -413,7 +413,7 @@ public class Robot extends LoggedRobot {
       // intake.setWrist(currentWrist);
       // intake.cubeIntakeRoller();
       intake.setWrist(0.0);
-      intake.spinRollers(0.2);
+      intake.spinRollers(0.075);
       elevator.set(Heights.PRIME);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
