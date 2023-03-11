@@ -31,14 +31,14 @@ public class Elevator {
     private final int PID_TILT_DOWN_SLOT = 1;
 
     // Acceleration in RPM per second
-    private final double MAX_ACCELERATION_UP_LIFT = 6000d;
-    private final double MAX_ACCELERATION_DOWN_LIFT = 800d;
+    private final double MAX_ACCELERATION_UP_LIFT = 15000d;
+    private final double MAX_ACCELERATION_DOWN_LIFT = 15000d;
     private final double MAX_ACCELERATION_TILT_UP = 10000d;
     private final double MAX_ACCELERATION_TILT_DOWN = 5000d;
 
     // Velocity in RPM
-    private final double MAX_VELOCITY_UP_LIFT = 7000d;
-    private final double MAX_VELOCITY_DOWN_LIFT = 800d;
+    private final double MAX_VELOCITY_UP_LIFT = 7500d;
+    private final double MAX_VELOCITY_DOWN_LIFT = 7500d;
     private final double MAX_VELOCITY_TILT_UP = 5000d;
     private final double MAX_VELOCITY_TILT_DOWN = 5000d;
 
@@ -161,13 +161,13 @@ public class Elevator {
         SmartDashboard.putNumber("Elevator Current", liftMotor.getOutputCurrent());
         SmartDashboard.putString("Elevator State", desiredHeight.name());
         SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
+        SmartDashboard.putNumber("Elevator Velocity", liftEncoder.getVelocity());
 
-        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
-        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
-        SmartDashboard.putNumber("Tilt Applied Velocity", tiltMotor.getAppliedOutput());
-        SmartDashboard.putNumber("Tilt Applied Velocity", tiltMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Tilt Current Velocity", tiltEncoder.getVelocity());
+    
+        // SmartDashboard.putNumber("Tilt Rotations", rawTilt);
+        // SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
+
     }
 
     // Resets encoders and potentially other sensors to desired start angle
@@ -190,7 +190,7 @@ public class Elevator {
 
         switch(desiredHeight) {
             case STOWED:
-                liftCtrl.setReference(0.0, ControlType.kSmartMotion);
+                liftCtrl.setReference(0.0, ControlType.kSmartMotion, PID_DOWN_SLOT_LIFT);
                 if (rawLift >= Constants.LIFT_THRESHOLD_TO_STOW) { // Lifted back enough to retract pivot
                     // tiltCtrl.setReference(0.0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT, getTiltFeedForward(false));
                     tiltCtrl.setReference(0.0, ControlType.kSmartMotion, PID_TILT_DOWN_SLOT);
@@ -204,7 +204,7 @@ public class Elevator {
                 break;
             case PRIME: // Prepare 4 bar without lifting elevator
                 // liftMotor.set(0.0);
-                liftCtrl.setReference(0.0, ControlType.kSmartMotion);
+                liftCtrl.setReference(0.0, ControlType.kSmartMotion, PID_DOWN_SLOT_LIFT);
                 tiltCtrl.setReference(maxTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT);
                 // tiltCtrl.setReference(maxTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
                 // tiltCtrl.setReference(maxTilt, ControlType.kSmartMotion, PID_TILT_UP_SLOT, getTiltFeedForward(true));
@@ -263,6 +263,14 @@ public class Elevator {
             return 0.0;
         }
         return (curRots/maxRots)*2.5;
+    }
+
+    public boolean atTiltReference() {
+        if (desiredHeight == Heights.STOWED) {
+            return Math.abs(tiltEncoder.getPosition()) <= 2.0;
+        } else {
+            return Math.abs(tiltEncoder.getPosition() - Constants.TILT_MAX_ROTATIONS) <= 2.0;
+        }
     }
 
     public boolean atReference() {
