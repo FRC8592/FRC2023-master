@@ -141,7 +141,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
     elevator.writeToSmartDashboard();
-    ledStrips.upAndDown();
+    // ledStrips.upAndDown();
   }
 
   /**
@@ -324,9 +324,9 @@ public class Robot extends LoggedRobot {
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(-translateX), 
-      driveScaler.scale(-translateY), 
-      driveScaler.scale(rotate), 
+      driveScaler.scale(-joystickDeadband(translateX)), 
+      driveScaler.scale(-joystickDeadband(translateY)), 
+      driveScaler.scale(joystickDeadband(rotate)), 
       drive.getGyroscopeRotation()
     );
 
@@ -368,17 +368,42 @@ public class Robot extends LoggedRobot {
       //   joystickDeadband(rotate),
       //   drive.getGyroscopeRotation()
       // );
-      if (driverController.getPOV() != -1){
-        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-            drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
+      // if (driverController.getPOV() != -1){
+      //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+      //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
+      // }
+
+      double turn;
+      switch(driverController.getPOV()) {
+        case 0:
+          turn = drive.turnToAngle(180.0);
+          break;
+        case 90:
+          turn = drive.turnToAngle(90.0);
+          break;
+        case 180:
+          turn = drive.turnToAngle(0.0);
+          break;
+        case 270:
+          turn = drive.turnToAngle(270.0);
+          break;
+        default:
+          turn = driveSpeeds.omegaRadiansPerSecond;
+          break;
       }
+
+      driveSpeeds = new ChassisSpeeds(
+        driveSpeeds.vxMetersPerSecond, 
+        driveSpeeds.vyMetersPerSecond,
+        turn
+      );
     }
 
     if (driverController.getBButton()) { // Wheels locked
       drive.setWheelLock();
     } else if (shouldBalance){
       autoPark.balance(drive);
-    }else if (driverController.getPOV() == -1) {
+    } else {
       drive.drive(driveSpeeds);
     }
 
@@ -404,21 +429,21 @@ public class Robot extends LoggedRobot {
     
       // }
       intake.setWrist(currentWrist);
-      intake.coneIntakeRoller();
+      if (operatorController.getXButton()) {
+        intake.cubeIntakeRoller();
+      } else if (operatorController.getYButton()) {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS * 2 / 3);
+      } else {
+        intake.coneIntakeRoller();
+      }
     } else if (operatorController.getLeftBumper()){
-      intake.setWrist(currentWrist);
-      intake.cubeIntakeRoller();
-    }else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
+      // intake.setWrist(currentWrist);
+      // intake.cubeIntakeRoller();
+      intake.setWrist(0.0);
+      intake.spinRollers(0.075);
+      elevator.set(Heights.PRIME);
+    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
-    }else if (operatorController.getLeftBumper()) {
-      intake.setWrist(currentWrist);
-      // if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
-      //   intake.outtakeRoller();
-      // } else if (operatorController.getLeftTriggerAxis() >= 0.1) {
-      //   intake.intakeRoller();        
-      // } else {
-      //   intake.stopRoller();
-      // }
     } else if (operatorController.getRightBumper()) {
       intake.setWrist(0.0);
     } else {
@@ -437,9 +462,7 @@ public class Robot extends LoggedRobot {
             intake.setWrist(currentWrist);
           }
         } else {
-          if (operatorController.getBackButton()) {
-            elevator.overrideStow();
-          } else if (operatorController.getAButton()) {
+          if (operatorController.getAButton()) {
             elevator.set(Heights.STOWED);
             intake.setWrist(0.0);
           } else if (operatorController.getBButton() || driverController.getLeftBumper()) {
@@ -447,13 +470,18 @@ public class Robot extends LoggedRobot {
             intake.setWrist(0.0);
           } else if (operatorController.getXButton()) {
             elevator.set(Heights.MID);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
           } else if (operatorController.getYButton()) {
             elevator.set(Heights.HIGH);
-            intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
-          } else {
-            elevator.set(Heights.STALL);
-          }
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
+          } 
+          // else {
+          //   elevator.set(Heights.STALL);
+          // }
         }
         if (operatorController.getPOV() == 90) {
           intake.intakeRoller();
@@ -505,7 +533,7 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
         0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-           intake.logBeamBreaks();
+          //  intake.logBeamBreaks();
 
     // // opposite of controller direct
   }
