@@ -18,8 +18,8 @@ public class AutonomousSelector {
     public Class<?>[] autos = {
         MoveOutCommunityAuto.class,
 
-        MiddlePreloadBalanceAuto.class,
         MiddleBalanceAuto.class,
+        MiddlePreloadBalanceAuto.class,
 
         LoadingZonePreloadMobilityAuto.class,
         LoadingZonePreloadBalanceAuto.class,

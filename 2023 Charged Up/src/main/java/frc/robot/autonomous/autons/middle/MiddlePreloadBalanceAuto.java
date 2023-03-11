@@ -21,7 +21,7 @@ public class MiddlePreloadBalanceAuto extends BaseAuto {
             config,
             GRID_E.getPose(),
             // BALANCE_MIDDLE.translate(0.25, 0.0)
-            GRID_E.translate(5.0, 0.0)
+            GRID_E.translate(4.0, 0.0)
         );
         
         queue = new CommandQueue(
