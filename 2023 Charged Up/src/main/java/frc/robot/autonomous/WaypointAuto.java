@@ -12,8 +12,6 @@ public class WaypointAuto extends BaseAuto {
         queue = new CommandQueue(
             new WaypointCommand(drive)
                 .addWaypoint(new Pose2d(0,-2, Rotation2d.fromDegrees(90)))
-                .addWaypoint(new Pose2d(-1,-2, Rotation2d.fromDegrees(180)))
-                .addWaypoint(new Pose2d(-1,0, Rotation2d.fromDegrees(2700)))
                 .addWaypoint(new Pose2d(0,0, Rotation2d.fromDegrees(360)))
                 .addSmoothingFilter(new SmoothingFilter(5, 5, 5))
         );

@@ -267,6 +267,16 @@ public class Robot extends LoggedRobot {
           .setNumber(Constants.CONE_PIPELINE);
       ledStrips.setFullYellow();
     }
+
+    if(shooterController.getBButtonPressed()){
+      currentPiecePipeline = "APRILTAGS_3D";
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+          .setNumber(Constants.APRILTAGS_3D);
+    }
+ 
+    drive.updatePose(gameObjectVision.getPoseFromLimelight());
+    SmartDashboard.putString("ESTIMATED POSE", drive.getPosEstimate().toString()); 
+
   }
 
   /** This function is called once when the robot is disabled. */
@@ -285,13 +295,36 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
+    selectedAuto = selector.getSelectedAutonomous();
+    selectedAuto.addModules(drive); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.initialize();
+    
+    if (!isReal()) {
+      selectedAuto.setInitialSimulationPose();
+    } else {
+      drive.zeroGyroscope();
+      drive.resetEncoder();
+      drive.resetPose(selectedAuto.getStartPose());
+    }
+
+    SmartDashboard.putString("Auto Selected", selectedAuto.getClass().getSimpleName());
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
+    drive.resetSteerAngles();
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    selectedAuto.periodic();
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+          .setNumber(Constants.APRILTAGS_3D);
+    
+    drive.updatePose(gameObjectVision.getPoseFromLimelight());
+    SmartDashboard.putString("ESTIMATED POSE", drive.getPosEstimate().toString()); 
   }
 
   /** This function is called once when the robot is first started up. */
