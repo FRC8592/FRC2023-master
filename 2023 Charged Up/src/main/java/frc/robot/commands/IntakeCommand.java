@@ -41,7 +41,9 @@ public class IntakeCommand extends Command {
         if (timer.get() >= delay) {
             intake.enableWrist(true);
             intake.intakeRoller();
-            return intake.hasPiece() || isDependent;
+            return timer.get() >= 3.0 || isDependent;
+            // return intake.hasPiece() || isDependent;
+            
         }
         return isDependent;
     }

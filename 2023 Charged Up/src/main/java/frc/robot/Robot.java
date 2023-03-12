@@ -72,6 +72,9 @@ public class Robot extends LoggedRobot {
   public boolean wasZeroed = false;
   private boolean coneVision = true;
   public Power power;
+  private boolean angleTapBool = false;
+
+  private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
 
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
@@ -109,7 +112,7 @@ public class Robot extends LoggedRobot {
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
     ledStrips = new LED(power, gameObjectVision);
-    strafePID = new PIDController(-0.2, 0, 0);
+    strafePID = new PIDController(-0.05, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
     // intake.reset();
@@ -211,12 +214,14 @@ public class Robot extends LoggedRobot {
     double translateX;
     double translateY;
     double rotate;
+    double rotateToAngle;
 
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
 
     drive.getCurrentPos();
     gameObjectVision.updateVision();
     elevator.update();
+    SmartDashboard.putNumber("Current Wrist", currentWrist);
 
     /*
      * Controls:
@@ -264,17 +269,18 @@ public class Robot extends LoggedRobot {
      * - Additional Programmer Notes:
      *  - Possibly make it so that when a certain button is held the robot switches to robot-centric for manually lining up using a camera
      *  - Negative left trigger is equal to positive right trigger axis on some controllers
-     * 
+     *
      * - Additional Driver Notes:
      *  - Going to a pre-set elevator position automatically sets the pivot to the corresponding tilt
      *  - Make sure to turn on the robot and disable the robot with the all mechanisms back to starting configuration
      *  - Slow mode was changed from a toggle to a hold based on driver preference
-     *  - Activating cone/cube mode works for both intake and scoring target-lock
+     *  - Activating cone/cube mode works for both intake and scoring target-lock (*MIGHT CHANGE*)
      */
 
     // ========================== \\
     // ======= Drivetrain ======= \\
     // ========================== \\
+
     boolean shouldBalance = false;
     if (driverController.getStartButton()){
       shouldBalance = true;
@@ -282,19 +288,22 @@ public class Robot extends LoggedRobot {
       shouldBalance = false;
     }
 
-    
-
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
 
-    if (operatorController.getPOV() == 270) { // DPAD Left
-      coneVision = true;
-      // Set LED's to cone attention
-    } else if (operatorController.getPOV() == 90) { // DPAD Right
-      coneVision = false;
-      // Set LED's to cube attention
+    if (driverController.getYButton()) {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    } else if (driverController.getXButton()) {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+    } else if (operatorController.getPOV() == 0) {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+    } else if (operatorController.getPOV() == 180) {
+      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
     }
+
+    // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
+    // SmartDashboard.putNumber("Current Pipeline", pipeline);
 
     if (driverController.getRightBumper()) {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
@@ -309,57 +318,87 @@ public class Robot extends LoggedRobot {
     translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
     translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      driveScaler.scale(-joystickDeadband(translateX)), 
+      driveScaler.scale(-joystickDeadband(translateY)), 
+      driveScaler.scale(joystickDeadband(rotate)), 
+      drive.getGyroscopeRotation()
+    );
+
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
     } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
-      if (coneVision) {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      } else {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      }
-
       // set LED to targetlock
-
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
-          driveSpeeds.vxMetersPerSecond,
-          driveSpeeds.vyMetersPerSecond,
+          // driveSpeeds.vxMetersPerSecond,
+          // driveSpeeds.vyMetersPerSecond,
+          translateX,
+          translateY,
           gameObjectVision.turnRobot(
             1.0,
             turnPID,
-            8.0
+            3.0
           )
         );
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      if (coneVision) {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      } else {
-        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
+      // set LED to targetlock
+      if (gameObjectVision.targetValid) {
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond,
+          gameObjectVision.turnRobot(
+            1.0,
+            strafePID,
+            8.0
+          ),
+          driveSpeeds.omegaRadiansPerSecond
+        );
+      }
+      
+    } else { // Normal drive
+      // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      //   driveScaler.scale(joystickDeadband(translateX)),
+      //   driveScaler.scale(joystickDeadband(translateY)),
+      //   joystickDeadband(rotate),
+      //   drive.getGyroscopeRotation()
+      // );
+      // if (driverController.getPOV() != -1){
+      //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+      //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
+      // }
+
+      double turn;
+      switch(driverController.getPOV()) {
+        case 0:
+          turn = drive.turnToAngle(180.0);
+          break;
+        case 90:
+          turn = drive.turnToAngle(90.0);
+          break;
+        case 180:
+          turn = drive.turnToAngle(0.0);
+          break;
+        case 270:
+          turn = drive.turnToAngle(270.0);
+          break;
+        default:
+          turn = driveSpeeds.omegaRadiansPerSecond;
+          break;
       }
 
-      // set LED to targetlock
-
       driveSpeeds = new ChassisSpeeds(
-        driveSpeeds.vxMetersPerSecond,
-        0,
-        driveSpeeds.omegaRadiansPerSecond
-      );
-    } else { // Normal drive
-      driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        driveScaler.scale(joystickDeadband(translateX)),
-        driveScaler.scale(joystickDeadband(translateY)),
-        joystickDeadband(rotate),
-        drive.getGyroscopeRotation()
+        driveSpeeds.vxMetersPerSecond, 
+        driveSpeeds.vyMetersPerSecond,
+        turn
       );
     }
 
     if (driverController.getBButton()) { // Wheels locked
-      
       drive.setWheelLock();
     } else if (shouldBalance){
       autoPark.balance(drive);
-    }else {
+    } else {
       drive.drive(driveSpeeds);
     }
 
@@ -372,42 +411,111 @@ public class Robot extends LoggedRobot {
     // ===================== \\
 
     // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
-
-    if (operatorController.getLeftTriggerAxis() >= 0.1 || operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) {
-      intake.enableWrist(true);
-    } else if (operatorController.getLeftBumper()) {
-      intake.enableWrist(false);
+    
+    if (operatorController.getLeftTriggerAxis() >= 0.1) {
+     
+      // if (operatorController.getAButton()) {
+      //   intake.setWrist(0.0);
+      // } else if (operatorController.getXButton()) {
+      //   intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
+      // } else {
+      //   intake.setWrist(currentWrist);
+      
+    
+      // }
+      intake.setWrist(currentWrist);
+      if (operatorController.getXButton()) {
+        intake.cubeIntakeRoller();
+      } else if (operatorController.getYButton()) {
+        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS * 2 / 3);
+      } else {
+        intake.coneIntakeRoller();
+      }
+    } else if (operatorController.getLeftBumper()){
+      // intake.setWrist(currentWrist);
+      // intake.cubeIntakeRoller();
+      intake.setWrist(0.0);
+      intake.spinRollers(0.075);
+      elevator.set(Heights.PRIME);
+    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
+      intake.outtakeRoller();
+    } else if (operatorController.getRightBumper()) {
+      intake.setWrist(0.0);
+    } else {
+        if (operatorController.getStartButton()) {
+          if (angleTapBool) {
+            if (operatorController.getPOV() == -1) {
+              angleTapBool = false;
+            }
+          } else if (operatorController.getPOV() == 0) {
+            angleTapBool = true;
+            currentWrist -= 0.25;
+            intake.setWrist(currentWrist);
+          } else if (operatorController.getPOV() == 180) {
+            angleTapBool = true;
+            currentWrist += 0.25;
+            intake.setWrist(currentWrist);
+          }
+        } else {
+          if (operatorController.getAButton()) {
+            elevator.set(Heights.STOWED);
+            intake.setWrist(0.0);
+          } else if (operatorController.getBButton() || driverController.getLeftBumper()) {
+            elevator.set(Heights.PRIME);
+            intake.setWrist(0.0);
+          } else if (operatorController.getXButton()) {
+            elevator.set(Heights.MID);
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
+          } else if (operatorController.getYButton()) {
+            elevator.set(Heights.HIGH);
+            if (elevator.atTiltReference()) {
+              intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
+            }
+          } 
+          // else {
+          //   elevator.set(Heights.STALL);
+          // }
+        }
+        if (operatorController.getPOV() == 90) {
+          intake.intakeRoller();
+        } else if (operatorController.getPOV() == 270) {
+          intake.outtakeRoller();
+        } else {
+          intake.stopRoller();
+        }
     }
 
     // ======================= \\
     // ======= Rollers ======= \\
     // ======================= \\
 
-    if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
-      intake.intakeRoller();
-    } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
-      intake.scoreRoller();
-    } else if (operatorController.getRightBumper()) { // Outtake game piece
-      intake.outtakeRoller();
-    } else { // Stop rollers
-      intake.stopRoller();
-    }
+    // if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
+    //   intake.intakeRoller();
+    // } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
+    //   intake.scoreRoller();
+    // } else if (operatorController.getRightBumper()) { // Outtake game piece
+    //   intake.outtakeRoller();
+    // } else { // Stop rollers
+    //   intake.stopRoller();
+    // }
 
     // ======================== \\
     // ======= Elevator ======= \\
     // ======================== \\
 
-    if (operatorController.getAButton()) { // Stowed height
-      elevator.set(Heights.STOWED);
-    } else if (operatorController.getXButton()) { // Mid height
-      elevator.set(Heights.MID);
-    } else if (operatorController.getYButton()) { // High height
-      elevator.set(Heights.HIGH);
-    } else if (driverController.getLeftBumper()) { // Prime
-      elevator.set(Heights.PRIME);
-    } else { // Stall at current height
-      elevator.set(Heights.STALL);
-    }
+    // if (operatorController.getAButton()) { // Stowed height
+    //   elevator.set(Heights.STOWED);
+    // } else if (operatorController.getXButton()) { // Mid height
+    //   elevator.set(Heights.MID);
+    // } else if (operatorController.getYButton()) { // High height
+    //   elevator.set(Heights.HIGH);
+    // } else if (driverController.getLeftBumper()) { // Prime
+    //   elevator.set(Heights.PRIME);
+    // } else { // Stall at current height
+    //   elevator.set(Heights.STALL);
+    // }
   }
 
   /** This function is called once when the robot is disabled. */
@@ -429,6 +537,11 @@ public class Robot extends LoggedRobot {
     // else if (operatorController.getYButton()) {
     //   ledStrips.set(LEDMode.WAVES);
     // }
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
+        0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
+          //  intake.logBeamBreaks();
+
+    // // opposite of controller direct
   }
 
   /** This function is called once when test mode is enabled. */

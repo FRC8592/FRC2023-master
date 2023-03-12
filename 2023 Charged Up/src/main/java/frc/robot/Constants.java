@@ -58,33 +58,33 @@ public final class Constants {
 
 
     public static final double LEVEL_PITCH = 3.0;
-    public static final double PITCH_MULTIPLIER = 1.0 / 40.0;
+    public static final double PITCH_MULTIPLIER = 1.0 / 60.0;
     //
     // CAN IDs for intake hardware (NEEDS SETTING)
     //
     public static final int WRIST_ID    = 17;
     public static final int ROLLER_ID    = 18;
-    public static final int BEAM_BREAK_CONE_ID      = 2;
-    public static final int BEAM_BREAK_CUBE_ID      = 3;
-    public static final int ROLLER_MAX_CURRENT_AMPS = 10;
-    public static final int WRIST_MAX_CURRENT_AMPS = 20;
-    public static final double ROLLER_KP = 0.00025;
+    public static final int BEAM_BREAK_CONE_ID      = 3;
+    public static final int BEAM_BREAK_CUBE_ID      = 2;
+    public static final int ROLLER_MAX_CURRENT_AMPS = 60;
+    public static final int WRIST_MAX_CURRENT_AMPS = 30;
+    public static final double ROLLER_KP = 0.0001; // 0.00025
     public static final double ROLLER_KI = 0.0;
-    public static final double ROLLER_KD = 0.0;
+    public static final double ROLLER_KD = 0.01;
     public static final double ROLLER_KF = 0.0;
-    public static final double WRIST_KP = 0.0001;
+    public static final double WRIST_KP = 0.00025;
     public static final double WRIST_KI = 0.0;
-    public static final double WRIST_KD = 0.0;
+    public static final double WRIST_KD = -0.00003;
     public static final double WRIST_KF = 0.0;
-    public static final double ROLLER_GEAR_RATIO = 1.0;
+    public static final double ROLLER_GEAR_RATIO = 1.0 / 8.0;
     public static final double WRIST_GEAR_RATIO = 1.0 / 64.0;
     public static final int ROLLER_PID_SLOT = 0;
     public static final int WRIST_PID_SLOT = 0;
-    public static final double ROLLER_MAX_ACCELERATION = 1.0; // Rotations per minute per second
-    public static final double ROLLER_MAX_VELOCITY = 1.0; // Rotations per minute
-    public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
+    public static final double ROLLER_MAX_VELOCITY = 5676.0 / ROLLER_GEAR_RATIO;
+    public static final double ROLLER_MAX_ACCELERATION = ROLLER_MAX_VELOCITY; // Rotations per minute per second
+    public static final double WRIST_MAX_ACCELERATION = 15000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 51.25;
+    public static final double WRIST_INTAKE_ROTATIONS = 51.5;
     public static final double WRIST_STOWED_ROTATIONS = 0;
     public static final double WRIST_SCORING_ROTATIONS = 52.0;
     public static final double WRIST_MAX_ROTATIONS = 58;
@@ -94,20 +94,9 @@ public final class Constants {
     //
     public static final int ELEVATOR_LIFT_MOTOR_ID   = 16;
     public static final int ELEVATOR_TILT_MOTOR_ID   = 15;
-    public static final double ARM_ANGLE_OUT         = 30;
-    public static final double ARM_ANGLE_IN          = 90;
-    public static final double STOWED_HEIGHT_CONE    = 0;
-    public static final double LOW_HEIGHT_CONE       = 1;
-    public static final double MID_HEIGHT_CONE       = 2;
-    public static final double HIGH_HEIGHT_CONE      = 3;
-    public static final double STOWED_HEIGHT_CUBE    = 0;
-    public static final double LOW_HEIGHT_CUBE       = 1;
-    public static final double MID_HEIGHT_CUBE       = 2;
-    public static final double HIGH_HEIGHT_CUBE      = 3;
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
-    public static final double LIFTED_DRIVING_LIMIT_THRESHOLD = 0;
-    public static final double TILT_MAX_ROTATIONS = -23.0;
+    public static final double TILT_MAX_ROTATIONS = -23.5;
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
@@ -184,7 +173,7 @@ public final class Constants {
     public static double BALL_TARGET_HEIGHT    = 4.75;
     public static double BALL_ROTATE_KP        = -0.1; //0.15;           // Proportional constant for turret rotate speed
     public static double BALL_ROTATE_KI        = 0.0;
-    public static double BALL_ROTATE_KD        = -0.01;   
+    public static double BALL_ROTATE_KD        = 0.0;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
     public static String LIMELIGHT_VISION       = "limelight-vision";
 
@@ -303,11 +292,14 @@ public final class Constants {
     public static final int CUBE_PIPELINE = 0;
     public static final int CONE_PIPELINE = 1;
     public static final int APRILTAG_PIPELINE = 2;
-    public static final int RETROTAPE_PIPELINE = 3;
+    public static final int RETROTAPE_PIPELINE = 4;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;
 
+    public static final double TURN_TO_kP = 0.0001;
+    public static final double TURN_TO_kI = 0;
+    public static final double TURN_TO_kD = 0.0;
 
     // Conversion constants
     public static final double INCHES_TO_METERS = 1.0 / 39.37;

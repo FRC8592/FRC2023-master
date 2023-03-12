@@ -31,12 +31,14 @@ public class ScoreCommand extends Command {
     @Override
     public boolean execute() {
         if (Robot.isReal()) {
-            if (timer.get() >= delay) {
-                intake.enableWrist(true);
-                intake.scoreRoller();
-                return !intake.hasPiece();
-            }
-            return false;
+            // if (timer.get() >= delay) {
+            //     intake.enableWrist(true);
+            //     intake.scoreRoller();
+            //     return !intake.hasPiece();
+            // }
+            intake.enableWrist(true);
+            intake.scoreRoller();
+            return timer.get() >= 1.75;
         }
         return timer.get() >= 1.0;
     }

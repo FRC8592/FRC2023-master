@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.controller.PIDController;
+
 
 import static frc.robot.Constants.*;
 
@@ -37,8 +39,10 @@ public class Drivetrain {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
     private SwerveDriveOdometry odometry; //Odometry object for swerve drive
-    
+    private PIDController turnToPID = new PIDController(Constants.TURN_TO_kP, TURN_TO_kI, TURN_TO_kD);
     private FRCLogger logger;
+
+    private PIDController turnPID;
 
     private final double kWheelCircumference = 4*Math.PI;
     private final double kFalconTicksToMeters = 1.0 / 4096.0 / kWheelCircumference;
@@ -160,6 +164,11 @@ public class Drivetrain {
         );
 
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(), new SwerveModulePosition[]  {new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition(), new SwerveModulePosition()});
+        turnToPID.enableContinuousInput(-180, 180);
+        turnToPID.setTolerance(10.0);
+
+        turnPID = new PIDController(0.05, 0, 0);
+        turnPID.setTolerance(5);
     }
 
     /**
@@ -197,6 +206,10 @@ public class Drivetrain {
     }
 
     public double getYaw(){
+        // double yaw = m_navx.getYaw();
+        // if (yaw < 0) {
+        //     yaw += 360;
+        // }
         return m_navx.getYaw();
     }
 
@@ -228,7 +241,6 @@ public class Drivetrain {
         // setDriveVelocity(metersPerSecondToTicks(states[2].speedMetersPerSecond), m_backLeftModule);
         // setDriveVelocity(metersPerSecondToTicks(states[3].speedMetersPerSecond), m_backRightModule);
 
-
         setModule(m_frontLeftModule, states[0].angle.getRadians(), metersPerSecondToTicks(states[0].speedMetersPerSecond));
         setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
         setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
@@ -255,6 +267,51 @@ public class Drivetrain {
         m_backLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
         m_backRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
     }
+
+    public double turnToAngle(double targetDegrees){
+        double yaw = getYaw();
+        // targetDegrees = 180 - targetDegrees;
+
+        // if (targetDegrees > 180) {
+        //     targetDegrees -= 360;
+        // }
+
+        // targetDegrees = 180 - targetDegrees;
+        // targetDegrees *= -1;
+
+        // double targetDifference = yaw - targetDegrees;
+        double turn = turnPID.calculate(0, getErrorAngle(getCurrentPos(), new Pose2d(0, 0, Rotation2d.fromDegrees(targetDegrees))));
+
+        SmartDashboard.putNumber("Current Yaw", yaw);
+        SmartDashboard.putNumber("Target Degrees", targetDegrees);
+        SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
+        SmartDashboard.putNumber("TurnTo PID", -turn);
+
+        // return -turnToPID.calculate(yaw, targetDegrees);
+        return -turn;
+    }
+
+    private double getErrorAngle(Pose2d robot, Pose2d goal){
+        /*** Computation for currect rotate errors into waypoint ****/
+       double goalAngle = goal.getRotation().getDegrees();
+       double curAngle = robot.getRotation().getDegrees();
+       if (curAngle < 0) {
+            curAngle += 360;
+       }
+       double errorAngle = 0; 
+       //we only use angles between 0 and 2 PI so convert the angles to that range.
+       if(goalAngle < 0){
+                   goalAngle += 360;    
+       }
+       // find shortest angle difference error angle should allways be > -PI and <= PI
+       errorAngle = goalAngle - curAngle;   
+       if(errorAngle > 180){
+           errorAngle -= 360;
+       } else if(errorAngle <= -180){
+           errorAngle += 360;
+       } 
+       return errorAngle;
+   }
 
     public void getSwervePositions() {
         SmartDashboard.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
