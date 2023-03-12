@@ -242,14 +242,14 @@ public class Vision {
   public double turnRobot(double visionSearchSpeed, PIDController turnPID, double limit){
 
     // Stop turning if we have locked onto the target within acceptable angular error
-    if (targetValid && targetLocked) {
-      turnSpeed = 0;
-    }
+    // if (targetValid && targetLocked) {
+    //   turnSpeed = 0;
+    // }
 
     // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
     // Limit maximum speed
-    else if (targetValid) {
-      turnSpeed = turnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
+    if (targetValid) {
+      turnSpeed = turnPID.calculate(tx.getDouble(0.0), 0);  // Setpoint is always 0 degrees (dead center)
       turnSpeed = Math.max(turnSpeed, -limit);
       turnSpeed = Math.min(turnSpeed, limit);
     }

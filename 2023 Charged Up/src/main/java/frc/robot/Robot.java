@@ -192,6 +192,7 @@ public class Robot extends LoggedRobot {
     // ledStrips.upAndDown();
     // autoPark.balance(drive);
     elevator.update();
+    gameObjectVision.updateVision();
   }
   
   /** This function is called once when teleop is enabled. */

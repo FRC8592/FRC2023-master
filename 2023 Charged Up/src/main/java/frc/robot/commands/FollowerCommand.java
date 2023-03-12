@@ -55,6 +55,7 @@ public class FollowerCommand extends Command {
         this.vision = vision;
         trajectory = pTraj;
         visionPID = new PIDController(0.05, 0.0, 0.0);
+        timer = new Timer();
     }
 
     // public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels) {
@@ -92,13 +93,16 @@ public class FollowerCommand extends Command {
         
         ChassisSpeeds newSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
         if (vision != null) {
+            double vyVision = vision.turnRobot( 0,   visionPID,   1.0);
+            if (Math.abs(trajectory.trajectory().sample(trajectory.trajectory().getTotalTimeSeconds()).poseMeters.getX() - drive.getCurrentPos().getX()) <= 0.2) {
+                vyVision = 0;
+            }
+
+            SmartDashboard.putNumber("VY Speed From Vision", vyVision);
+
             newSpeeds = new ChassisSpeeds(
                 speeds.vxMetersPerSecond,
-                vision.turnRobot(
-                    1.0, 
-                    visionPID, 
-                    1.0
-                ), 
+               -vyVision , 
                 speeds.omegaRadiansPerSecond
             );
         }
