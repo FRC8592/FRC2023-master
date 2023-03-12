@@ -75,6 +75,7 @@ public class Intake {
         double rawWristPosition = wristEncoder.getPosition(); // rotations
         
         SmartDashboard.putNumber("Wrist position", rawWristPosition);
+        SmartDashboard.putNumber("Wrist velocity", wristEncoder.getVelocity());
         SmartDashboard.putNumber("Wrist current", wristMotor.getOutputCurrent());
         SmartDashboard.putNumber("Roller current", rollerMotor.getOutputCurrent());
         SmartDashboard.putNumber("Roller velocity", rollerEncoder.getVelocity());

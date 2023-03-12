@@ -72,7 +72,7 @@ public final class Constants {
     public static final double ROLLER_KI = 0.0;
     public static final double ROLLER_KD = 0.01;
     public static final double ROLLER_KF = 0.0;
-    public static final double WRIST_KP = 0.0003;
+    public static final double WRIST_KP = 0.00025;
     public static final double WRIST_KI = 0.0;
     public static final double WRIST_KD = -0.00003;
     public static final double WRIST_KF = 0.0;
@@ -82,7 +82,7 @@ public final class Constants {
     public static final int WRIST_PID_SLOT = 0;
     public static final double ROLLER_MAX_VELOCITY = 5676.0 / ROLLER_GEAR_RATIO;
     public static final double ROLLER_MAX_ACCELERATION = ROLLER_MAX_VELOCITY; // Rotations per minute per second
-    public static final double WRIST_MAX_ACCELERATION = 9000.0; // Rotations per minute per second
+    public static final double WRIST_MAX_ACCELERATION = 15000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
     public static final double WRIST_INTAKE_ROTATIONS = 51.5;
     public static final double WRIST_STOWED_ROTATIONS = 0;

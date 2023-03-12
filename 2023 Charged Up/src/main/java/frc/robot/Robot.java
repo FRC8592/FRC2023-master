@@ -141,7 +141,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
     elevator.writeToSmartDashboard();
-    ledStrips.upAndDown();
+    // ledStrips.upAndDown();
   }
 
   /**
