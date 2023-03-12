@@ -125,6 +125,8 @@ public class Robot extends LoggedRobot {
     driveScaler = new DriveScaler();
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
+
+    SmartDashboard.putNumber("Command Counter", 0);
   }
 
   /**

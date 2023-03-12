@@ -19,9 +19,10 @@ public class LoadingZonePreloadBalanceAuto extends BaseAuto {
     private SwerveTrajectory C_TO_BM = generateTrajectoryFromPoints(
         config.setEndVelocity(0.1),
         GRID_C.getPose(),
-        INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.05),
-        INTERMEDIARY_LOADING_ZONE.translate(-0.25, -0.1),
-        BALANCE_MIDDLE.rotate(Rotation2d.fromDegrees(180.0))
+        INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.0),
+        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.0),
+        INTERMEDIARY_LOADING_ZONE.translate(0.0, 0.0),
+        BALANCE_MIDDLE.translate(0.0, 0.0, Rotation2d.fromDegrees(180))
     );
 
      @Override

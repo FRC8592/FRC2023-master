@@ -29,6 +29,8 @@ public class SwerveTrajectory {
 
     private double maxRotationVelocity = Math.PI;
     private double turnDelay = 0.0;
+    private boolean vision = false;
+    private double acceptanceRange = 0.1;
 
     public SwerveTrajectory(Trajectory trajectory) {
         mXPID = new PIDController(1.0, 0, 0.0); // 0.1 0 -0.0002
@@ -50,6 +52,30 @@ public class SwerveTrajectory {
         // rotation = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation();
         rotation = new Rotation2d();
         mTrajectory = trajectory;
+    }
+
+    public SwerveTrajectory(Trajectory trajectory, boolean vision) {
+        mXPID = new PIDController(1.0, 0, 0.0); // 0.1 0 -0.0002
+        mYPID = new PIDController(1.0, 0, 0.0); // 0.1 0 -0.0002
+        mTurnPID = new ProfiledPIDController(0.5, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
+
+        mXPID.setTolerance(0.1, 0.1);
+        mYPID.setTolerance(0.1, 0.1);
+        mTurnPID.setTolerance(0.1, 0.1);
+        mTurnPID.enableContinuousInput(-Math.PI, Math.PI); // Might need to change to degrees
+
+        turnPID = new PIDController(0.05, 0, 0);
+        turnPID.setTolerance(0.1);
+        // turnPID.enableContinuousInput(-Math.PI/2, Math.PI/2);
+
+        mDrivePID.setTolerance(new Pose2d(0.3, 0.3, Rotation2d.fromDegrees(5)));
+
+        // rotation = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation();
+        rotation = new Rotation2d();
+        mTrajectory = trajectory;
+
+        this.vision = vision;
     }
 
     /**
@@ -84,6 +110,16 @@ public class SwerveTrajectory {
 
     public double getConfiguredEndingVelocity() {
         return config.getEndVelocity();
+    }
+
+    public SwerveTrajectory addVision() {
+        this.vision = true;
+        return this;
+    }
+
+    public SwerveTrajectory setAcceptanceRange(double acceptance) {
+        acceptanceRange = acceptance;
+        return this;
     }
 
     /**
@@ -135,7 +171,7 @@ public class SwerveTrajectory {
                 // ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.1) &&
                 // (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.1)) 
                 // ||
-                time >= mTrajectory.getTotalTimeSeconds();// || (Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.1);
+                time >= mTrajectory.getTotalTimeSeconds() || (Math.abs(getEndingPose().getX() - poseRobot.getX()) <= acceptanceRange && vision);
         } else {
             return time >= mTrajectory.getTotalTimeSeconds();
         }
