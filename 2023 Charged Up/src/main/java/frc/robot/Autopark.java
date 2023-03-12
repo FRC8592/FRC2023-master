@@ -2,6 +2,9 @@ package frc.robot;
 
 
 import edu.wpi.first.wpilibj.Timer;
+
+import java.sql.Driver;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,7 +23,6 @@ public class Autopark {
     public Autopark(){
         currentState = AutoBalanceStates.DRIVE_FORWARD;
         timer = new Timer();
-
     }
     
     public boolean balance(Drivetrain drivetrain){
@@ -34,6 +36,12 @@ public class Autopark {
                 timer.start();
                 if(Math.abs(pitch) >= Constants.LEVEL_PITCH && timer.get() >= 2.0) {
                     currentState = AutoBalanceStates.FIX_TILT; 
+                }
+                else if(timer.get()>= 3){
+                    drivetrain.drive(new ChassisSpeeds(0.7, 0, 0)); //the slower the better
+                    if(timer.get()>=4){
+                        timer.reset();
+                    }
                 }
                 else {
                     drivetrain.drive(new ChassisSpeeds(-0.7, 0, 0)); //the slower the better
