@@ -19,7 +19,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class TwoPieceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
-    private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1);
+    private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
     private SwerveTrajectory C_TO_Ilz = generateTrajectoryFromPoints(
         config
@@ -38,29 +38,29 @@ public class TwoPieceAuto extends BaseAuto {
             .setEndVelocity(0.0)
             .setReversed(false),
         INTERMEDIARY_LOADING_ZONE.translate(-0.0, 0.1),
-        GAME_PIECE_1.translate(-0.1, -0.05)
+        GAME_PIECE_1.translate(0.0, -0.05)
     );
 
     private SwerveTrajectory GP1_TO_B = generateTrajectoryFromPoints(
         config
             .setStartVelocity(0.0)
-            .setEndVelocity(1.0)
+            .setEndVelocity(2.0)
             .setReversed(true),
-        GAME_PIECE_1.translate(-0.1, -0.05),
+        GAME_PIECE_1.translate(0.0, -0.05),
         GAME_PIECE_1.translate(-0.6, 0.0),
         GAME_PIECE_1.translate(-2.0, 0.0),
-        GAME_PIECE_1.translate(-3.3, -0.05)
+        GAME_PIECE_1.translate(-3.0, -0.05)
         // GRID_B.translate(0.25 + 2.0, 0)
     );
 
     private SwerveTrajectory B_TO_SCORE = generateTrajectoryFromPoints(
         slowConfig
-            .setStartVelocity(1.0)
+            .setStartVelocity(2.0)
             .setEndVelocity(0.0)
             .setReversed(true),
         // GRID_B.translate(0.25 + 2.0, 0),
-        GAME_PIECE_1.translate(-3.3, -0.05),
-        GAME_PIECE_1.translate(-4.0, -0.05)
+        GAME_PIECE_1.translate(-3.0, -0.05),
+        GAME_PIECE_1.translate(-3.8, -0.05)
     );
 
     @Override
