@@ -38,7 +38,7 @@ public class TwoPieceAuto extends BaseAuto {
             .setEndVelocity(0.0)
             .setReversed(false),
         INTERMEDIARY_LOADING_ZONE.translate(-0.0, 0.1),
-        GAME_PIECE_1.translate(0.0, -0.05)
+        GAME_PIECE_1.translate(0.25, -0.05)
     );
 
     private SwerveTrajectory GP1_TO_B = generateTrajectoryFromPoints(
@@ -46,7 +46,7 @@ public class TwoPieceAuto extends BaseAuto {
             .setStartVelocity(0.0)
             .setEndVelocity(2.0)
             .setReversed(true),
-        GAME_PIECE_1.translate(0.0, -0.05),
+        GAME_PIECE_1.translate(0.25, -0.05),
         GAME_PIECE_1.translate(-0.6, 0.0),
         GAME_PIECE_1.translate(-2.0, 0.0),
         GAME_PIECE_1.translate(-3.0, -0.05)
