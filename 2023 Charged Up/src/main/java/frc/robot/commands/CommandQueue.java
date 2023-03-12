@@ -12,6 +12,8 @@ public class CommandQueue {
     private Command[] commandArray;
     private Timer timer;
 
+    private int counter = 1;
+
     /**
      * @param commands list of commands (in order) to run for the queue
      */
@@ -50,6 +52,8 @@ public class CommandQueue {
                 queue.poll();
                 timer.reset();
                 timer.start();
+                SmartDashboard.putNumber("Command Counter", counter);
+                counter++;
                 if (queue.size() != 0) {
                     queue.peek().initialize();
                 } else {

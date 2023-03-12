@@ -5,12 +5,14 @@ import frc.robot.Drivetrain;
 import frc.robot.Elevator;
 import frc.robot.Intake;
 import frc.robot.Robot;
+import frc.robot.Vision;
 import frc.robot.commands.CommandQueue;
 
 public abstract class BaseAuto {
     protected Drivetrain drive;
     protected Elevator elevator;
     protected Intake intake;
+    protected Vision vision;
     protected CommandQueue queue;
 
     protected double scoreTime = 1; // Remove once actual intake/outtake on the robot
@@ -19,10 +21,11 @@ public abstract class BaseAuto {
      * Add all running subsystems for use for all autonomous routines
      * @param pDrive {@code drivetrain} object
      */
-    public void addModules(Drivetrain pDrive, Elevator pLift, Intake pIntake) {
+    public void addModules(Drivetrain pDrive, Elevator pLift, Intake pIntake, Vision pVision) {
         drive = pDrive;
         elevator = pLift;
         intake = pIntake;
+        vision = pVision;
     }
 
     /**

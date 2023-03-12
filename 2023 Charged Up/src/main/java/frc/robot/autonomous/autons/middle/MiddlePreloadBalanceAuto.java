@@ -13,7 +13,7 @@ import frc.robot.commands.ScoreCommand;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class MiddlePreloadBalanceAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(1.3, 1);
+    private TrajectoryConfig config = new TrajectoryConfig(0.7, 1);
 
     @Override
     public void initialize() {
