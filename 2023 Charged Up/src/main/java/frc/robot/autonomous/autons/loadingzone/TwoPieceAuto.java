@@ -71,7 +71,7 @@ public class TwoPieceAuto extends BaseAuto {
             //     new LiftCommand(elevator, Heights.HIGH)
             // ),
             // new LiftCommand(elevator, Heights.STOWED)
-            new FollowerCommand(drive, C_TO_Ilz),//.addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.5)),
+            new FollowerCommand(drive, C_TO_Ilz.addLogger(logger)),//.addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.5)),
             new FollowerCommand(drive, Ilz_TO_GP1)//.addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.5))
         );
     }

@@ -164,7 +164,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     selectedAuto = selector.getSelectedAutonomous();
-    selectedAuto.addModules(drive, elevator, intake, gameObjectVision); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.addModules(drive, elevator, intake, gameObjectVision, logger); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
     selectedAuto.addDelay(selector.getDelay());
     
@@ -188,6 +188,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     selectedAuto.periodic();
+    logger.log(this, "Robot Current Pose", drive.getCurrentPos());
     // lift.periodic();
     // ledStrips.upAndDown();
     // autoPark.balance(drive);

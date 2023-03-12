@@ -3,6 +3,7 @@ package frc.robot.autonomous.autons;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.Drivetrain;
 import frc.robot.Elevator;
+import frc.robot.FRCLogger;
 import frc.robot.Intake;
 import frc.robot.Robot;
 import frc.robot.Vision;
@@ -14,18 +15,20 @@ public abstract class BaseAuto {
     protected Intake intake;
     protected Vision vision;
     protected CommandQueue queue;
-
+    protected FRCLogger logger;
     protected double scoreTime = 1; // Remove once actual intake/outtake on the robot
 
     /**
      * Add all running subsystems for use for all autonomous routines
      * @param pDrive {@code drivetrain} object
      */
-    public void addModules(Drivetrain pDrive, Elevator pLift, Intake pIntake, Vision pVision) {
+    public void addModules(Drivetrain pDrive, Elevator pLift, Intake pIntake, Vision pVision, FRCLogger logger) {
         drive = pDrive;
         elevator = pLift;
         intake = pIntake;
         vision = pVision;
+        this.logger = logger;
+        
     }
 
     /**

@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.FRCLogger;
 import frc.robot.Robot;
 
 /**
@@ -24,6 +25,7 @@ public class SwerveTrajectory {
     private Trajectory mTrajectory;
     private TrajectoryConfig config = new TrajectoryConfig(0, 0).setEndVelocity(0).setStartVelocity(0);
     private Pose2d poseRobot = new Pose2d();
+    private FRCLogger autoLogger;
 
     private PIDController turnPID;
 
@@ -93,8 +95,12 @@ public class SwerveTrajectory {
      */
     public ChassisSpeeds sample(double pSeconds, Pose2d robotPose) {
         State state = mTrajectory.sample(pSeconds);
+        
 
         ChassisSpeeds desired = mDrivePID.calculate(getInitialPose(), state, rotation);
+        if (autoLogger != null){
+            autoLogger.log(this, "Desired Robot Pose", state.poseMeters);
+        }
         if (Robot.isReal()) {
             desired = mDrivePID.calculate(
                 robotPose, 
@@ -188,5 +194,10 @@ public class SwerveTrajectory {
      */
     public Pose2d getInitialPose() {
         return mTrajectory.getInitialPose();
+    }
+
+    public SwerveTrajectory addLogger(FRCLogger logger){
+        this.autoLogger = logger;
+        return this;
     }
 }
