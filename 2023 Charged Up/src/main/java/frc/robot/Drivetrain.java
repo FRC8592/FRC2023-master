@@ -234,7 +234,9 @@ public class Drivetrain {
         setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
         setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
         setModule(m_backRightModule, states[3].angle.getRadians(), metersPerSecondToTicks(states[3].speedMetersPerSecond));
+
         updatePose(vision.getPoseFromLimelight());
+        
         this.odometry.update(
             getGyroscopeRotation(), 
             new SwerveModulePosition[] {
@@ -310,7 +312,10 @@ public class Drivetrain {
     }
 
     public void teleopInitLogSwerve(){
-        logger.log(this, "TeleopInit SwerveValues", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
+        logger.log(
+            this,
+            "TeleopInit SwerveValues",
+            new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
     }
 
     public void setModule(SwerveModule module, double steerAngle, double velocityMetersPerSecond){
