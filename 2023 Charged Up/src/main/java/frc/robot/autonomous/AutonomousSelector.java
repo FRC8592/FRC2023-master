@@ -18,6 +18,8 @@ public class AutonomousSelector {
     public Class<?>[] autos = {
         MoveOutCommunityAuto.class,
 
+        TwoPieceAuto.class,
+
         MiddleBalanceAuto.class,
         MiddlePreloadBalanceAuto.class,
 

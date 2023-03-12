@@ -164,7 +164,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     selectedAuto = selector.getSelectedAutonomous();
-    selectedAuto.addModules(drive, elevator, intake); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.addModules(drive, elevator, intake, gameObjectVision); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
     selectedAuto.addDelay(selector.getDelay());
     

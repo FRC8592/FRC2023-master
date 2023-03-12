@@ -31,9 +31,9 @@ public class SwerveTrajectory {
     private double turnDelay = 0.0;
 
     public SwerveTrajectory(Trajectory trajectory) {
-        mXPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
-        mYPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
-        mTurnPID = new ProfiledPIDController(0.4, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mXPID = new PIDController(2.2, 0, 0.0); // 0.1 0 -0.0002
+        mYPID = new PIDController(2.2, 0, 0.0); // 0.1 0 -0.0002
+        mTurnPID = new ProfiledPIDController(0.5, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
@@ -132,8 +132,8 @@ public class SwerveTrajectory {
     public boolean isFinished(double time) {
         if (Robot.isReal()) {
             return 
-                ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.2) &&
-                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.2)) ||
+                ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.1) &&
+                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.1)) ||
                 time >= mTrajectory.getTotalTimeSeconds() * 1.2;
         } else {
             return time >= mTrajectory.getTotalTimeSeconds();

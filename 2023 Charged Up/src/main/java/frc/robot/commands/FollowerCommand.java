@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -8,12 +9,15 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
+import frc.robot.Vision;
 import frc.robot.autonomous.SwerveTrajectory;
 
 public class FollowerCommand extends Command {
     private Drivetrain drive;
     private SwerveTrajectory trajectory;
     private Timer timer;
+    private Vision vision;
+    private PIDController visionPID;
     // private Rotation2d endRotation;
 
     public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj) {
@@ -44,6 +48,13 @@ public class FollowerCommand extends Command {
         setTag(tag);
 
         // endRotation = pRot;
+    }
+
+    public FollowerCommand(Drivetrain drive, Vision vision, SwerveTrajectory pTraj) {
+        this.drive = drive;
+        this.vision = vision;
+        trajectory = pTraj;
+        visionPID = new PIDController(0.05, 0.0, 0.0);
     }
 
     // public FollowerCommand(Drivetrain pDrive, SwerveTrajectory pTraj, Rotation2d pRot, boolean lockWheels) {
@@ -80,9 +91,19 @@ public class FollowerCommand extends Command {
         }
         
         ChassisSpeeds newSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
+        if (vision != null) {
+            newSpeeds = new ChassisSpeeds(
+                speeds.vxMetersPerSecond,
+                vision.turnRobot(
+                    1.0, 
+                    visionPID, 
+                    1.0
+                ), 
+                speeds.omegaRadiansPerSecond
+            );
+        }
         drive.drive(newSpeeds);
         
-        // return time >= trajectory.trajectory().getTotalTimeSeconds();
         return trajectory.isFinished(time);
     }
 
