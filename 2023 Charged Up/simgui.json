@@ -77,6 +77,12 @@
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+        "limelight-vision": {
+          "open": true
+        },
+        "open": true
+      },
+      "limelight-vision": {
         "open": true
       }
     }

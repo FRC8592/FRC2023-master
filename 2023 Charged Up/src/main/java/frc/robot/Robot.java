@@ -6,8 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.LED.LEDMode;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.ConfigRun.AutoOptions;
 import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.AutoDrive;
@@ -15,6 +16,8 @@ import frc.robot.autonomous.AutonomousSelector;
 import frc.robot.autonomous.autons.BaseAuto;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Timer;
+
 
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -68,14 +71,15 @@ public class Robot extends LoggedRobot {
   public PIDController strafePID;
   public boolean wasZeroed = false;
   private boolean coneVision = true;
+  public Power power;
   private boolean angleTapBool = false;
 
   private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
-  // public Power power;
 
   private BaseAuto selectedAuto;
   private AutonomousSelector selector;
   public Autopark autoPark;
+  private Timer timer = new Timer();
 
   private DriveScaler driveScaler;
 
@@ -90,18 +94,10 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     //AdvantageKit logging code
     Logger.getInstance().recordMetadata("ProjectName", "MyProject"); // Set a metadata value
-    if (isReal()) {
+    if (true) {
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         new PowerDistribution(1, PowerDistribution.ModuleType.kRev); // Enables power distribution logging
-    }
-    else {
-      if (isReal()) { // Doesn't work in simulation; redundant code to allow simulation to not crash
-        setUseTiming(false); // Run as fast as possible
-        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-        Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
-        Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-      }
     }
     Logger.getInstance().start();
     
@@ -109,19 +105,18 @@ public class Robot extends LoggedRobot {
     logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     operatorController = new XboxController(1);
-    // power = new Power();
+    power = new Power();
     drive = new Drivetrain(logger);
-    ledStrips = new LED();
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+    ledStrips = new LED(power, gameObjectVision);
     strafePID = new PIDController(-0.05, 0, 0);
     elevator = new Elevator();
     intake = new Intake();
     // intake.reset();
     // lift.reset();
-
     driveScaler = new DriveScaler();
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
@@ -143,7 +138,8 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     intake.writeToSmartDashboard();
     elevator.writeToSmartDashboard();
-    // ledStrips.upAndDown();
+    power.powerPeriodic();
+    ledStrips.updatePeriodic();
   }
 
   /**
@@ -302,12 +298,16 @@ public class Robot extends LoggedRobot {
 
     if (driverController.getYButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.set(LEDMode.CONE);
     } else if (driverController.getXButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-    } else if (operatorController.getPOV() == 0) {
+      ledStrips.set(LEDMode.CUBE);
+    } else if (operatorController.getPOV() == 0 && !operatorController.getStartButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-    } else if (operatorController.getPOV() == 180) {
+      ledStrips.set(LEDMode.CUBE);
+    } else if (operatorController.getPOV() == 180 && !operatorController.getStartButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      ledStrips.set(LEDMode.CONE);
     }
 
     // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
@@ -337,6 +337,7 @@ public class Robot extends LoggedRobot {
       autoPark.balance(drive);
     } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
       // set LED to targetlock
+      ledStrips.set(LEDMode.TARGETLOCK);
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
           // driveSpeeds.vxMetersPerSecond,
@@ -352,6 +353,7 @@ public class Robot extends LoggedRobot {
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
       // set LED to targetlock
+      ledStrips.set(LEDMode.TARGETLOCK);
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
           driveSpeeds.vxMetersPerSecond,
@@ -380,6 +382,7 @@ public class Robot extends LoggedRobot {
       switch(driverController.getPOV()) {
         case 0:
           turn = drive.turnToAngle(180.0);
+          ledStrips.set(LEDMode.TARGETLOCK);
           break;
         case 90:
           turn = drive.turnToAngle(90.0);
@@ -534,6 +537,16 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    ledStrips.set(LEDMode.ATTENTION);
+    // else if(operatorController.getBButton()){
+    //     ledStrips.set(LEDMode.TARGETLOCK);
+    // }
+    // else if(operatorController.getXButton()){
+    //     ledStrips.set(LEDMode.UP_AND_DOWN);
+    // } 
+    // else if (operatorController.getYButton()) {
+    //   ledStrips.set(LEDMode.WAVES);
+    // }
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
         0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
           //  intake.logBeamBreaks();

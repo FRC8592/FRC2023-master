@@ -165,11 +165,11 @@ public final class Constants {
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     // Vision constants for the ball camera
-    public static double BALL_LOCK_ERROR       = 3.0;
-    public static double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
+    public static final double BALL_LOCK_ERROR       = 3.0;
+    public static final double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 35.75;
-    public static double BALL_CAMERA_ANGLE     = 30.0;
+    public static double BALL_CAMERA_ANGLE     = -30.0;
     public static double BALL_TARGET_HEIGHT    = 4.75;
     public static double BALL_ROTATE_KP        = -0.1; //0.15;           // Proportional constant for turret rotate speed
     public static double BALL_ROTATE_KI        = 0.0;
@@ -276,6 +276,13 @@ public final class Constants {
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 
+    // LED Constants
+    public static final int LED_LENGTH = 8;
+    public static final double MINIMUM_VOLTAGE = 9.0;
+    public static final int PULSE_METHOD_SPEED = 5;
+    public static final int PULSE_SIZE = 2; 
+    public static final int PULSE_GAP = 5;
+
 
     //Constants for our starting position in autonomous
     public static final double POSITION_ERROR = 20; //error for checking what position we are in at the start of the match in degrees
@@ -295,5 +302,7 @@ public final class Constants {
     public static final double TURN_TO_kI = 0;
     public static final double TURN_TO_kD = 0.0;
 
+    // Conversion constants
+    public static final double INCHES_TO_METERS = 1.0 / 39.37;
 }
 
