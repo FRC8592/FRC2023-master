@@ -137,6 +137,7 @@ public class Robot extends LoggedRobot {
     intake.writeToSmartDashboard();
     elevator.writeToSmartDashboard();
     power.powerPeriodic();
+    ledStrips.updatePeriodic();
   }
 
   /**
@@ -294,12 +295,16 @@ public class Robot extends LoggedRobot {
 
     if (driverController.getYButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+      ledStrips.set(LEDMode.CONE);
     } else if (driverController.getXButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-    } else if (operatorController.getPOV() == 0) {
+      ledStrips.set(LEDMode.CUBE);
+    } else if (operatorController.getPOV() == 0 && !operatorController.getStartButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-    } else if (operatorController.getPOV() == 180) {
+      ledStrips.set(LEDMode.CUBE);
+    } else if (operatorController.getPOV() == 180 && !operatorController.getStartButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
+      ledStrips.set(LEDMode.CONE);
     }
 
     // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
@@ -329,6 +334,7 @@ public class Robot extends LoggedRobot {
       autoPark.balance(drive);
     } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
       // set LED to targetlock
+      ledStrips.set(LEDMode.TARGETLOCK);
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
           // driveSpeeds.vxMetersPerSecond,
@@ -344,6 +350,7 @@ public class Robot extends LoggedRobot {
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
       // set LED to targetlock
+      ledStrips.set(LEDMode.TARGETLOCK);
       if (gameObjectVision.targetValid) {
         driveSpeeds = new ChassisSpeeds(
           driveSpeeds.vxMetersPerSecond,
@@ -372,6 +379,7 @@ public class Robot extends LoggedRobot {
       switch(driverController.getPOV()) {
         case 0:
           turn = drive.turnToAngle(180.0);
+          ledStrips.set(LEDMode.TARGETLOCK);
           break;
         case 90:
           turn = drive.turnToAngle(90.0);
@@ -526,8 +534,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    ledStrips.updatePeriodic();
-    ledStrips.set(LEDMode.STOPPLACING);
+    ledStrips.set(LEDMode.ATTENTION);
     // else if(operatorController.getBButton()){
     //     ledStrips.set(LEDMode.TARGETLOCK);
     // }

@@ -277,6 +277,7 @@ public final class Constants {
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 
     // LED Constants
+    public static final int LED_LENGTH = 8;
     public static final double MINIMUM_VOLTAGE = 9.0;
     public static final int PULSE_METHOD_SPEED = 5;
     public static final int PULSE_SIZE = 2; 

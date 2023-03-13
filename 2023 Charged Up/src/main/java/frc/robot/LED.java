@@ -3,6 +3,7 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import edu.wpi.first.hal.simulation.PowerDistributionDataJNI;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -57,9 +58,6 @@ public class LED {
     
     //Dynamic/Other
     private double timeout;
-    
-    //Constants
-    private static final int LED_LENGTH = 8;
 
     /**
      * Premade color presets
@@ -107,6 +105,7 @@ public class LED {
         // LEDs off
         OFF;
     }
+
     /**Construct an LED controller
      * 
      * @param power Power object to get battery voltage
@@ -115,12 +114,11 @@ public class LED {
     public LED(Power power, Vision vision){
         //Get the physical LEDs ready
         liftNEOPIXELS = new AddressableLED(0);
-        liftBuffer = new AddressableLEDBuffer(LED_LENGTH+1);
-        liftNEOPIXELS.setLength(LED_LENGTH+1);
+        liftBuffer = new AddressableLEDBuffer(Constants.LED_LENGTH);
+        liftNEOPIXELS.setLength(Constants.LED_LENGTH);
+        liftNEOPIXELS.start(); 
 
         //Vision and power objects; see above
-        liftBuffer = new AddressableLEDBuffer(LED_LENGTH);
-        liftNEOPIXELS.setLength(LED_LENGTH);
         this.vision = vision;
         this.power = power;
 
@@ -147,8 +145,6 @@ public class LED {
      */
     public void updatePeriodic() {
         SmartDashboard.putString("LED Mode", mode.name());
-        //Update the Power object
-        power.powerPeriodic();
         // Switch between the possible states of the LED
         switch (mode) {
             case CONE:
@@ -174,18 +170,23 @@ public class LED {
                 break;
             case UP_AND_DOWN:
                 setUpAndDown(col1, col2);
+                timeout = 10;
                 break;
             case FIRE:
                 setFire(true);
+                timeout = 10;
                 break;
             case BINARY:
-                setBinary();
+                // setBinary();
+                timeout = 10;
                 break;
             case WAVES:
                 setWaves(col1);
+                timeout = 10;
                 break;
             case SNAKE:
-                setSnake(col1);
+                // setSnake(col1);
+                timeout = 10;
                 break;
             case OFF:
                 setOff();
@@ -214,13 +215,12 @@ public class LED {
         }
 
         if(lockTimer.get() > timeout){
-            mode = LEDMode.OFF;
+            mode = LEDMode.ATTENTION;
             lockTimer.reset();
             lockTimer.stop();
         }
         
         liftNEOPIXELS.setData(liftBuffer);
-        liftNEOPIXELS.start(); 
     }
 
 
@@ -249,7 +249,7 @@ public class LED {
         if(uadTimer.get() >= .05){
             uadIndex++;
             uadTimer.reset();
-            for(int i = 0; i < LED_LENGTH; i++){
+            for(int i = 0; i < Constants.LED_LENGTH; i++){
                 if (Math.sin(i + uadIndex)  > 0){
                     setColor(i, colorA);
                 }
@@ -297,9 +297,9 @@ public class LED {
         Collections.sort(fireBlobs);
 
         //Clear the LED list
-        for(int i = 0; i < LED_LENGTH; i++){
+        for(int i = 0; i < Constants.LED_LENGTH; i++){
             setColor(i,new Color(0,0,0));
-            setColor(LED_LENGTH - 1 - i,new Color(0,0,0));
+            setColor(Constants.LED_LENGTH - 1 - i,new Color(0,0,0));
         }
 
         //                                              For all fireBlobs,
@@ -310,7 +310,7 @@ public class LED {
                 if(j>-1){
                     //                                  assign the LED at the index to the color of the blob
                     setColor(j, fireBlobs.get(i).getColor());
-                    setColor(LED_LENGTH - 1 - j, fireBlobs.get(i).getColor());
+                    setColor(Constants.LED_LENGTH - 1 - j, fireBlobs.get(i).getColor());
                 }
             }
         }
@@ -336,17 +336,17 @@ public class LED {
                 double max = 2.0;
                 double min = 0.75;
                 double difference = max - min;
-                int numLEDs = (int)((max - distToTarget) / difference * (LED_LENGTH));
+                int numLEDs = (int)((max - distToTarget) / difference * (Constants.LED_LENGTH));
                 
                 //If distance is at or closer to the max distance, set the color of LEDs to green and cap amount to turn on
-                if (numLEDs >= LED_LENGTH ) {
-                    numLEDs = LED_LENGTH;
+                if (numLEDs >= Constants.LED_LENGTH ) {
+                    numLEDs = Constants.LED_LENGTH;
                     color = PresetColor.GREEN;
                     visionTimer.start();
                 }
         
                 // loop through one side of the LEDs and set an amount of LEDs on depending on distance
-                for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+                for (int ledIndex = 0; ledIndex < Constants.LED_LENGTH; ledIndex++){
                     if(ledIndex < numLEDs) {
                         setColor(ledIndex, color);
                     } else {
@@ -370,7 +370,7 @@ public class LED {
      */
     private void setPct(double pct, PresetColor color) {
         // loop through LEDs, and set the passed percentage as on
-        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+        for (int ledIndex = 0; ledIndex < Constants.LED_LENGTH; ledIndex++){
             if (pct != 0 && (double)ledIndex % (1.0 / (pct / 100.0)) < 1.0){
                 setColor(ledIndex, color);
             }else {
@@ -379,58 +379,52 @@ public class LED {
         }
     }
 
-    //UPDATE FOR 2023
     public void setBinary(){
         binaryIndex++;
-        for(int i = 0; i < 21; i++){
-            setColor(20-i,binary[(binaryIndex/6+i)%90]);
-            setColor(22+i,binary[(binaryIndex/6+i)%90]);
+        for(int i = 0; i < Constants.LED_LENGTH; i++){
+            setColor(Constants.LED_LENGTH-i-1,binary[(binaryIndex/6+i)%90]);
         }
     }
 
-    //UPDATE FOR 2023
     public void setSnake(PresetColor col1){
         Color color = new Color(col1.red, col1.green, col1.blue);
         int location;
         int direction;
-        double speed = 50;
-        if(snakeTimer.get()*speed<21){
+        double speed = 15;
+        int length = 5;
+        if(snakeTimer.get()*speed<Constants.LED_LENGTH){
             location = (int)(snakeTimer.get()*speed);
             direction=0;
         }
-        else if (snakeTimer.get()*speed<LED_LENGTH){
-            location = 21-(((int)(snakeTimer.get()*speed))-21);
+        else if (snakeTimer.get()*speed<Constants.LED_LENGTH*2){
+            location = Constants.LED_LENGTH-(((int)(snakeTimer.get()*speed))-Constants.LED_LENGTH)-1;
             direction=1;
         }
         else{
             snakeTimer.reset();
-            location=1;
+            location=0;
             direction=0;
         }
-        for(int i = 0; i < LED_LENGTH; i++){
+        for(int i = 0; i < Constants.LED_LENGTH; i++){
             setColor(i,PresetColor.OFF);
         }
         if(direction==0){
-            for(int i = 0; i < 15; i++){
-                if(location+i<21){
-                    setColor(location+i,getColorAtBrightness(color, 0.0666*i));
-                    setColor(21+location+i,getColorAtBrightness(color, 0.0666*i));
+            for(int i = 0; i < length; i++){
+                if(location+i<Constants.LED_LENGTH){
+                    setColor(location+i,getColorAtBrightness(color, i*(1.0/length)));
                 }
                 else {
-                    setColor(21-((location+i)-21),getColorAtBrightness(color, 0.0666*i));
-                    setColor(LED_LENGTH - 1 -((location+i)-21),getColorAtBrightness(color, 0.0666*i));
+                    setColor(Constants.LED_LENGTH-((location+i)-Constants.LED_LENGTH)-1,getColorAtBrightness(color, i*(1.0/length)));
                 }
             }
         }
         else{
-            for(int i = 0; i < 15; i++){
+            for(int i = 0; i < length; i++){
                 if(location-i>0){
-                    setColor(location-i,getColorAtBrightness(color, 0.0666*i));
-                    setColor(21+location-i,getColorAtBrightness(color, 0.0666*i));
+                    setColor(location-i,getColorAtBrightness(color, i*(1.0/length)));
                 }
                 else{
-                    setColor(-(location-i),getColorAtBrightness(color, 0.0666*i));
-                    setColor(21-(location-i),getColorAtBrightness(color, 0.0666*i));
+                    setColor(-(location-i),getColorAtBrightness(color, i*(1.0/length)));
                 }
             }
         }
@@ -459,25 +453,25 @@ public class LED {
     }
     
     private void lowVoltage() {
-        for(int i = 0; i < LED_LENGTH / 10; i++) {
+        for(int i = 0; i < Constants.LED_LENGTH / 10; i++) {
             setColor(i, PresetColor.RED);
         }
     }
     
     private void setWaves(PresetColor color) {
         waveCounter++;
-        for(int i = 0; i < LED_LENGTH / 2; i++) {
-            if(Math.abs(LED_LENGTH / 2 + i - indexOn) % Constants.PULSE_GAP < Constants.PULSE_SIZE) {
-                setColor((LED_LENGTH / 2 + i), color);
-                setColor((LED_LENGTH / 2 - 1 - i), color);
+        for(int i = 0; i < Constants.LED_LENGTH / 2; i++) {
+            if(Math.abs(Constants.LED_LENGTH / 2 + i - indexOn) % Constants.PULSE_GAP < Constants.PULSE_SIZE) {
+                setColor((Constants.LED_LENGTH / 2 + i), color);
+                setColor((Constants.LED_LENGTH / 2 - 1 - i), color);
             } else {
-                setColor((LED_LENGTH / 2 + i), PresetColor.OFF);
-                setColor((LED_LENGTH / 2 - 1- i), PresetColor.OFF);
+                setColor((Constants.LED_LENGTH / 2 + i), PresetColor.OFF);
+                setColor((Constants.LED_LENGTH / 2 - 1- i), PresetColor.OFF);
             }
         }
         if (waveCounter >= Constants.PULSE_METHOD_SPEED) {
             waveCounter = 0;
-            indexOn = (indexOn + 1) % (LED_LENGTH / 2);
+            indexOn = (indexOn + 1) % (Constants.LED_LENGTH / 2);
         }
     }
 
