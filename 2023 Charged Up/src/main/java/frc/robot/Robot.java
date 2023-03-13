@@ -120,6 +120,8 @@ public class Robot extends LoggedRobot {
     driveScaler = new DriveScaler();
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
+
+    SmartDashboard.putNumber("Command Counter", 0);
   }
 
   /**
@@ -160,7 +162,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     selectedAuto = selector.getSelectedAutonomous();
-    selectedAuto.addModules(drive, elevator, intake); // ADD EACH SUBSYSTEM ONCE FINISHED
+    selectedAuto.addModules(drive, elevator, intake, gameObjectVision); // ADD EACH SUBSYSTEM ONCE FINISHED
     selectedAuto.initialize();
     selectedAuto.addDelay(selector.getDelay());
     
@@ -188,6 +190,7 @@ public class Robot extends LoggedRobot {
     // ledStrips.upAndDown();
     // autoPark.balance(drive);
     elevator.update();
+    gameObjectVision.updateVision();
   }
   
   /** This function is called once when teleop is enabled. */

@@ -27,12 +27,15 @@ public class SwerveTrajectory {
 
     private PIDController turnPID;
 
-    private double MAX_ANGULAR_VELOCITY_AUTONOMOUS = 2 * Math.PI;
+    private double maxRotationVelocity = Math.PI;
+    private double turnDelay = 0.0;
+    private boolean vision = false;
+    private double acceptanceRange = 0.1;
 
     public SwerveTrajectory(Trajectory trajectory) {
-        mXPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
-        mYPID = new PIDController(0.6, 0, 0.0); // 0.1 0 -0.0002
-        mTurnPID = new ProfiledPIDController(0.4, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mXPID = new PIDController(1.0, 0, 0.0); // 0.1 0 -0.0002
+        mYPID = new PIDController(1.0, 0, 0.0); // 0.1 0 -0.0002
+        mTurnPID = new ProfiledPIDController(0.5, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
         mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
 
         mXPID.setTolerance(0.1, 0.1);
@@ -51,12 +54,52 @@ public class SwerveTrajectory {
         mTrajectory = trajectory;
     }
 
+    public SwerveTrajectory(Trajectory trajectory, boolean vision) {
+        mXPID = new PIDController(1.0, 0, 0.0); // 0.1 0 -0.0002
+        mYPID = new PIDController(1.0, 0, 0.0); // 0.1 0 -0.0002
+        mTurnPID = new ProfiledPIDController(0.5, 0, 0, new Constraints(4 * Math.PI, 2 * Math.PI)); // Probably should increase the P value or maybe even change constraints to degrees
+        mDrivePID = new HolonomicDriveController(mXPID, mYPID, mTurnPID);
+
+        mXPID.setTolerance(0.1, 0.1);
+        mYPID.setTolerance(0.1, 0.1);
+        mTurnPID.setTolerance(0.1, 0.1);
+        mTurnPID.enableContinuousInput(-Math.PI, Math.PI); // Might need to change to degrees
+
+        turnPID = new PIDController(0.05, 0, 0);
+        turnPID.setTolerance(0.1);
+        // turnPID.enableContinuousInput(-Math.PI/2, Math.PI/2);
+
+        mDrivePID.setTolerance(new Pose2d(0.3, 0.3, Rotation2d.fromDegrees(5)));
+
+        // rotation = trajectory.sample(trajectory.getTotalTimeSeconds()).poseMeters.getRotation();
+        rotation = new Rotation2d();
+        mTrajectory = trajectory;
+
+        this.vision = vision;
+    }
+
     /**
      * @param rotation ending rotation
      * @return the same {@code SwerveTrajectory} object back but with the added {@code Rotation2d} for easy usage
      */
     public SwerveTrajectory addRotation(Rotation2d rotation) {
         this.rotation = Rotation2d.fromDegrees(rotation.getDegrees());
+        return this;
+    }
+
+    /**
+     * @param rotation ending rotation
+     * @return the same {@code SwerveTrajectory} object back but with the added {@code Rotation2d} for easy usage
+     */
+    public SwerveTrajectory addRotation(Rotation2d rotation, double turnSpeed, double delay) {
+        this.rotation = Rotation2d.fromDegrees(rotation.getDegrees());
+        turnDelay = delay;
+        maxRotationVelocity = turnSpeed;
+        return this;
+    }
+
+    public SwerveTrajectory setMaxRotationSpeed(double radiansPerSecond) {
+        maxRotationVelocity = radiansPerSecond;
         return this;
     }
 
@@ -67,6 +110,16 @@ public class SwerveTrajectory {
 
     public double getConfiguredEndingVelocity() {
         return config.getEndVelocity();
+    }
+
+    public SwerveTrajectory addVision() {
+        this.vision = true;
+        return this;
+    }
+
+    public SwerveTrajectory setAcceptanceRange(double acceptance) {
+        acceptanceRange = acceptance;
+        return this;
     }
 
     /**
@@ -99,35 +152,27 @@ public class SwerveTrajectory {
 
         SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
 
-        // SmartDashboard.putNumber("Desired X", desired.vxMetersPerSecond);
-        // SmartDashboard.putNumber("Desired Y", desired.vyMetersPerSecond);
-        // SmartDashboard.putNumber("Desired Omega", desired.omegaRadiansPerSecond);
-        // SmartDashboard.putNumber("Ending Turn", rotation.getDegrees());
-        // SmartDashboard.putNumber("Starting Rotation", trajectory().getInitialPose().getRotation().getDegrees());
-       
         poseRobot = robotPose;
 
         double turn = turnPID.calculate(0, getErrorAngle(robotPose, new Pose2d(0, 0, rotation)));
-        
+        turn = Math.max(-maxRotationVelocity, Math.min(maxRotationVelocity, pSeconds >= turnDelay ? turn : 0.0));
+
         desired = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, -turn);
-        // ChassisSpeeds test = new ChassisSpeeds(desired.vxMetersPerSecond, desired.vyMetersPerSecond, -turn);
         return desired;
-        // return test;
     }
 
+    /**
+     * @param time in seconds
+     * @return whether the path has finished
+     */
     public boolean isFinished(double time) {
         if (Robot.isReal()) {
-            // return mDrivePID.atReference() && time >= (mTrajectory.getTotalTimeSeconds());
-            // return time >= (mTrajectory.getTotalTimeSeconds());
             return 
-                ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.2) &&
-                (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.2)) ||
-                time >= mTrajectory.getTotalTimeSeconds() * 1.2;
-                // && 
-                // (Math.abs(rotation.getDegrees() - poseRobot.getRotation().getDegrees()) <= 5);
-            // return mDrivePID.atReference();
+                // ((Math.abs(getEndingPose().getX() - poseRobot.getX()) <= 0.1) &&
+                // (Math.abs(getEndingPose().getY() - poseRobot.getY()) <= 0.1)) 
+                // ||
+                time >= mTrajectory.getTotalTimeSeconds() || (Math.abs(getEndingPose().getX() - poseRobot.getX()) <= acceptanceRange && vision);
         } else {
-            // return mDrivePID.atReference();
             return time >= mTrajectory.getTotalTimeSeconds();
         }
     }
@@ -168,6 +213,9 @@ public class SwerveTrajectory {
         return rotation;
     }
 
+    /**
+     * @return ending {@code Pose2d}
+     */
     public Pose2d getEndingPose() {
         return mTrajectory.sample(mTrajectory.getTotalTimeSeconds() - 0.02).poseMeters;
     }
