@@ -20,6 +20,7 @@ public class AutonomousSelector {
 
         MiddleBalanceAuto.class,
         MiddlePreloadBalanceAuto.class,
+        MiddlePreloadGrabPieceBalanceAuto.class,
 
         LoadingZonePreloadBalanceAuto.class,
         LoadingZoneConeCubeAuto.class,
