@@ -16,34 +16,44 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class LoadingZonePreloadBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.8, 1.0);
     
-    private SwerveTrajectory C_TO_BM = generateTrajectoryFromPoints(
-        config.setEndVelocity(0.1),
+    private SwerveTrajectory C_TO_Ilz = generateTrajectoryFromPoints(
+        config
+            .setStartVelocity(0.0)
+            .setEndVelocity(1.0),
         GRID_C.getPose(),
-        INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.0),
+        INTERMEDIARY_LOADING_ZONE.translate(-2.25, 0.0),
         INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.0),
-        INTERMEDIARY_LOADING_ZONE.translate(0.0, 0.0),
-        BALANCE_MIDDLE.translate(0.0, 0.0, Rotation2d.fromDegrees(180))
+        INTERMEDIARY_LOADING_ZONE.getPose()
     );
 
-     @Override
+    private SwerveTrajectory Ilz_TO_BM = generateTrajectoryFromPoints(
+        config
+            .setStartVelocity(1.0)
+            .setEndVelocity(0.1),
+        INTERMEDIARY_LOADING_ZONE.getPose(),
+        BALANCE_MIDDLE.rotate(Rotation2d.fromDegrees(180))
+    );
+
+    @Override
     public void initialize() {
         queue = new CommandQueue(
-            new LiftCommand(elevator, Heights.PRIME), // Tilt up
-            new JointCommand(
-                new ScoreCommand(intake), // Pull out the intake and score the pre-loaded piece
+            new LiftCommand(elevator, Heights.PRIME), // PRIME 4-bar
+            new JointCommand( // Lift elevator HIGH and score
+                new ScoreCommand(intake), 
                 new LiftCommand(elevator, Heights.HIGH)
             ),
-            new LiftCommand(elevator, Heights.PRIME),
-            new JointCommand(
+            new LiftCommand(elevator, Heights.PRIME), // PRIME elevator
+            new JointCommand( // STOW elevator while moving out community
                 new LiftCommand(elevator, Heights.STOWED),
-                new FollowerCommand(drive, C_TO_BM)
+                new FollowerCommand(drive, C_TO_Ilz)
             ),
-            new AutobalanceCommand(drive) // Balance 
+            new FollowerCommand(drive, Ilz_TO_BM), // Move towards charging station
+            new AutobalanceCommand(drive) // Balance
         );
     }
+
     @Override
     public void periodic() {
         queue.run();
     }
-
 }

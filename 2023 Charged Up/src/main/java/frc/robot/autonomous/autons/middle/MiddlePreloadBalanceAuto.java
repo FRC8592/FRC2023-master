@@ -20,7 +20,6 @@ public class MiddlePreloadBalanceAuto extends BaseAuto {
         SwerveTrajectory E_TO_BM = generateTrajectoryFromPoints(
             config,
             GRID_E.getPose(),
-            // BALANCE_MIDDLE.translate(0.25, 0.0)
             GRID_E.translate(4.0, 0.0)
         );
         

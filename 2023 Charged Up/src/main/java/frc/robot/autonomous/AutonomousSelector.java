@@ -18,23 +18,19 @@ public class AutonomousSelector {
     public Class<?>[] autos = {
         MoveOutCommunityAuto.class,
 
-        TwoPieceAuto.class,
-
         MiddleBalanceAuto.class,
         MiddlePreloadBalanceAuto.class,
 
-        LoadingZonePreloadMobilityAuto.class,
         LoadingZonePreloadBalanceAuto.class,
-        LoadingZoneTwoPieceAuto.class,
-        LoadingZonePreloadConeAuto.class,
+        LoadingZoneConeCubeAuto.class,
+        LoadingZoneConeGrabPieceBalanceAuto.class,
         
         CableCoverPreloadMobilityAuto.class,
-        CableCoverPreloadBalanceAuto.class,
-        CableCoverTwoPieceAuto.class
+        CableCoverPreloadBalanceAuto.class
     };
 
     public AutonomousSelector() {
-        autonChooser.setDefaultOption("DEFAULT", MoveOutCommunityAuto.class);
+        autonChooser.setDefaultOption("DEFAULT - DO NOTHING", DoNothingAuto.class);
         for (Class<?> auto : autos) {
             autonChooser.addOption(auto.getSimpleName(), auto);
         }
