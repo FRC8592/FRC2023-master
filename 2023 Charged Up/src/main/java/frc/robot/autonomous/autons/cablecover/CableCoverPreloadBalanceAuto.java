@@ -16,14 +16,19 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class CableCoverPreloadBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.8, 1);
 
-    private SwerveTrajectory G_TO_BM = generateTrajectoryFromPoints(
-        config,
+    private SwerveTrajectory G_TO_Icc = generateTrajectoryFromPoints(
+        config.setStartVelocity(0.0).setEndVelocity(1.0),
         GRID_G.getPose(),
-        INTERMEDIARY_CABLE_COVER.translate(-2.0, -0.1),
-        INTERMEDIARY_CABLE_COVER.translate(0.0, -0.1),
-        BALANCE_MIDDLE.rotate(Rotation2d.fromDegrees(180.0))
+        INTERMEDIARY_CABLE_COVER.translate(-2.25, 0.0),
+        INTERMEDIARY_CABLE_COVER.translate(-1.0, 0.0),
+        INTERMEDIARY_CABLE_COVER.getPose()
     );
 
+    private SwerveTrajectory Icc_TO_BM = generateTrajectoryFromPoints(
+        config.setStartVelocity(1.0).setEndVelocity(0.0),
+        INTERMEDIARY_CABLE_COVER.getPose(),
+        BALANCE_MIDDLE.rotate(Rotation2d.fromDegrees(180.0))
+    );
 
     @Override
     public void initialize() {
@@ -34,10 +39,11 @@ public class CableCoverPreloadBalanceAuto extends BaseAuto {
                 new LiftCommand(elevator, Heights.HIGH)
             ),
             new LiftCommand(elevator, Heights.PRIME), // Retract the elevator
-            new JointCommand( // Retract the 4-bar driving to charging station 
+            new JointCommand( // Retract the 4-bar driving out community 
                 new LiftCommand(elevator, Heights.STOWED),
-                new FollowerCommand(drive, G_TO_BM)
+                new FollowerCommand(drive, G_TO_Icc)
             ),
+            new FollowerCommand(drive, Icc_TO_BM), // Move to Charging Station
             new AutobalanceCommand(drive) // Balance
         );
     }
