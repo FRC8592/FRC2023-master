@@ -57,7 +57,7 @@ public class LoadingZoneConeCubeAuto extends BaseAuto {
             .setEndVelocity(0.0)
             .setReversed(true),
         GAME_PIECE_1.translate(-3.0, -0.05),
-        GAME_PIECE_1.translate(-3.8, -0.05)
+        GAME_PIECE_1.translate(-3.9, -0.05)
     );
 
     @Override
