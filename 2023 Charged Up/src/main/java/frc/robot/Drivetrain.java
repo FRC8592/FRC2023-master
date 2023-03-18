@@ -8,7 +8,9 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -184,6 +186,9 @@ public class Drivetrain {
     public Rotation2d getGyroscopeRotation() {
         // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
         // return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
+        // if (DriverStation.getAlliance() == Alliance.Red) {
+        //     return Rotation2d.fromDegrees(180-m_navx.getYaw());
+        // }
         return Rotation2d.fromDegrees(-m_navx.getYaw());
     }
 
@@ -278,6 +283,10 @@ public class Drivetrain {
         // if (targetDegrees > 180) {
         //     targetDegrees -= 360;
         // }
+
+        if (DriverStation.getAlliance() == Alliance.Red) {
+            targetDegrees = 180 - targetDegrees;
+        }
 
         // targetDegrees = 180 - targetDegrees;
         // targetDegrees *= -1;

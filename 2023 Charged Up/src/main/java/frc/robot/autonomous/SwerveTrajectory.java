@@ -10,6 +10,8 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
@@ -129,6 +131,10 @@ public class SwerveTrajectory {
      */
     public ChassisSpeeds sample(double pSeconds, Pose2d robotPose) {
         State state = mTrajectory.sample(pSeconds);
+
+        if (DriverStation.getAlliance() == Alliance.Red) {
+            this.rotation = Rotation2d.fromDegrees(180 - rotation.getDegrees());
+        }
 
         ChassisSpeeds desired = mDrivePID.calculate(getInitialPose(), state, rotation);
         if (Robot.isReal()) {

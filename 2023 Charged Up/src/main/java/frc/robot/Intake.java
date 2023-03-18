@@ -176,4 +176,9 @@ public class Intake {
     public boolean hasPiece() { // Beam break not tested yet
         return beamCone.isBroken() || beamCube.isBroken();
     }
+
+    public void haltWrist() {
+        double rawWrist = wristEncoder.getPosition();
+        setWrist(rawWrist);
+    }
 }

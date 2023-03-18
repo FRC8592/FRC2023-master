@@ -227,7 +227,7 @@ public enum AutonomousPositions {
                 config
             );
 
-            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config).addRotation(Rotation2d.fromDegrees(180));
+            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config);
         } else {
             Pose2d startPose = poses[0];
             Pose2d endPose = poses[poses.length - 1];
