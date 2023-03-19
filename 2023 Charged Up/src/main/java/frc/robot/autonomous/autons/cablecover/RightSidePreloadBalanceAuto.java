@@ -13,7 +13,7 @@ import frc.robot.commands.LiftCommand;
 import frc.robot.commands.ScoreCommand;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class CableCoverPreloadBalanceAuto extends BaseAuto {
+public class RightSidePreloadBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.8, 1);
 
     private SwerveTrajectory G_TO_Icc = generateTrajectoryFromPoints(

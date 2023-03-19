@@ -59,7 +59,7 @@ public class Drivetrain {
     // Measure the drivetrain's maximum velocity (m/s) or calculate the theoretical maximum.
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6; //4.5
     // 6380.0 / 60.0 *
     //     SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
     //     SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
@@ -67,7 +67,7 @@ public class Drivetrain {
     // The maximum angular velocity of the robot in radians per second.
     //
     // This calculated value could be replaced with a measured value.
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND / //6.0
         Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
     // Set up the kinematics module based on physical drivetrain characteristics
@@ -283,10 +283,6 @@ public class Drivetrain {
         // if (targetDegrees > 180) {
         //     targetDegrees -= 360;
         // }
-
-        if (DriverStation.getAlliance() == Alliance.Red) {
-            targetDegrees = 180 - targetDegrees;
-        }
 
         // targetDegrees = 180 - targetDegrees;
         // targetDegrees *= -1;

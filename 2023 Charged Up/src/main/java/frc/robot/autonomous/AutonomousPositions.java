@@ -201,6 +201,7 @@ public enum AutonomousPositions {
     public static SwerveTrajectory generateTrajectoryFromPoints(TrajectoryConfig config, Pose2d ... poses) {
         Trajectory traj = new Trajectory();
         boolean red = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+        red = false;
         if (red) {
             Pose2d startPose = poses[0];
             Pose2d endPose = poses[poses.length - 1];

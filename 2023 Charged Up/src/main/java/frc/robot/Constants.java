@@ -58,7 +58,7 @@ public final class Constants {
 
 
     public static final double LEVEL_PITCH = 3.0;
-    public static final double PITCH_MULTIPLIER = 1.0 / 60.0;
+    public static final double PITCH_MULTIPLIER = 1.0 / 65.0;
     //
     // CAN IDs for intake hardware (NEEDS SETTING)
     //
