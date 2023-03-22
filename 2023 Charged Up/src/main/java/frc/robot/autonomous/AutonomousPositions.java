@@ -23,9 +23,9 @@ public enum AutonomousPositions {
     GRID_H(1.664 + 0.6, 1.579 - 0.1),
     GRID_I(1.664 + 0.6, 0.384 + 0.5),
     
-    BALANCE_CABLE_COVER(5.292, 1.902, Rotation2d.fromDegrees(0)), // Consider pushing x position out to not bump into charging station
-    BALANCE_MIDDLE(5.292 - 0.75 + 0.75 + 0.5, 2.682 - 0.2 + 0.5, Rotation2d.fromDegrees(0)),
-    BALANCE_LOADING_ZONE(5.292, 3.523, Rotation2d.fromDegrees(0)), // Consider pushing x position out to not bump into charging station
+    BALANCE_CABLE_COVER(5.292, 1.902), // Consider pushing x position out to not bump into charging station
+    BALANCE_MIDDLE(5.292 - 0.75 + 0.75 + 0.5, 2.682 - 0.2 + 0.5),
+    BALANCE_LOADING_ZONE(5.292, 3.523), // Consider pushing x position out to not bump into charging station
 
     // Positions all mixed up for intermediary
     INTERMEDIARY_LOADING_ZONE(4.985, 5.013 - 0.5), // Changed to parallel with Grid_A 
@@ -57,11 +57,6 @@ public enum AutonomousPositions {
         ref = new Rotation2d();
     }
 
-    AutonomousPositions(double xPos, double yPos, Rotation2d refRotation) {
-        translation = new Translation2d(xPos, yPos);
-        ref = refRotation;
-    }
-
     public Translation2d getTranslation() {
         return translation;
     }
@@ -82,225 +77,41 @@ public enum AutonomousPositions {
         return new Pose2d(getPose().getX() + dx, getPose().getY() + dy, newRotation);
     }
 
-    public AutonomousPositions setRotation(Rotation2d rot) {
-        ref = rot;
-        return this;
-    }
-
-    public static AutonomousPositions createPosition(Translation2d translate) {
-        OVERRIDE.translation = translate;
-        return OVERRIDE;
-    }
-
-    public static AutonomousPositions createPosition(double x, double y) {
-        OVERRIDE.translation = new Translation2d(x, y);
-        return OVERRIDE;
-    }
-
-    public static SwerveTrajectory generateTrajectoryFromPoints(AutonomousPositions start, AutonomousPositions end, Rotation2d endRotation, TrajectoryConfig config) {
-        Trajectory traj;
-        boolean red = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-        if (red) {
-            traj = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(RED_WALL.getPose().getX() - start.getPose().getX(), start.getPose().getY(), Rotation2d.fromDegrees(180 + start.getPose().getRotation().getDegrees())), 
-                new ArrayList<>(), 
-                new Pose2d(RED_WALL.getPose().getX() - end.getPose().getX(), end.getPose().getY(), Rotation2d.fromDegrees(180 + end.getPose().getRotation().getDegrees())),
-                config
-            );
-        } else {
-            traj = TrajectoryGenerator.generateTrajectory(
-                start.getPose(), 
-                new ArrayList<>(), 
-                end.getPose(),
-                config
-            );
-        }
-
-        return new SwerveTrajectory(traj).addRotation(endRotation.plus(red ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(180)));
-    }
-
-    // ADD SOMETHING TO SET INTIAL AND FINAL ROTAITON FOR REFERNECE REASONS 
-    public static SwerveTrajectory generateTrajectoryFromPoints(AutonomousPositions start, AutonomousPositions end, Rotation2d endRotation, Rotation2d startRef, Rotation2d endRef, TrajectoryConfig config) {
-        Trajectory traj;
-        boolean red = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-        if (red) {
-            traj = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(RED_WALL.getPose().getX() - start.getPose().getX(), start.getPose().getY(), Rotation2d.fromDegrees(180 + start.getPose().getRotation().getDegrees() + startRef.getDegrees())), 
-                new ArrayList<>(), 
-                new Pose2d(RED_WALL.getPose().getX() - end.getPose().getX(), end.getPose().getY(), Rotation2d.fromDegrees(180 + end.getPose().getRotation().getDegrees() + endRef.getDegrees())),
-                config
-            );
-        } else {
-            traj = TrajectoryGenerator.generateTrajectory(
-                // start.getPose(),
-                new Pose2d(start.getPose().getTranslation(), Rotation2d.fromDegrees(-startRef.getDegrees())), 
-                new ArrayList<>(), 
-                new Pose2d(end.getPose().getTranslation(), Rotation2d.fromDegrees(-endRef.getDegrees())),
-                config
-            );
-        }
-
-        // return new SwerveTrajectory(traj).addRotation(endRotation.plus(red ? Rotation2d.fromDegrees(180) : new Rotation2d()));
-        return new SwerveTrajectory(traj).addRotation(endRotation);
-    }
-
-    public static SwerveTrajectory generateTrajectoryFromPoints(TrajectoryConfig config, AutonomousPositions ... positions) {
+    public static SwerveTrajectory generate(TrajectoryConfig config, Pose2d ... poses) {
         Trajectory traj = new Trajectory();
-        boolean red = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-        if (red) {
-            AutonomousPositions startPos = positions[0];
-            AutonomousPositions endPos = positions[positions.length - 1];
-            Translation2d[] nonEndPositions = new Translation2d[positions.length - 2];
-
-            for (int i = 1; i < positions.length - 1; i++) {
-                if (positions[i] != null) {
-                    nonEndPositions[i-1] = new Translation2d(RED_WALL.getTranslation().getX() - positions[i].getTranslation().getX(), positions[i].getTranslation().getY());
-                }
-            }
-
-            traj = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(
-                    RED_WALL.getPose().getX() - startPos.getPose().getX(), 
-                    startPos.getPose().getY(),
-                    Rotation2d.fromDegrees(180)
-                ), 
-                List.of(
-                    nonEndPositions
-                ), 
-                new Pose2d(
-                    RED_WALL.getPose().getX() - endPos.getPose().getX(), 
-                    endPos.getPose().getY(),
-                    Rotation2d.fromDegrees(180)
-                ), 
-                config
-            );
-        } else {
-            AutonomousPositions startPos = positions[0];
-            AutonomousPositions endPos = positions[positions.length - 1];
-            Translation2d[] nonEndPositions = new Translation2d[positions.length - 2];
-
-            for (int i = 1; i < positions.length - 1; i++) {
-                if (positions[i] != null) {
-                    nonEndPositions[i-1] = positions[i].getPose().getTranslation();
-                }
-            }
-
-            traj = TrajectoryGenerator.generateTrajectory(
-                startPos.getPose(), 
-                List.of(
-                    nonEndPositions
-                ), 
-                endPos.getPose(), 
-                config
-            );
+        Pose2d startPose = poses[0];
+        Pose2d endPose = poses[poses.length - 1];
+        Translation2d[] nonEndPoses = new Translation2d[poses.length - 2];
+        for (int i = 1; i < poses.length - 1; i++) {
+            nonEndPoses[i-1] = poses[i].getTranslation();
         }
 
-        return new SwerveTrajectory(traj);
+        traj = TrajectoryGenerator.generateTrajectory(
+            startPose, 
+            List.of(nonEndPoses), 
+            endPose, 
+            config
+        );
+
+        return new SwerveTrajectory(traj).setTrajectoryConfiguration(config);
     }
 
-    public static SwerveTrajectory generateTrajectoryFromPoints(TrajectoryConfig config, Pose2d ... poses) {
+    public static SwerveTrajectory generate(TrajectoryConfig config, Rotation2d rotation, double turnDelay, Pose2d ... poses) {
         Trajectory traj = new Trajectory();
-        boolean red = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-        if (red) {
-            Pose2d startPose = poses[0];
-            Pose2d endPose = poses[poses.length - 1];
-            Translation2d[] nonEndPoses = new Translation2d[poses.length - 2];
-
-            for (int i = 1; i < poses.length - 1; i++) {
-                nonEndPoses[i-1] = new Translation2d(RED_WALL.getPose().getX() - poses[i].getTranslation().getX(), poses[i].getTranslation().getY());
-            }
-
-            traj = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(
-                    RED_WALL.getPose().getX() - startPose.getX(),
-                    startPose.getY(),
-                    // startPose.getRotation().plus(Rotation2d.fromDegrees(180))
-                    Rotation2d.fromDegrees(180-startPose.getRotation().getDegrees())
-                ),
-                List.of(nonEndPoses), 
-                new Pose2d(
-                    RED_WALL.getPose().getX() - endPose.getX(),
-                    endPose.getY(),
-                    Rotation2d.fromDegrees(180-endPose.getRotation().getDegrees())
-                    // endPose.getRotation().plus(Rotation2d.fromDegrees(180))
-                ), 
-                config
-            );
-
-            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config).addRotation(Rotation2d.fromDegrees(180));
-        } else {
-            Pose2d startPose = poses[0];
-            Pose2d endPose = poses[poses.length - 1];
-            Translation2d[] nonEndPoses = new Translation2d[poses.length - 2];
-
-            for (int i = 1; i < poses.length - 1; i++) {
-                nonEndPoses[i-1] = poses[i].getTranslation();
-            }
-
-            traj = TrajectoryGenerator.generateTrajectory(
-                startPose, 
-                List.of(nonEndPoses), 
-                endPose, 
-                config
-            );
-
-            return new SwerveTrajectory(traj).setTrajectoryConfiguration(config);
+        Pose2d startPose = poses[0];
+        Pose2d endPose = poses[poses.length - 1];
+        Translation2d[] nonEndPoses = new Translation2d[poses.length - 2];
+        for (int i = 1; i < poses.length - 1; i++) {
+            nonEndPoses[i-1] = poses[i].getTranslation();
         }
 
-    }
+        traj = TrajectoryGenerator.generateTrajectory(
+            startPose, 
+            List.of(nonEndPoses), 
+            endPose, 
+            config
+        );
 
-    // MAKE SURE TO ADD RED ONCE RED FINISHES
-    public static SwerveTrajectory generateTrajectoryFromPoints(TrajectoryConfig config, Rotation2d refStartRot, Rotation2d refEndRot, AutonomousPositions ... positions) {
-        Trajectory traj = new Trajectory();
-        boolean red = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-        if (red) {
-            AutonomousPositions startPos = positions[0];
-            AutonomousPositions endPos = positions[positions.length - 1];
-            Translation2d[] nonEndPositions = new Translation2d[positions.length - 2];
-
-            for (int i = 1; i < positions.length - 1; i++) {
-                if (positions[i] != null) {
-                    // nonEndPositions[i-1] = RED_WALL.getTranslation().minus(positions[i].getPose().getTranslation());
-                    nonEndPositions[i-1] = new Translation2d(RED_WALL.getTranslation().getX() - positions[i].getTranslation().getX(), positions[i].getTranslation().getY());
-                }
-            }
-
-            traj = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(
-                    // RED_WALL.getTranslation().minus(startPos.getTranslation()),
-                    RED_WALL.getPose().getX() - startPos.getPose().getX(), 
-                    startPos.getPose().getY(), 
-                    refStartRot.plus(Rotation2d.fromDegrees(180))), 
-                List.of(
-                    nonEndPositions
-                ), 
-                new Pose2d(
-                    RED_WALL.getPose().getX() - endPos.getPose().getX(), 
-                    endPos.getPose().getY(),
-                    refStartRot.plus(Rotation2d.fromDegrees(180))), 
-                config
-            );
-        } else {
-            AutonomousPositions startPos = positions[0];
-            AutonomousPositions endPos = positions[positions.length - 1];
-            Translation2d[] nonEndPositions = new Translation2d[positions.length - 2];
-
-            for (int i = 1; i < positions.length - 1; i++) {
-                if (positions[i] != null) {
-                    nonEndPositions[i-1] = positions[i].getPose().getTranslation();
-                }
-            }
-
-            traj = TrajectoryGenerator.generateTrajectory(
-                new Pose2d(startPos.getTranslation(), refStartRot), 
-                List.of(
-                    nonEndPositions
-                ), 
-                new Pose2d(endPos.getTranslation(), refStartRot), 
-                config
-            );
-        }
-
-        return new SwerveTrajectory(traj);
+        return new SwerveTrajectory(traj).setTrajectoryConfiguration(config).addRotation(rotation, 2 * Math.PI, turnDelay);
     }
 }

@@ -27,7 +27,10 @@ public class AutonomousSelector {
         LoadingZoneConeGrabPieceBalanceAuto.class,
         
         CableCoverPreloadMobilityAuto.class,
-        CableCoverPreloadBalanceAuto.class
+        CableCoverPreloadBalanceAuto.class,
+
+        LeftConeCubeBalanceAuto.class,
+        RightConeCubeBalanceAuto.class
     };
 
     public AutonomousSelector() {

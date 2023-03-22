@@ -27,7 +27,7 @@ public class SwerveTrajectory {
 
     private PIDController turnPID;
 
-    private double maxRotationVelocity = Math.PI;
+    private double maxRotationVelocity = 2 * Math.PI;
     private double turnDelay = 0.0;
     private boolean vision = false;
     private double acceptanceRange = 0.1;
@@ -95,6 +95,16 @@ public class SwerveTrajectory {
         this.rotation = Rotation2d.fromDegrees(rotation.getDegrees());
         turnDelay = delay;
         maxRotationVelocity = turnSpeed;
+        return this;
+    }
+
+    /**
+     * @param rotation ending rotation
+     * @return the same {@code SwerveTrajectory} object back but with the added {@code Rotation2d} for easy usage
+     */
+    public SwerveTrajectory addRotation(Rotation2d rotation, double delay) {
+        this.rotation = Rotation2d.fromDegrees(rotation.getDegrees());
+        turnDelay = delay;
         return this;
     }
 

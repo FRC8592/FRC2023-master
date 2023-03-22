@@ -16,7 +16,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class LoadingZonePreloadBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.8, 1.0);
     
-    private SwerveTrajectory C_TO_Ilz = generateTrajectoryFromPoints(
+    private SwerveTrajectory C_TO_Ilz = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(1.0),
@@ -26,7 +26,7 @@ public class LoadingZonePreloadBalanceAuto extends BaseAuto {
         INTERMEDIARY_LOADING_ZONE.getPose()
     );
 
-    private SwerveTrajectory Ilz_TO_BM = generateTrajectoryFromPoints(
+    private SwerveTrajectory Ilz_TO_BM = generate(
         config
             .setStartVelocity(1.0)
             .setEndVelocity(0.1),

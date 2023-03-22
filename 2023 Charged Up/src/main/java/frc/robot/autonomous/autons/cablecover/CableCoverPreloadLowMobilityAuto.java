@@ -14,7 +14,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class CableCoverPreloadLowMobilityAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
-    private SwerveTrajectory G_TO_Icc = generateTrajectoryFromPoints(
+    private SwerveTrajectory G_TO_Icc = generate(
         config,
         GRID_G.getPose(),
         INTERMEDIARY_CABLE_COVER.translate(-2.0, 0.5),

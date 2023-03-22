@@ -17,7 +17,7 @@ public class MiddlePreloadBalanceAuto extends BaseAuto {
 
     @Override
     public void initialize() {
-        SwerveTrajectory E_TO_BM = generateTrajectoryFromPoints(
+        SwerveTrajectory E_TO_BM = generate(
             config,
             GRID_E.getPose(),
             GRID_E.translate(4.0, 0.0)

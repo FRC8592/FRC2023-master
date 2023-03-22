@@ -11,7 +11,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class MoveOutCommunityAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
-    private SwerveTrajectory MOVE_OUT = generateTrajectoryFromPoints(
+    private SwerveTrajectory MOVE_OUT = generate(
         config,
         GRID_A.getPose(),
         GRID_A.translate(4, 0)

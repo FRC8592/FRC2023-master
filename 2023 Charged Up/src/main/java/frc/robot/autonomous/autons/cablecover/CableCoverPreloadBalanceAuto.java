@@ -16,7 +16,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class CableCoverPreloadBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.8, 1);
 
-    private SwerveTrajectory G_TO_Icc = generateTrajectoryFromPoints(
+    private SwerveTrajectory G_TO_Icc = generate(
         config.setStartVelocity(0.0).setEndVelocity(1.0),
         GRID_G.getPose(),
         INTERMEDIARY_CABLE_COVER.translate(-2.25, 0.0),
@@ -24,7 +24,7 @@ public class CableCoverPreloadBalanceAuto extends BaseAuto {
         INTERMEDIARY_CABLE_COVER.getPose()
     );
 
-    private SwerveTrajectory Icc_TO_BM = generateTrajectoryFromPoints(
+    private SwerveTrajectory Icc_TO_BM = generate(
         config.setStartVelocity(1.0).setEndVelocity(0.0),
         INTERMEDIARY_CABLE_COVER.getPose(),
         BALANCE_MIDDLE.rotate(Rotation2d.fromDegrees(180.0))

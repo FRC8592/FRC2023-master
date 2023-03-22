@@ -19,7 +19,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class LoadingZoneConeGrabPieceBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
 
-    private SwerveTrajectory C_TO_Ilz = generateTrajectoryFromPoints(
+    private SwerveTrajectory C_TO_Ilz = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(2.0)
@@ -30,7 +30,7 @@ public class LoadingZoneConeGrabPieceBalanceAuto extends BaseAuto {
         INTERMEDIARY_LOADING_ZONE.translate(0.0, 0.1)
     );
 
-    private SwerveTrajectory Ilz_TO_GP1 = generateTrajectoryFromPoints(
+    private SwerveTrajectory Ilz_TO_GP1 = generate(
         config
             .setStartVelocity(2.0)
             .setEndVelocity(0.0)
@@ -39,7 +39,7 @@ public class LoadingZoneConeGrabPieceBalanceAuto extends BaseAuto {
         GAME_PIECE_1.translate(0.25, -0.05)
     );
 
-    private SwerveTrajectory GP1_TO_BM = generateTrajectoryFromPoints(
+    private SwerveTrajectory GP1_TO_BM = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(0.0)

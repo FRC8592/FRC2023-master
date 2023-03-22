@@ -17,7 +17,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 public class CableCoverPreloadGrabPieceBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 2);
 
-    private SwerveTrajectory C_TO_Ilz = generateTrajectoryFromPoints(
+    private SwerveTrajectory C_TO_Ilz = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(1.0)
@@ -27,7 +27,7 @@ public class CableCoverPreloadGrabPieceBalanceAuto extends BaseAuto {
         INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.0)
     );
 
-    private SwerveTrajectory Ilz_TO_GP1 = generateTrajectoryFromPoints(
+    private SwerveTrajectory Ilz_TO_GP1 = generate(
         config
             .setStartVelocity(1.0)
             .setEndVelocity(0.0)
@@ -36,7 +36,7 @@ public class CableCoverPreloadGrabPieceBalanceAuto extends BaseAuto {
         GAME_PIECE_1.translate(-0.5, 0)
     );
 
-    private SwerveTrajectory GP1_TO_BM = generateTrajectoryFromPoints(
+    private SwerveTrajectory GP1_TO_BM = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(0.0)
