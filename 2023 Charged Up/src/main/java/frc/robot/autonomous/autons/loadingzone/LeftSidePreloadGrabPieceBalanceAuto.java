@@ -16,7 +16,7 @@ import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class LoadingZoneConeGrabPieceBalanceAuto extends BaseAuto {
+public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
 
     private SwerveTrajectory C_TO_Ilz = generate(

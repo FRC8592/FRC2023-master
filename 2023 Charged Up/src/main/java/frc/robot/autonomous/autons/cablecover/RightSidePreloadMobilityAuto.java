@@ -11,7 +11,7 @@ import frc.robot.commands.LiftCommand;
 import frc.robot.commands.ScoreCommand;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class CableCoverPreloadLowMobilityAuto extends BaseAuto {
+public class RightSidePreloadMobilityAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
     private SwerveTrajectory G_TO_Icc = generate(
@@ -24,8 +24,16 @@ public class CableCoverPreloadLowMobilityAuto extends BaseAuto {
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new ScoreCommand(intake), // Score preload low
-            new FollowerCommand(drive, G_TO_Icc) // Move out community
+            new LiftCommand(elevator, Heights.PRIME), // Tilt up
+            new JointCommand( // Lift to high and score pre-load
+                new ScoreCommand(intake), 
+                new LiftCommand(elevator, Heights.HIGH)
+            ),
+            new LiftCommand(elevator, Heights.PRIME), // Retract the elevator
+            new JointCommand( // Retract the 4-bar while exiting community 
+                new LiftCommand(elevator, Heights.STOWED),
+                new FollowerCommand(drive, G_TO_Icc)
+            )
         );
     }
 

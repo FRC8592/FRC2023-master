@@ -13,7 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class LoadingZonePreloadBalanceAuto extends BaseAuto {
+public class LeftSidePreloadBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.8, 1.0);
     
     private SwerveTrajectory C_TO_Ilz = generate(

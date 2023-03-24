@@ -17,34 +17,34 @@ import frc.robot.commands.PipelineCommand.Pipeline;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
+public class MiddleRightConeGrabPieceBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
-    private SwerveTrajectory D_TO_Ib = generate(
+    private SwerveTrajectory F_TO_Ib = generateTrajectoryFromPoints(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(1.0)
             .setReversed(false),
-        GRID_D.getPose(),
-        GRID_D.translate(1.0, -0.05),
-        GRID_D.translate(3.0, -0.05)
+        GRID_F.getPose(),
+        GRID_F.translate(1.0, 0.05),
+        GRID_F.translate(3.0, 0.05)
     );
 
-    private SwerveTrajectory Ib_TO_GP2 = generate(
+    private SwerveTrajectory Ib_TO_GP3 = generateTrajectoryFromPoints(
         config
             .setStartVelocity(1.0)
             .setEndVelocity(0.0)
             .setReversed(false),
-        GRID_D.translate(3.0, -0.05),
-        GRID_D.translate(4.5, 0.0)
+        GRID_F.translate(3.0, 0.05),
+        GRID_F.translate(4.5, 0.0)
     );
 
-    private SwerveTrajectory GP2_TO_BM = generate(
+    private SwerveTrajectory GP3_TO_BM = generateTrajectoryFromPoints(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(0.0)
             .setReversed(true),
-        GRID_D.translate(4.5, 0),
+        GRID_F.translate(4.5, 0),
         BALANCE_MIDDLE.getPose()
     );
 
@@ -58,16 +58,16 @@ public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
             ),
             new LiftCommand(elevator, Heights.PRIME),
             new JointCommand(
-                new FollowerCommand(drive, D_TO_Ib.addRotation(Rotation2d.fromDegrees(180), Math.PI, 0.25)),
+                new FollowerCommand(drive, F_TO_Ib.addRotation(Rotation2d.fromDegrees(180), Math.PI, 0.25)),
                 new LiftCommand(elevator, Heights.STOWED),
                 new IntakeCommand(intake, 3.0),
                 new PipelineCommand(vision, Pipeline.CUBE)
             ),
             new JointCommand(
-                new FollowerCommand(drive, vision, Ib_TO_GP2.addRotation(Rotation2d.fromDegrees(180))),
+                new FollowerCommand(drive, vision, Ib_TO_GP3.addRotation(Rotation2d.fromDegrees(180))),
                 new IntakeCommand(intake)
             ),
-            new FollowerCommand(drive, GP2_TO_BM),
+            new FollowerCommand(drive, GP3_TO_BM),
             new AutobalanceCommand(drive)
         );
     }

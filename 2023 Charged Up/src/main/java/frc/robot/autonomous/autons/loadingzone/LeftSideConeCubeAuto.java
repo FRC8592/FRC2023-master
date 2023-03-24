@@ -15,7 +15,7 @@ import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class LoadingZoneConeCubeAuto extends BaseAuto {
+public class LeftSideConeCubeAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
     private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
@@ -57,7 +57,7 @@ public class LoadingZoneConeCubeAuto extends BaseAuto {
             .setEndVelocity(0.0)
             .setReversed(true),
         GAME_PIECE_1.translate(-3.0, -0.05),
-        GAME_PIECE_1.translate(-3.9, -0.05)
+        GAME_PIECE_1.translate(-4.2, -0.05)
     );
 
     @Override
