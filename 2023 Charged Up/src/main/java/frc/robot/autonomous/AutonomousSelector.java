@@ -22,6 +22,7 @@ public class AutonomousSelector {
         LeftConeBalanceAuto.class,
         LeftConeGrabCubeBalanceAuto.class,
         LeftConeCubeAuto.class,
+        LeftConeConeAuto.class,
         LeftConeCubeBalanceAuto.class,
         LeftCableCoverConeCubeAuto.class,
 
@@ -33,6 +34,7 @@ public class AutonomousSelector {
         RightConeBalanceAuto.class,
         RightConeGrabCubeBalanceAuto.class,
         RightConeCubeAuto.class,
+        RightConeConeAuto.class,
         RightConeCubeBalanceAuto.class,
         RightCableCoverConeCubeAuto.class,
     };
