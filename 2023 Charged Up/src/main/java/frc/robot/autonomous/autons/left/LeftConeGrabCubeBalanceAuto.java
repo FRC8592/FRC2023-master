@@ -1,4 +1,4 @@
-package frc.robot.autonomous.autons.loadingzone;
+package frc.robot.autonomous.autons.left;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -16,7 +16,7 @@ import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
+public class LeftConeGrabCubeBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
 
     private SwerveTrajectory C_TO_Ilz = generate(
@@ -76,5 +76,4 @@ public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
     public void periodic() {
         queue.run();
     }
-    
 }

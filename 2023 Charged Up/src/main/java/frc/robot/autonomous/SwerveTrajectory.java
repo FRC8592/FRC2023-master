@@ -10,8 +10,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
@@ -29,7 +27,7 @@ public class SwerveTrajectory {
 
     private PIDController turnPID;
 
-    private double maxRotationVelocity = 2 * Math.PI;
+    private double maxRotationVelocity = Math.PI;
     private double turnDelay = 0.0;
     private boolean vision = false;
     private double acceptanceRange = 0.1;

@@ -1,6 +1,5 @@
 package frc.robot.autonomous.autons.other;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.autonomous.autons.BaseAuto;
@@ -20,7 +19,7 @@ public class MoveOutCommunityAuto extends BaseAuto {
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new FollowerCommand(drive, MOVE_OUT.addRotation(Rotation2d.fromDegrees(180), Math.PI, 1.0))
+            new FollowerCommand(drive, MOVE_OUT) // Move out community
         );
     }
 

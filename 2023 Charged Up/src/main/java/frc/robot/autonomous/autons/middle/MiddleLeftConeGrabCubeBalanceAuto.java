@@ -17,7 +17,7 @@ import frc.robot.commands.PipelineCommand.Pipeline;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
+public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
     private SwerveTrajectory D_TO_Ib = generate(
@@ -33,7 +33,7 @@ public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
     private SwerveTrajectory Ib_TO_GP2 = generate(
         config
             .setStartVelocity(1.0)
-            .setEndVelocity(0.0)
+            .setEndVelocity(1.0)
             .setReversed(false),
         GRID_D.translate(3.0, -0.05),
         GRID_D.translate(4.5, 0.0)
@@ -41,8 +41,8 @@ public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
 
     private SwerveTrajectory GP2_TO_BM = generate(
         config
-            .setStartVelocity(0.0)
-            .setEndVelocity(0.0)
+            .setStartVelocity(1.0)
+            .setEndVelocity(1.0)
             .setReversed(true),
         GRID_D.translate(4.5, 0),
         BALANCE_MIDDLE.getPose()

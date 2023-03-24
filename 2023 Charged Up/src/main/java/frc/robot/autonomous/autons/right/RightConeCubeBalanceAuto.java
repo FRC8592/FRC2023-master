@@ -1,9 +1,10 @@
-package frc.robot.autonomous.autons;
+package frc.robot.autonomous.autons.right;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.SwerveTrajectory;
+import frc.robot.autonomous.autons.BaseAuto;
 import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
 import frc.robot.commands.FollowerCommand;
