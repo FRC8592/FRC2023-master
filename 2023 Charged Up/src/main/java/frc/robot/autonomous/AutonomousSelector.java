@@ -21,13 +21,15 @@ public class AutonomousSelector {
         MiddleBalanceAuto.class,
         MiddlePreloadBalanceAuto.class,
         MiddlePreloadGrabPieceBalanceAuto.class,
+        MiddleRightConeGrabPieceBalanceAuto.class,
 
-        LoadingZonePreloadBalanceAuto.class,
-        LoadingZoneConeCubeAuto.class,
-        LoadingZoneConeGrabPieceBalanceAuto.class,
+        LeftSidePreloadBalanceAuto.class,
+        LeftSideConeCubeAuto.class,
+        LeftSidePreloadGrabPieceBalanceAuto.class,
         
-        CableCoverPreloadMobilityAuto.class,
-        CableCoverPreloadBalanceAuto.class
+        RightSidePreloadBalanceAuto.class,
+        RightSideConeCubeAuto.class,
+        RightSidePreloadGrabPieceBalanceAuto.class
     };
 
     public AutonomousSelector() {
