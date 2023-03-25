@@ -58,7 +58,13 @@ public final class Constants {
 
 
     public static final double LEVEL_PITCH = 3.0;
-    public static final double PITCH_MULTIPLIER = 1.0 / 60.0;
+    public static final double PITCH_MULTIPLIER = 0.01612903;
+    
+    public static final double AUTOBALANCE_kP = 0.03;
+    public static final double AUTOBALANCE_kI = 0.0;
+    public static final double AUTOBALANCE_kD = 0.0;
+
+    public static final double AUTOBALANCE_MAX_SPEED = 0.75;
     //
     // CAN IDs for intake hardware (NEEDS SETTING)
     //
@@ -302,9 +308,6 @@ public final class Constants {
     public static final double TURN_TO_kI = 0;
     public static final double TURN_TO_kD = 0.0;
 
-    public static final double AUTOBALANCE_kP = 0.0001;
-    public static final double AUTOBALANCE_kI = 0.0;
-    public static final double AUTOBALANCE_kD = 0.0;
 
     // Conversion constants
     public static final double INCHES_TO_METERS = 1.0 / 39.37;

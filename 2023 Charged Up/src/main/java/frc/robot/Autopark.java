@@ -19,7 +19,7 @@ public class Autopark {
     AutoBalanceStates currentState;
     Timer timer;
     private PIDController balancePID;
-    private double initialDist = 0, finalDist = 0;
+    private double initialDist = 0, finalDist = 0, speed;
     private boolean firstFrame = true;
 
     public Autopark(){
@@ -35,12 +35,13 @@ public class Autopark {
         System.out.println(currentState.toString() + " " + pitch);
 
         if (Math.abs(pitch) >= Constants.LEVEL_PITCH) {
-            drivetrain.drive(new ChassisSpeeds(-(pitch * Constants.PITCH_MULTIPLIER), 0, 0));
-            SmartDashboard.putNumber("Movement speed", balancePID.calculate(pitch, 0));
+            speed = -Math.signum(pitch) * Math.min(Math.abs(pitch * Constants.PITCH_MULTIPLIER), Constants.AUTOBALANCE_MAX_SPEED);
+            drivetrain.drive(new ChassisSpeeds(speed, 0, 0));
         } else {
             drivetrain.setWheelLock();
-            SmartDashboard.putNumber("Movement speed", 0);
+            speed = 0;
         }
+        SmartDashboard.putNumber("Movement speed", 0);
 
         return notBalanced;
     }
@@ -51,12 +52,30 @@ public class Autopark {
         System.out.println(currentState.toString() + " " + pitch);
 
         if (Math.abs(pitch) >= Constants.LEVEL_PITCH) {
-            drivetrain.drive(new ChassisSpeeds(balancePID.calculate(pitch, 0), 0, 0));
-            SmartDashboard.putNumber("Movement speed", balancePID.calculate(pitch, 0));
+            speed = -Math.signum(pitch) * Math.min(Math.abs(balancePID.calculate(pitch, 0)), Constants.AUTOBALANCE_MAX_SPEED);
+            drivetrain.drive(new ChassisSpeeds(speed, 0, 0));
         } else {
             drivetrain.setWheelLock();
-            SmartDashboard.putNumber("Movement speed", 0);
+            speed = 0;
         }
+        SmartDashboard.putNumber("Movement speed", speed);
+
+        return notBalanced;
+    }
+
+    public boolean balanceTest3(Drivetrain drivetrain) {
+        double pitch = drivetrain.getRoll();
+        boolean notBalanced = true;
+        System.out.println(currentState.toString() + " " + pitch);
+
+        if (Math.abs(pitch) >= Constants.LEVEL_PITCH) {
+            speed = -Math.signum(pitch) * Math.min(Math.abs(balancePID.calculate(pitch, 0)), Constants.AUTOBALANCE_MAX_SPEED);
+            drivetrain.drive(new ChassisSpeeds(balancePID.calculate(pitch, 0), 0, 0));
+        } else {
+            drivetrain.setWheelLock();
+            speed = 0;
+        }
+        SmartDashboard.putNumber("Movement speed", speed);
 
         return notBalanced;
     }
