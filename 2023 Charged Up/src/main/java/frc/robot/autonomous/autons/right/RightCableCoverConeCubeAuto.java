@@ -16,26 +16,25 @@ import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class RightCableCoverConeCubeAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(3.0, 1.0);
+    private TrajectoryConfig config = new TrajectoryConfig(3.75, 1.0);
     private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
     private SwerveTrajectory G_TO_CABLE_COVER = generate(
         config
             .setStartVelocity(0.0)
-            .setEndVelocity(1.0)
+            .setEndVelocity(0.75)
             .setReversed(false),
         GRID_G.getPose(),
-        INTERMEDIARY_CABLE_COVER.translate(-2.0, -0.2),
-        INTERMEDIARY_CABLE_COVER.translate(-1.0, -0.1)
+        INTERMEDIARY_CABLE_COVER.translate(-2.0, -0.2)
     ).addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.5);
 
     private SwerveTrajectory CABLE_COVER_TO_Icc = generate(
         config
-            .setStartVelocity(1.0)
+            .setStartVelocity(0.75)
             .setEndVelocity(2.0)
             .setReversed(false),
-        INTERMEDIARY_CABLE_COVER.translate(-1.0, -0.1),
-        INTERMEDIARY_CABLE_COVER.translate(0.0, -0.1)
+        INTERMEDIARY_CABLE_COVER.translate(-2.0, 0.2),
+        INTERMEDIARY_CABLE_COVER.translate(0.0, 0.1)
     ).addRotation(Rotation2d.fromDegrees(180));
 
     private SwerveTrajectory Icc_TO_GP4 = generate(
@@ -54,17 +53,25 @@ public class RightCableCoverConeCubeAuto extends BaseAuto {
             .setReversed(true),
         GAME_PIECE_4.translate(0.25, 0.05),
         GAME_PIECE_4.translate(-0.6, 0.0),
-        GAME_PIECE_4.translate(-2.0, 0.0),
-        GAME_PIECE_4.translate(-3.0, 0.05)
+        GAME_PIECE_4.translate(-1.75, 0.0)
+    );
+
+    private SwerveTrajectory CABLE_COVER_PASS = generate(
+        config
+            .setStartVelocity(1.0)
+            .setEndVelocity(0.5)
+            .setReversed(true),
+        GAME_PIECE_1.translate(-1.75, 0.0),
+        GAME_PIECE_1.translate(-2.5, 0.0)
     );
 
     private SwerveTrajectory H_TO_SCORE = generate(
         slowConfig
-            .setStartVelocity(1.0)
+            .setStartVelocity(0.5)
             .setEndVelocity(0.0)
             .setReversed(true),
-        GAME_PIECE_4.translate(-3.0, 0.05),
-        GAME_PIECE_4.translate(-4.2, 0.05)
+        GAME_PIECE_1.translate(-2.5, 0.0),
+        GAME_PIECE_1.translate(-4.0, 0.05)
     ).addVision().setAcceptanceRange(0.05);
 
     @Override
@@ -92,6 +99,10 @@ public class RightCableCoverConeCubeAuto extends BaseAuto {
             new JointCommand( // Change pipeline APRIL TAG and PRIME 4-bar while moving back to community
                 new PipelineCommand(vision, Pipeline.APRIL_TAG),
                 new FollowerCommand(drive, GP4_TO_H),
+                new LiftCommand(elevator, Heights.PRIME)
+            ),
+            new JointCommand(
+                new FollowerCommand(drive, vision, CABLE_COVER_PASS),
                 new LiftCommand(elevator, Heights.PRIME)
             ),
             new JointCommand( // TRACK grid and continue PRIME 4-bar
