@@ -302,6 +302,10 @@ public final class Constants {
     public static final double TURN_TO_kI = 0;
     public static final double TURN_TO_kD = 0.0;
 
+    public static final double AUTOBALANCE_kP = 0.0001;
+    public static final double AUTOBALANCE_kI = 0.0;
+    public static final double AUTOBALANCE_kD = 0.0;
+
     // Conversion constants
     public static final double INCHES_TO_METERS = 1.0 / 39.37;
 }
