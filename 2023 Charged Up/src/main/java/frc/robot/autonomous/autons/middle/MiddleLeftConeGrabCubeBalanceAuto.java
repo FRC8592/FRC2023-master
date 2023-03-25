@@ -13,6 +13,7 @@ import frc.robot.commands.JointCommand;
 import frc.robot.commands.LiftCommand;
 import frc.robot.commands.PipelineCommand;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.ThrowPieceCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
@@ -45,7 +46,8 @@ public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
             .setEndVelocity(1.0)
             .setReversed(true),
         GRID_D.translate(4.5, 0),
-        BALANCE_MIDDLE.getPose()
+        BALANCE_MIDDLE.getPose(),
+        BALANCE_MIDDLE.translate(-1.2, 0.0)
     );
 
     @Override
@@ -68,7 +70,10 @@ public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
                 new IntakeCommand(intake)
             ),
             new FollowerCommand(drive, GP2_TO_BM),
-            new AutobalanceCommand(drive)
+            new JointCommand(
+                new AutobalanceCommand(drive),
+                new ThrowPieceCommand(intake)
+            )
         );
     }
 

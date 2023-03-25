@@ -157,6 +157,14 @@ public class Intake {
         // }
     }
 
+    public void throwPiece() {
+        setWrist(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS));
+        double rawWrist = wristEncoder.getPosition();
+        if (rawWrist >= 3.0) {
+            scoreRoller();
+        }
+    }
+
     public void enableWrist(boolean enable) {
         if (enable) {
             wristCtrl.setReference(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS), ControlType.kSmartMotion);

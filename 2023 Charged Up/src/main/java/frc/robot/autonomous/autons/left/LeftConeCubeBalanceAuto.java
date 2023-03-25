@@ -18,7 +18,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class LeftConeCubeBalanceAuto extends BaseAuto {
     private TrajectoryConfig fastConfig = new TrajectoryConfig(3.75, 1);
-    private TrajectoryConfig slowConfig = new TrajectoryConfig(1, 1);
+    private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1);
     private TrajectoryConfig balanceConfig = new TrajectoryConfig(2, 1);
 
     private SwerveTrajectory C_TO_Ilz = generate(
@@ -64,15 +64,15 @@ public class LeftConeCubeBalanceAuto extends BaseAuto {
     );
 
     private SwerveTrajectory B_TO_BALANCE = generate(
-        balanceConfig
+        slowConfig
             .setStartVelocity(0.0)
             .setEndVelocity(1.0)
             .setReversed(false),
         GAME_PIECE_1.translate(-3.9, -0.05),
         GAME_PIECE_1.translate(-3.9, -0.1),
-        GAME_PIECE_1.translate(-3.6, -1.0),
-        GAME_PIECE_1.translate(-3.4, -1.2),
-        GAME_PIECE_1.translate(-2.3, -1.2)
+        GAME_PIECE_1.translate(-3.7, -1.0),
+        GAME_PIECE_1.translate(-3.5, -1.4),
+        GAME_PIECE_1.translate(-2.4, -1.4)
     );
 
     @Override
@@ -106,7 +106,7 @@ public class LeftConeCubeBalanceAuto extends BaseAuto {
             ),
             new JointCommand(
                 new LiftCommand(elevator, Heights.STOWED),
-                new FollowerCommand(drive, B_TO_BALANCE.addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 1.0))
+                new FollowerCommand(drive, B_TO_BALANCE.addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.75))
             ),
             new JointCommand(
                 new AutobalanceCommand(drive),
