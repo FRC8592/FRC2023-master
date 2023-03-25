@@ -18,7 +18,7 @@ public class Autopark {
     AutoBalanceStates currentState;
     Timer timer;
     public Autopark(){
-        currentState = AutoBalanceStates.DRIVE_FORWARD;
+        currentState = AutoBalanceStates.FIX_TILT;
         timer = new Timer();
 
     }

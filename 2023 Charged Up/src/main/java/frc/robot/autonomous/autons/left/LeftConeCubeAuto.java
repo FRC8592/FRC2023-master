@@ -16,7 +16,7 @@ import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class LeftConeCubeAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
+    private TrajectoryConfig config = new TrajectoryConfig(3.75, 1);
     private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
     private SwerveTrajectory C_TO_Ilz = generate(
