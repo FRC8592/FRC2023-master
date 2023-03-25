@@ -367,7 +367,7 @@ public class Robot extends LoggedRobot {
       if (substationVision.targetValid && elevator.atTiltReference()){
 
         driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          driveSpeeds.vxMetersPerSecond,
+          translateX,
           substationVision.turnRobot(
             1.0,
             strafePID,
