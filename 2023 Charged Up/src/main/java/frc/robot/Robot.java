@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
   public LED ledStrips;
 
   public Vision gameObjectVision;
+  public Vision substationVision;
   public String currentPiecePipeline;
   private Elevator elevator;
   private Intake intake;
@@ -108,6 +109,9 @@ public class Robot extends LoggedRobot {
     power = new Power();
     drive = new Drivetrain(logger);
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
+     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+     Constants.BALL_TARGET_HEIGHT, logger);
+    substationVision = new Vision(Constants.LIMELIGHT_SUBSTATION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -230,6 +234,8 @@ public class Robot extends LoggedRobot {
     gameObjectVision.updateVision();
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
+    NetworkTableInstance.getDefault().getTable(Constants.LIMELIGHT_SUBSTATION).getEntry("pipeline").setNumber(Constants.SUBSTATION_CONE_PIPELINE);
+
 
     /*
      * Controls:
@@ -355,20 +361,32 @@ public class Robot extends LoggedRobot {
           )
         );
       }
-    } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
+    } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // line up with single substation
       // set LED to targetlock
       ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
-        driveSpeeds = new ChassisSpeeds(
+      if (substationVision.targetValid && elevator.atTiltReference()){
+
+        driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
           driveSpeeds.vxMetersPerSecond,
-          gameObjectVision.turnRobot(
+          substationVision.turnRobot(
             1.0,
             strafePID,
             8.0
           ),
-          driveSpeeds.omegaRadiansPerSecond
-        );
+          driveSpeeds.omegaRadiansPerSecond, 
+          drive.getGyroscopeRotation());
       }
+      // if (gameObjectVision.targetValid) {
+      //   driveSpeeds = new ChassisSpeeds(
+      //     driveSpeeds.vxMetersPerSecond,
+      //     gameObjectVision.turnRobot(
+      //       1.0,
+      //       strafePID,
+      //       8.0
+      //     ),
+      //     driveSpeeds.omegaRadiansPerSecond
+      //   )
+      // }
       
     } else { // Normal drive
       // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(

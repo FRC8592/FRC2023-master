@@ -176,6 +176,7 @@ public final class Constants {
     public static double BALL_ROTATE_KD        = 0.0;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
     public static String LIMELIGHT_VISION       = "limelight-vision";
+    public static String LIMELIGHT_SUBSTATION       = "limelight-substation";
 
     public static double CLOSE_BALL_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
     public static double CLOSE_BALL_ROTATE_KI  = 0.0;
@@ -294,6 +295,8 @@ public final class Constants {
     public static final int CONE_PIPELINE = 1;
     public static final int APRILTAG_PIPELINE = 2;
     public static final int RETROTAPE_PIPELINE = 4;
+    
+    public static final int SUBSTATION_CONE_PIPELINE = 4;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;
