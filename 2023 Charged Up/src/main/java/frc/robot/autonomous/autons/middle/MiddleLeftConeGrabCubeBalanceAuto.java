@@ -34,7 +34,7 @@ public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
     private SwerveTrajectory Ib_TO_GP2 = generate(
         config
             .setStartVelocity(1.0)
-            .setEndVelocity(1.0)
+            .setEndVelocity(0.5)
             .setReversed(false),
         GRID_D.translate(3.0, -0.05),
         GRID_D.translate(4.5, 0.0)
@@ -42,7 +42,7 @@ public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
 
     private SwerveTrajectory GP2_TO_BM = generate(
         config
-            .setStartVelocity(1.0)
+            .setStartVelocity(0.5)
             .setEndVelocity(1.0)
             .setReversed(true),
         GRID_D.translate(4.5, 0),
