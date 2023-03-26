@@ -1,4 +1,4 @@
-package frc.robot.autonomous.autons.cablecover;
+package frc.robot.autonomous.autons.right;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -15,11 +15,11 @@ import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class RightSideConeCubeAuto extends BaseAuto {
+public class RightConeConeAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
     private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
-    private SwerveTrajectory G_TO_Icc = generateTrajectoryFromPoints(
+    private SwerveTrajectory G_TO_Icc = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(2.0)
@@ -30,7 +30,7 @@ public class RightSideConeCubeAuto extends BaseAuto {
         INTERMEDIARY_CABLE_COVER.translate(0.0, -0.1)
     );
 
-    private SwerveTrajectory Icc_TO_GP4 = generateTrajectoryFromPoints(
+    private SwerveTrajectory Icc_TO_GP4 = generate(
         config
             .setStartVelocity(2.0)
             .setEndVelocity(0.0)
@@ -39,24 +39,22 @@ public class RightSideConeCubeAuto extends BaseAuto {
         GAME_PIECE_4.translate(0.25, 0.05)
     );
 
-    private SwerveTrajectory GP4_TO_H = generateTrajectoryFromPoints(
+    private SwerveTrajectory GP4_TO_I = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(2.0)
             .setReversed(true),
         GAME_PIECE_4.translate(0.25, 0.05),
-        GAME_PIECE_4.translate(-0.6, 0.0),
-        GAME_PIECE_4.translate(-2.0, 0.0),
-        GAME_PIECE_4.translate(-3.0, 0.05)
+        GAME_PIECE_4.translate(-3.0, 0.25)
     );
 
-    private SwerveTrajectory H_TO_SCORE = generateTrajectoryFromPoints(
+    private SwerveTrajectory I_TO_SCORE = generate(
         slowConfig
             .setStartVelocity(2.0)
             .setEndVelocity(0.0)
             .setReversed(true),
-        GAME_PIECE_4.translate(-3.0, 0.05),
-        GAME_PIECE_4.translate(-4.2, 0.05)
+        GAME_PIECE_4.translate(-3.0, 0.25),
+        GAME_PIECE_4.translate(-4.2, 0.25)
     );
 
     @Override
@@ -80,11 +78,11 @@ public class RightSideConeCubeAuto extends BaseAuto {
             ),
             new JointCommand( // Change pipeline APRIL TAG and PRIME 4-bar while moving back to community
                 new PipelineCommand(vision, Pipeline.APRIL_TAG),
-                new FollowerCommand(drive, GP4_TO_H),
+                new FollowerCommand(drive, GP4_TO_I),
                 new LiftCommand(elevator, Heights.PRIME)
             ),
             new JointCommand( // TRACK grid and continue PRIME 4-bar
-                new FollowerCommand(drive, vision, H_TO_SCORE.addVision().setAcceptanceRange(0.05)),
+                new FollowerCommand(drive, vision, I_TO_SCORE.addVision().setAcceptanceRange(0.05)),
                 new LiftCommand(elevator, Heights.PRIME)
             ),
             new JointCommand( // Lift elevator HIGH and score

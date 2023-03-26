@@ -13,14 +13,15 @@ import frc.robot.commands.JointCommand;
 import frc.robot.commands.LiftCommand;
 import frc.robot.commands.PipelineCommand;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.ThrowPieceCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
+public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1, 1);
 
-    private SwerveTrajectory D_TO_Ib = generateTrajectoryFromPoints(
+    private SwerveTrajectory D_TO_Ib = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(1.0)
@@ -30,22 +31,23 @@ public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
         GRID_D.translate(3.0, -0.05)
     );
 
-    private SwerveTrajectory Ib_TO_GP2 = generateTrajectoryFromPoints(
+    private SwerveTrajectory Ib_TO_GP2 = generate(
         config
             .setStartVelocity(1.0)
-            .setEndVelocity(0.0)
+            .setEndVelocity(1.0)
             .setReversed(false),
         GRID_D.translate(3.0, -0.05),
         GRID_D.translate(4.5, 0.0)
     );
 
-    private SwerveTrajectory GP2_TO_BM = generateTrajectoryFromPoints(
+    private SwerveTrajectory GP2_TO_BM = generate(
         config
-            .setStartVelocity(0.0)
-            .setEndVelocity(0.0)
+            .setStartVelocity(1.0)
+            .setEndVelocity(1.0)
             .setReversed(true),
         GRID_D.translate(4.5, 0),
-        BALANCE_MIDDLE.getPose()
+        BALANCE_MIDDLE.getPose(),
+        BALANCE_MIDDLE.translate(-1.2, 0.0)
     );
 
     @Override
@@ -68,7 +70,10 @@ public class MiddlePreloadGrabPieceBalanceAuto extends BaseAuto {
                 new IntakeCommand(intake)
             ),
             new FollowerCommand(drive, GP2_TO_BM),
-            new AutobalanceCommand(drive)
+            new JointCommand(
+                new AutobalanceCommand(drive),
+                new ThrowPieceCommand(intake)
+            )
         );
     }
 

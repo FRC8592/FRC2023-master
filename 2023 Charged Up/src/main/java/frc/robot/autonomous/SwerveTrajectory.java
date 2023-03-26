@@ -10,8 +10,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 
@@ -97,6 +95,16 @@ public class SwerveTrajectory {
         this.rotation = Rotation2d.fromDegrees(rotation.getDegrees());
         turnDelay = delay;
         maxRotationVelocity = turnSpeed;
+        return this;
+    }
+
+    /**
+     * @param rotation ending rotation
+     * @return the same {@code SwerveTrajectory} object back but with the added {@code Rotation2d} for easy usage
+     */
+    public SwerveTrajectory addRotation(Rotation2d rotation, double delay) {
+        this.rotation = Rotation2d.fromDegrees(rotation.getDegrees());
+        turnDelay = delay;
         return this;
     }
 
