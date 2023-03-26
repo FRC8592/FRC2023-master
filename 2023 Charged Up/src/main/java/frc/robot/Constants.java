@@ -96,7 +96,7 @@ public final class Constants {
     public static final int ELEVATOR_TILT_MOTOR_ID   = 15;
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
-    public static final double TILT_MAX_ROTATIONS = -25.5;
+    public static final double TILT_MAX_ROTATIONS = -23.5; // -25.5
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
