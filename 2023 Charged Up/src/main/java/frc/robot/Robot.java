@@ -446,7 +446,7 @@ public class Robot extends LoggedRobot {
       } else {
         intake.coneIntakeRoller();
       }
-    } else if (operatorController.getLeftBumperPressed()){
+    } else if (operatorController.getLeftBumper()){
       // intake.setWrist(currentWrist);
       // intake.cubeIntakeRoller();
       intake.setWrist(0.0);
