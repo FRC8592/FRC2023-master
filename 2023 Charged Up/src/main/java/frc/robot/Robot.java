@@ -111,7 +111,7 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
-    substationVision = new Vision(Constants.LIMELIGHT_SUBSTATION, Constants.BALL_LOCK_ERROR,
+    substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -234,7 +234,7 @@ public class Robot extends LoggedRobot {
     gameObjectVision.updateVision();
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
-    NetworkTableInstance.getDefault().getTable(Constants.LIMELIGHT_SUBSTATION).getEntry("pipeline").setNumber(Constants.SUBSTATION_CONE_PIPELINE);
+    NetworkTableInstance.getDefault().getTable(Constants.LIMELIGHT_REAR).getEntry("pipeline").setNumber(Constants.SUBSTATION_CONE_PIPELINE);
 
 
     /*
