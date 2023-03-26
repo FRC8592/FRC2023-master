@@ -1,4 +1,4 @@
-package frc.robot.autonomous.autons.loadingzone;
+package frc.robot.autonomous.autons.right;
 
 import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.SwerveTrajectory;
@@ -13,24 +13,24 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class LeftSidePreloadBalanceAuto extends BaseAuto {
+public class RightConeBalanceAuto extends BaseAuto {
     private TrajectoryConfig config = new TrajectoryConfig(1.8, 1.0);
     
-    private SwerveTrajectory C_TO_Ilz = generateTrajectoryFromPoints(
+    private SwerveTrajectory G_TO_Icc = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(1.0),
-        GRID_C.getPose(),
-        INTERMEDIARY_LOADING_ZONE.translate(-2.25, 0.0),
-        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.0),
-        INTERMEDIARY_LOADING_ZONE.getPose()
+        GRID_G.getPose(),
+        INTERMEDIARY_CABLE_COVER.translate(-2.25, 0.0),
+        INTERMEDIARY_CABLE_COVER.translate(-1.0, 0.0),
+        INTERMEDIARY_CABLE_COVER.getPose()
     );
 
-    private SwerveTrajectory Ilz_TO_BM = generateTrajectoryFromPoints(
+    private SwerveTrajectory Icc_TO_BM = generate(
         config
             .setStartVelocity(1.0)
             .setEndVelocity(0.1),
-        INTERMEDIARY_LOADING_ZONE.getPose(),
+        INTERMEDIARY_CABLE_COVER.getPose(),
         BALANCE_MIDDLE.rotate(Rotation2d.fromDegrees(180))
     );
 
@@ -45,9 +45,9 @@ public class LeftSidePreloadBalanceAuto extends BaseAuto {
             new LiftCommand(elevator, Heights.PRIME), // PRIME elevator
             new JointCommand( // STOW elevator while moving out community
                 new LiftCommand(elevator, Heights.STOWED),
-                new FollowerCommand(drive, C_TO_Ilz)
+                new FollowerCommand(drive, G_TO_Icc)
             ),
-            new FollowerCommand(drive, Ilz_TO_BM), // Move towards charging station
+            new FollowerCommand(drive, Icc_TO_BM), // Move towards charging station
             new AutobalanceCommand(drive) // Balance
         );
     }

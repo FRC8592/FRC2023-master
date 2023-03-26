@@ -82,12 +82,12 @@ public final class Constants {
     public static final int WRIST_PID_SLOT = 0;
     public static final double ROLLER_MAX_VELOCITY = 5676.0 / ROLLER_GEAR_RATIO;
     public static final double ROLLER_MAX_ACCELERATION = ROLLER_MAX_VELOCITY; // Rotations per minute per second
-    public static final double WRIST_MAX_ACCELERATION = 15000.0; // Rotations per minute per second
+    public static final double WRIST_MAX_ACCELERATION = 10000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 52.0 / 2.0;
+    public static final double WRIST_INTAKE_ROTATIONS = 34.5;
     public static final double WRIST_STOWED_ROTATIONS = 0;
-    public static final double WRIST_SCORING_ROTATIONS = 52.0 / 2.0;
-    public static final double WRIST_MAX_ROTATIONS = 58 / 2.0;
+    public static final double WRIST_SCORING_ROTATIONS = 34.5;
+    public static final double WRIST_MAX_ROTATIONS = 33.0;
 
     //
     // Constants and IDs for elevator hardware (NEEDS SETTING)
@@ -96,7 +96,7 @@ public final class Constants {
     public static final int ELEVATOR_TILT_MOTOR_ID   = 15;
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
-    public static final double TILT_MAX_ROTATIONS = -25.5;
+    public static final double TILT_MAX_ROTATIONS = -23.5; // -25.5
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;

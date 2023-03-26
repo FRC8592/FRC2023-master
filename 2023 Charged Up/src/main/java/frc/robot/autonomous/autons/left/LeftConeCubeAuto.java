@@ -1,11 +1,10 @@
-package frc.robot.autonomous.autons.loadingzone;
+package frc.robot.autonomous.autons.left;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.autonomous.autons.BaseAuto;
-import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
 import frc.robot.commands.FollowerCommand;
 import frc.robot.commands.IntakeCommand;
@@ -16,10 +15,11 @@ import frc.robot.commands.ScoreCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
-public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(3.0, 1);
+public class LeftConeCubeAuto extends BaseAuto {
+    private TrajectoryConfig config = new TrajectoryConfig(3.75, 1);
+    private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
-    private SwerveTrajectory C_TO_Ilz = generateTrajectoryFromPoints(
+    private SwerveTrajectory C_TO_Ilz = generate(
         config
             .setStartVelocity(0.0)
             .setEndVelocity(2.0)
@@ -30,7 +30,7 @@ public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
         INTERMEDIARY_LOADING_ZONE.translate(0.0, 0.1)
     );
 
-    private SwerveTrajectory Ilz_TO_GP1 = generateTrajectoryFromPoints(
+    private SwerveTrajectory Ilz_TO_GP1 = generate(
         config
             .setStartVelocity(2.0)
             .setEndVelocity(0.0)
@@ -39,13 +39,25 @@ public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
         GAME_PIECE_1.translate(0.25, -0.05)
     );
 
-    private SwerveTrajectory GP1_TO_BM = generateTrajectoryFromPoints(
+    private SwerveTrajectory GP1_TO_B = generate(
         config
             .setStartVelocity(0.0)
-            .setEndVelocity(0.0)
+            .setEndVelocity(2.0)
             .setReversed(true),
         GAME_PIECE_1.translate(0.25, -0.05),
-        BALANCE_MIDDLE.getPose()
+        GAME_PIECE_1.translate(-0.6, 0.0),
+        GAME_PIECE_1.translate(-2.0, 0.0),
+        GAME_PIECE_1.translate(-3.0, -0.05)
+        // GRID_B.translate(0.25 + 2.0, 0)
+    );
+
+    private SwerveTrajectory B_TO_SCORE = generate(
+        slowConfig
+            .setStartVelocity(2.0)
+            .setEndVelocity(0.0)
+            .setReversed(true),
+        GAME_PIECE_1.translate(-3.0, -0.05),
+        GAME_PIECE_1.translate(-4.2, -0.05)
     );
 
     @Override
@@ -57,7 +69,7 @@ public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
                 new LiftCommand(elevator, Heights.HIGH)
             ),
             new LiftCommand(elevator, Heights.PRIME), // Lift elevator PRIME
-            new PipelineCommand(vision, Pipeline.CUBE), // Change Pipeline CUBE
+            new PipelineCommand(vision, Pipeline.CUBE), // Change pipeline CUBE
             new JointCommand( // STOW 4-bar and INTAKE while moving out community
                 new LiftCommand(elevator, Heights.STOWED),
                 new FollowerCommand(drive, C_TO_Ilz.addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.5)),
@@ -67,8 +79,20 @@ public class LeftSidePreloadGrabPieceBalanceAuto extends BaseAuto {
                 new FollowerCommand(drive, vision, Ilz_TO_GP1.addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.0).addVision()),
                 new IntakeCommand(intake, true)
             ),
-            new FollowerCommand(drive, GP1_TO_BM), // Move to Charging Station
-            new AutobalanceCommand(drive) // BALANCE
+            new JointCommand( // Change pipeline APRIL TAG and PRIME 4-bar while moving back to community
+                new PipelineCommand(vision, Pipeline.APRIL_TAG),
+                new FollowerCommand(drive, GP1_TO_B),
+                new LiftCommand(elevator, Heights.PRIME)
+            ),
+            new JointCommand( // TRACK grid and continue PRIME 4-bar
+                new FollowerCommand(drive, vision, B_TO_SCORE.addVision().setAcceptanceRange(0.05)),
+                new LiftCommand(elevator, Heights.PRIME)
+            ),
+            new JointCommand( // Lift elevator HIGH and score
+                new LiftCommand(elevator, Heights.HIGH),
+                new ScoreCommand(intake)
+            ),
+            new LiftCommand(elevator, Heights.STOWED) // STOW all
         );
     }
 
