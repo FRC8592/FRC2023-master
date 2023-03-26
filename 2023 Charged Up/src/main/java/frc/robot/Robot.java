@@ -232,8 +232,11 @@ public class Robot extends LoggedRobot {
 
     drive.getCurrentPos();
     gameObjectVision.updateVision();
+    substationVision.updateVision();
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
+    SmartDashboard.putBoolean("Substation Target Valid", substationVision.targetValid);
+    SmartDashboard.putBoolean("Elevator Up", elevator.atTiltReference());
     NetworkTableInstance.getDefault().getTable(Constants.LIMELIGHT_REAR).getEntry("pipeline").setNumber(Constants.SUBSTATION_CONE_PIPELINE);
 
 
@@ -357,7 +360,8 @@ public class Robot extends LoggedRobot {
           gameObjectVision.turnRobot(
             1.0,
             turnPID,
-            3.0
+            3.0,
+            0
           )
         );
       }
@@ -366,13 +370,16 @@ public class Robot extends LoggedRobot {
       ledStrips.set(LEDMode.TARGETLOCK);
       if (substationVision.targetValid && elevator.atTiltReference()){
 
+        double strafeSpeed = substationVision.turnRobot(
+          0,
+          strafePID,
+          1.0,
+          8.0
+        );
         driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          substationVision.turnRobot(
-            1.0,
-            strafePID,
-            8.0
-          ),
-          translateY,
+          drive.getYaw() >= 0 ? -strafeSpeed : strafeSpeed,
+          driveScaler.scale(-joystickDeadband(translateY)), 
+          // -translateY * 0.3,
           driveSpeeds.omegaRadiansPerSecond, 
           drive.getGyroscopeRotation());
       }
