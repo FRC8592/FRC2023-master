@@ -18,8 +18,8 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class LeftConeCubeBalanceAuto extends BaseAuto {
     private TrajectoryConfig fastConfig = new TrajectoryConfig(3.75, 1);
-    private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1);
-    private TrajectoryConfig balanceConfig = new TrajectoryConfig(2, 1);
+    private TrajectoryConfig balanceConfig = new TrajectoryConfig(1.0, 1);
+    private TrajectoryConfig slowConfig = new TrajectoryConfig(2, 1);
 
     private SwerveTrajectory C_TO_Ilz = generate(
         fastConfig
@@ -55,7 +55,7 @@ public class LeftConeCubeBalanceAuto extends BaseAuto {
     );
 
     private SwerveTrajectory Ilz_TO_B = generate(
-        balanceConfig
+        slowConfig
             .setStartVelocity(1.5)
             .setEndVelocity(0.0)
             .setReversed(true),
@@ -64,7 +64,7 @@ public class LeftConeCubeBalanceAuto extends BaseAuto {
     );
 
     private SwerveTrajectory B_TO_BALANCE = generate(
-        slowConfig
+        balanceConfig
             .setStartVelocity(0.0)
             .setEndVelocity(1.0)
             .setReversed(false),
