@@ -8,7 +8,7 @@ public class DoNothingAuto extends BaseAuto {
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new DelayCommand(1.0)
+            new DelayCommand(1.0) // Literally just sit there
         );
     }
 

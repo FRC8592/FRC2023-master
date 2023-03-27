@@ -5,10 +5,10 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.autonomous.autons.*;
-import frc.robot.autonomous.autons.cablecover.*;
-import frc.robot.autonomous.autons.loadingzone.*;
+import frc.robot.autonomous.autons.left.*;
 import frc.robot.autonomous.autons.middle.*;
 import frc.robot.autonomous.autons.other.*;
+import frc.robot.autonomous.autons.right.*;
 
 public class AutonomousSelector {
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
@@ -17,19 +17,28 @@ public class AutonomousSelector {
 
     public Class<?>[] autos = {
         MoveOutCommunityAuto.class,
+        PreloadAuto.class,
+
+        LeftConeBalanceAuto.class,
+        LeftConeGrabCubeBalanceAuto.class,
+        LeftConeCubeAuto.class,
+        LeftConeConeAuto.class,
+        LeftConeCubeBalanceAuto.class,
+        LeftCableCoverConeCubeAuto.class,
+
+        LeftConeCubeGrabConeAuto.class,
 
         MiddleBalanceAuto.class,
-        MiddlePreloadBalanceAuto.class,
-        MiddlePreloadGrabPieceBalanceAuto.class,
-        MiddleRightConeGrabPieceBalanceAuto.class,
-
-        LeftSidePreloadBalanceAuto.class,
-        LeftSideConeCubeAuto.class,
-        LeftSidePreloadGrabPieceBalanceAuto.class,
+        MiddleConeBalanceAuto.class,
+        MiddleLeftConeGrabCubeBalanceAuto.class,
+        MiddleRightConeGrabCubeBalanceAuto.class,
         
-        RightSidePreloadBalanceAuto.class,
-        RightSideConeCubeAuto.class,
-        RightSidePreloadGrabPieceBalanceAuto.class
+        RightConeBalanceAuto.class,
+        RightConeGrabCubeBalanceAuto.class,
+        RightConeCubeAuto.class,
+        RightConeConeAuto.class,
+        RightConeCubeBalanceAuto.class,
+        RightCableCoverConeCubeAuto.class,
     };
 
     public AutonomousSelector() {
