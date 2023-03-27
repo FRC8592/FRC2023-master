@@ -162,13 +162,14 @@ public class Elevator {
         SmartDashboard.putString("Elevator State", desiredHeight.name());
         SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
         SmartDashboard.putNumber("Elevator Velocity", liftEncoder.getVelocity());
-
-    
-        // SmartDashboard.putNumber("Tilt Rotations", rawTilt);
-        // SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
-        // SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
-
+        
+        
+        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
+        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
+        SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
+        
     }
+ 
 
     // Resets encoders and potentially other sensors to desired start angle
     public void reset(double lift, double tilt) {
