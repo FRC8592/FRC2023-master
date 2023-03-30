@@ -82,14 +82,14 @@ public class LeftConeCubeAuto extends BaseAuto {
             new JointCommand( // Change pipeline APRIL TAG and PRIME 4-bar while moving back to community
                 new PipelineCommand(vision, Pipeline.APRIL_TAG),
                 new FollowerCommand(drive, GP1_TO_B),
-                new LiftCommand(elevator, Heights.PRIME)
+                new LiftCommand(elevator, Heights.PRIME, true)
             ),
             new JointCommand( // TRACK grid and continue PRIME 4-bar
                 new FollowerCommand(drive, vision, B_TO_SCORE.addVision().setAcceptanceRange(0.05)),
-                new LiftCommand(elevator, Heights.PRIME)
+                new LiftCommand(elevator, Heights.PRIME, true)
             ),
             new JointCommand( // Lift elevator HIGH and score
-                new LiftCommand(elevator, Heights.HIGH),
+                new LiftCommand(elevator, Heights.HIGH, true),
                 new ScoreCommand(intake)
             ),
             new LiftCommand(elevator, Heights.STOWED) // STOW all
