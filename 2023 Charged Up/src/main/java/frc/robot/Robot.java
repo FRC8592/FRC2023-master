@@ -541,7 +541,7 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    ledStrips.set(LEDMode.ATTENTION);
+    ledStrips.set(LEDMode.PARTY);
     elevator.writeToSmartDashboard();
     // else if(operatorController.getBButton()){
     //     ledStrips.set(LEDMode.TARGETLOCK);

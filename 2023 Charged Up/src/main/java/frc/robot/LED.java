@@ -102,6 +102,7 @@ public class LED {
         FIRE,
         WAVES,
         SNAKE,
+        PARTY,
         // LEDs off
         OFF;
     }
@@ -188,6 +189,10 @@ public class LED {
                 // setSnake(col1);
                 timeout = 10;
                 break;
+            case PARTY:
+                setPartyMode();
+                timeout = 5;
+                break;
             case OFF:
                 setOff();
                 timeout = 0;
@@ -258,6 +263,14 @@ public class LED {
                 }
             }
         }
+    }
+
+    int count = 0;
+    public void setPartyMode() {
+            count++;
+                for(int i = 0; i < Constants.LED_LENGTH; i++) {
+                    liftBuffer.setHSV(i, 8 * (i + count) % 180, 255, 255);
+                }
     }
 
     public void setFire(boolean runFire) {
