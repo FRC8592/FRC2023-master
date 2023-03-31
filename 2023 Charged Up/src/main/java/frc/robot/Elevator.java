@@ -284,4 +284,9 @@ public class Elevator {
         return Math.abs(liftEncoder.getPosition() - desiredHeight.getHeight()) <= 2.0 && atTilt;
                 
     }
+
+    public void setBrakeMode(){
+        liftMotor.setIdleMode(IdleMode.kBrake);
+        tiltMotor.setIdleMode(IdleMode.kBrake);
+    }
 }

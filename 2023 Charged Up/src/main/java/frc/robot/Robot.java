@@ -536,6 +536,9 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    elevator.setBrakeMode();
+  
+  
   }
 
   /** This function is called periodically when disabled. */
@@ -568,9 +571,6 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {
     SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     SmartDashboard.putNumber("Yaw Number", drive.getYaw());
-    
-
-    
   }
 
   /** This function is called once when the robot is first started up. */
