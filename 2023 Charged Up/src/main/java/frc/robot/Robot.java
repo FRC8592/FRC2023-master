@@ -73,6 +73,7 @@ public class Robot extends LoggedRobot {
   private boolean coneVision = true;
   public Power power;
   private boolean angleTapBool = false;
+  private boolean isPartyMode = false;
 
   private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
 
@@ -288,14 +289,20 @@ public class Robot extends LoggedRobot {
       drive.zeroGyroscope();
     }
 
+
     if (driverController.getAButton()) {
-      ledStrips.set(LEDMode.PARTY);
-    } else if (driverController.getYButton()) {
+      isPartyMode = !isPartyMode;
+    }
+
+
+    if (driverController.getYButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.set(LEDMode.CONE);
     } else if (driverController.getXButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
       ledStrips.set(LEDMode.CUBE);
+    } else if (isPartyMode) {
+      ledStrips.set(LEDMode.PARTY);
     }
 
     if (driverController.getRightBumper()) {
@@ -336,60 +343,49 @@ public class Robot extends LoggedRobot {
             driveSpeeds.omegaRadiansPerSecond
           );
         }
-      }
-      
-      double turn;
-      switch(driverController.getPOV()) {
-        case 0:
-          turn = drive.turnToAngle(180.0);
-          ledStrips.set(LEDMode.TARGETLOCK);
-          break;
-        case 90:
-          turn = drive.turnToAngle(90.0);
-          break;
-        case 180:
-          turn = drive.turnToAngle(0.0);
-          break;
-        case 270:
-          turn = drive.turnToAngle(270.0);
-          break;
-        default:
-          turn = driveSpeeds.omegaRadiansPerSecond;
-          break;
+      } else {
+        double turn;
+        switch(driverController.getPOV()) { // Cardinal Direction
+          case 0:
+            turn = drive.turnToAngle(180.0);
+            ledStrips.set(LEDMode.TARGETLOCK);
+            break;
+          case 90:
+            turn = drive.turnToAngle(90.0);
+            break;
+          case 180:
+            turn = drive.turnToAngle(0.0);
+            break;
+          case 270:
+            turn = drive.turnToAngle(270.0);
+            break;
+          default:
+            turn = driveSpeeds.omegaRadiansPerSecond;
+            break;
+        }
+
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond, 
+          driveSpeeds.vyMetersPerSecond,
+          turn
+        );
       }
 
-      driveSpeeds = new ChassisSpeeds(
-        driveSpeeds.vxMetersPerSecond, 
-        driveSpeeds.vyMetersPerSecond,
-        turn
-      );
-    }
-
-    if (driverController.getBButton()) {
-      drive.setWheelLock();
-    } else if (driverController.getStartButton()){
-      autoPark.balance(drive);
-    } else {
       drive.drive(driveSpeeds);
     }
 
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
       intake.setWrist(currentWrist);
-      if (operatorController.getXButton()) {
-        intake.cubeIntakeRoller();
-      } else if (operatorController.getYButton()) {
-        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS * 2 / 3);
-      } else {
-        intake.coneIntakeRoller();
-      }
+      intake.coneIntakeRoller();
     } else if (operatorController.getLeftBumper()){
       intake.setWrist(0.0);
       elevator.set(Heights.PRIME);
+      intake.spinRollers(0.075);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
-    } else if (operatorController.getRightBumper()) {
+    } else if (operatorController.getRightBumper() || operatorController.getBackButtonReleased()) {
       intake.setWrist(0.0);
-    } else if (operatorController.getBackButton()) {
+    } else if (operatorController.getBackButtonPressed()) {
       intake.throwPiece();
     } else {
         if (operatorController.getStartButton()) {
@@ -446,22 +442,16 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
-    ledStrips.set(LEDMode.PARTY);
+    ledStrips.set(LEDMode.ATTENTION);
     elevator.writeToSmartDashboard();
-    // else if(operatorController.getBButton()){
-    //     ledStrips.set(LEDMode.TARGETLOCK);
-    // }
-    // else if(operatorController.getXButton()){
-    //     ledStrips.set(LEDMode.UP_AND_DOWN);
-    // } 
-    // else if (operatorController.getYButton()) {
-    //   ledStrips.set(LEDMode.WAVES);
-    // }
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0,
-        0, drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
-          //  intake.logBeamBreaks();
-
-    // // opposite of controller direct
+    drive.drive(
+      ChassisSpeeds.fromFieldRelativeSpeeds(
+          0, 
+          0,
+        0, 
+        drive.getGyroscopeRotation()
+      )
+    );
   }
 
   /** This function is called once when test mode is enabled. */
