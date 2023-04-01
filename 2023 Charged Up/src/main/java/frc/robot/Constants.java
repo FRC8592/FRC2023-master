@@ -297,6 +297,7 @@ public final class Constants {
     public static final int RETROTAPE_PIPELINE = 4;
     
     public static final int SUBSTATION_CONE_PIPELINE = 0;
+    public static final double SUBSTATION_ACCEPTABLE_OFFSET = 3.0;
 
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;

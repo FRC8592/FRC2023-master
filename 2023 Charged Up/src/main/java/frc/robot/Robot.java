@@ -111,7 +111,7 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
-    substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.BALL_LOCK_ERROR,
+    substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_ACCEPTABLE_OFFSET,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -367,8 +367,20 @@ public class Robot extends LoggedRobot {
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // line up with single substation
       // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
+      // ledStrips.set(LEDMode.TARGETLOCK);
+
+      //if a valid target is in view and the elevator is in the up position
       if (substationVision.targetValid && elevator.atTiltReference()){
+
+        //led logic
+        if (substationVision.getOffsetAngleDegrees() > Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+          ledStrips.set(LEDMode.FAR);
+        }else if (substationVision.getOffsetAngleDegrees() < -Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+          ledStrips.set(LEDMode.CLOSE);
+        }else if (substationVision.targetLocked){
+          ledStrips.set(LEDMode.LOCKED);
+        }
+
 
         double strafeSpeed = substationVision.turnRobot(
           0,

@@ -230,6 +230,10 @@ public class Vision {
     return Math.toRadians(processedDx);
   }
 
+  public double getOffsetAngleDegrees(){
+    return processedDx;
+  }
+
 
   /**
    * Turn the robot based on limelight data
