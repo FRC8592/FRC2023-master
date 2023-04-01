@@ -27,8 +27,8 @@ public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
             .setEndVelocity(1.0)
             .setReversed(false),
         GRID_D.getPose(),
-        GRID_D.translate(1.0, -0.05),
-        GRID_D.translate(3.0, -0.05)
+        GRID_D.translate(1.0, -0.1),
+        GRID_D.translate(3.0, -0.1)
     );
 
     private SwerveTrajectory Ib_TO_GP2 = generate(
@@ -36,7 +36,7 @@ public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
             .setStartVelocity(1.0)
             .setEndVelocity(0.5)
             .setReversed(false),
-        GRID_D.translate(3.0, -0.05),
+        GRID_D.translate(3.0, -0.1),
         GRID_D.translate(4.5, 0.0)
     );
 
@@ -69,7 +69,9 @@ public class MiddleLeftConeGrabCubeBalanceAuto extends BaseAuto {
                 new FollowerCommand(drive, vision, Ib_TO_GP2.addRotation(Rotation2d.fromDegrees(180))),
                 new IntakeCommand(intake)
             ),
-            new FollowerCommand(drive, GP2_TO_BM),
+            new JointCommand(
+                new FollowerCommand(drive, GP2_TO_BM)
+            ),
             new JointCommand(
                 new AutobalanceCommand(drive),
                 new ThrowPieceCommand(intake)

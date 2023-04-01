@@ -13,6 +13,7 @@ import frc.robot.commands.JointCommand;
 import frc.robot.commands.LiftCommand;
 import frc.robot.commands.PipelineCommand;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.ThrowPieceCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 
 import static frc.robot.autonomous.AutonomousPositions.*;
@@ -26,8 +27,8 @@ public class MiddleRightConeGrabCubeBalanceAuto extends BaseAuto {
             .setEndVelocity(1.0)
             .setReversed(false),
         GRID_F.getPose(),
-        GRID_F.translate(1.0, 0.05),
-        GRID_F.translate(3.0, 0.05)
+        GRID_F.translate(1.0, 0.1),
+        GRID_F.translate(3.0, 0.1)
     );
 
     private SwerveTrajectory Ib_TO_GP3 = generate(
@@ -35,7 +36,7 @@ public class MiddleRightConeGrabCubeBalanceAuto extends BaseAuto {
             .setStartVelocity(1.0)
             .setEndVelocity(1.0)
             .setReversed(false),
-        GRID_F.translate(3.0, 0.05),
+        GRID_F.translate(3.0, 0.1),
         GRID_F.translate(4.5, 0.0)
     );
 
@@ -45,7 +46,8 @@ public class MiddleRightConeGrabCubeBalanceAuto extends BaseAuto {
             .setEndVelocity(1.0)
             .setReversed(true),
         GRID_F.translate(4.5, 0),
-        BALANCE_MIDDLE.getPose()
+        BALANCE_MIDDLE.getPose(),
+        BALANCE_MIDDLE.translate(-1.2, 0.0)
     );
 
     @Override
@@ -68,7 +70,10 @@ public class MiddleRightConeGrabCubeBalanceAuto extends BaseAuto {
                 new IntakeCommand(intake)
             ),
             new FollowerCommand(drive, GP3_TO_BM),
-            new AutobalanceCommand(drive)
+            new JointCommand(
+                new AutobalanceCommand(drive),
+                new ThrowPieceCommand(intake)
+            )
         );
     }
 

@@ -97,7 +97,7 @@ public class LeftConeCubeBalanceAuto extends BaseAuto {
             new JointCommand(
                 new PipelineCommand(vision, Pipeline.APRIL_TAG),
                 new FollowerCommand(drive, GP1_TO_Ilz.addRotation(new Rotation2d(), 2 * Math.PI, 0.25)),
-                new LiftCommand(elevator, Heights.PRIME)
+                new LiftCommand(elevator, Heights.PRIME, 0.5)
             ),
             new JointCommand(
                 new FollowerCommand(drive, vision, Ilz_TO_B.addVision().setAcceptanceRange(0.05)),

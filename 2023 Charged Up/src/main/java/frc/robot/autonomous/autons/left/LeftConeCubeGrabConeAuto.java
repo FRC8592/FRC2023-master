@@ -73,11 +73,12 @@ public class LeftConeCubeGrabConeAuto extends BaseAuto {
     private SwerveTrajectory Ilz_TO_GP2 = generate(
         fastConfig
             .setStartVelocity(fastConfig.getMaxVelocity())
-            .setEndVelocity(1.0)
+            .setEndVelocity(0.0)
             .setReversed(false),
         GAME_PIECE_1.translate(-2.0, -0.05),
         GAME_PIECE_1.translate(-1.0, -0.05),
-        GAME_PIECE_2.translate(0.25, -0.15, Rotation2d.fromDegrees(-45))
+        GAME_PIECE_1.translate(-0.5, -0.5),
+        GAME_PIECE_2.translate(-0.25, 0.25, Rotation2d.fromDegrees(-45))
     );
 
     @Override

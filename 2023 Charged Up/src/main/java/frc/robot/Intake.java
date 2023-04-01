@@ -128,7 +128,7 @@ public class Intake {
     }
 
     public void scoreRoller() {
-        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS) <= 5.0){
+        if(Math.abs(wristEncoder.getPosition() - Constants.WRIST_SCORING_ROTATIONS) <= 3.0){
             outtakeRoller();
         } else {
             stopRoller();
