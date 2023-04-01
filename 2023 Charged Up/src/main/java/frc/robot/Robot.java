@@ -385,7 +385,7 @@ public class Robot extends LoggedRobot {
       intake.outtakeRoller();
     } else if (operatorController.getRightBumper() || operatorController.getBackButtonReleased()) {
       intake.setWrist(0.0);
-    } else if (operatorController.getBackButtonPressed()) {
+    } else if (operatorController.getBackButton()) {
       intake.throwPiece();
     } else {
         if (operatorController.getStartButton()) {
