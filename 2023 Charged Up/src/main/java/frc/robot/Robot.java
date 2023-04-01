@@ -235,87 +235,68 @@ public class Robot extends LoggedRobot {
      * Controls:
      * 
      * - Driver:
-     *  - [Left Joystick X]: Drivetrain left/right
-     *  - [Left Joystick Y]: Drivetrain forward/back
-     *  - [Right Joysick X]: Drivetrain turn
+     *  - [Left Joystick X]: Drivetrain field-centric left/right
+     *  - [Left Joystick Y]: Drivetrain field-centric forward/back
+     *  - [Right Joysick X]: Drivetrain rotate
      *  - [Right Joysick Y]: N/A
-     *  - [Left Bumper]: Prime elevator
+     *  - [Left Bumper]: N/A
      *  - [Right Bumper]: Slow mode
-     *  - [Left Trigger]: Target-lock cone/cube
-     *  - [Right Trigger]: Target-lock apriltag/retro-reflective tape
+     *  - [Left Trigger]: N/A
+     *  - [Right Trigger]: Target-Lock Substation
      *  - [Back btn]: Reset field-centric rotation
      *  - [Start btn]: Autopark
-     *  - [A btn]: Elevator stow
-     *  - [X btn]: Get human player attention (*Currently not set*)
+     *  - [A btn]: LED Party Mode
+     *  - [X btn]: LED Cube Mode
      *  - [B btn]: Set wheels locked
-     *  - [Y btn]: N/A
-     *  - [DPAD Up]: Turn field-centric North (*Currently not set*)
-     *  - [DPAD Down]: Turn field-centric South (*Currently not set*)
-     *  - [DPAD Left]: Turn field-centric West (*Currently not set*)
-     *  - [DPAD Right]: Turn field-centric East (*Currently not set*)
+     *  - [Y btn]: LED Cone Mode
+     *  - [DPAD Up]: Turn field-centric North
+     *  - [DPAD Down]: Turn field-centric South
+     *  - [DPAD Left]: Turn field-centric West
+     *  - [DPAD Right]: Turn field-centric East
      * 
      * - Operator:
      *  - [Left Joystick X]: N/A
-     *  - [Left Joystick Y]: Manual tilt control (*Currently not set*)
+     *  - [Left Joystick Y]: N/A
      *  - [Right Joystick X]: N/A
-     *  - [Right Joystick Y]: Manual lift control (*Currently not set*)
-     *  - [Left Bumper]: Stow
-     *  - [Right Bumper]: Outtake
-     *  - [Left Trigger]: Intake (*Auto activates wrist*)
-     *  - [Right Trigger]: Score (*Auto activates wrist*)
+     *  - [Right Joystick Y]: N/A
+     *  - [Left Bumper]: Intake from Substation
+     *  - [Right Bumper]: Pull out Wrist
+     *  - [Left Trigger]: Wrist out and intake
+     *  - [Right Trigger]: Spin rollers reverse
      *  - [Back btn]: N/A
-     *  - [Start btn]: N/A
-     *  - [A btn]: Elevator stow (*Auto deactivates 4 bar*)
-     *  - [X btn]: Elevator mid (*Auto activates 4 bar*)
-     *  - [B btn]: N/A
-     *  - [Y btn]: Elevator high (*Auto activates 4 bar*)
-     *  - [DPAD Up]: Manual wrist up (*Currently not set*)
-     *  - [DPAD Down]: Manual wrist down (*Currently not set*)
-     *  - [DPAD Left]: Activate cone mode
-     *  - [DPAD Right]: Activate cube mode
+     *  - [Start btn]: Activate Manual Mode
+     *  - [A btn]: Tilt down and Elevator Stow
+     *  - [X btn]: Tilt up and Elevator Mid
+     *  - [B btn]: Prime Elevator
+     *  - [Y btn]: Tilt up and Elevator High
+     *  - [DPAD Up + Start btn]: Trim wrist up
+     *  - [DPAD Down + Start btn]: Trim wrist down
+     *  - [DPAD Left]: Override roller spin reverse
+     *  - [DPAD Right]: Override roller spin forward
      * 
-     * - Additional Programmer Notes:
-     *  - Possibly make it so that when a certain button is held the robot switches to robot-centric for manually lining up using a camera
-     *  - Negative left trigger is equal to positive right trigger axis on some controllers
-     *
      * - Additional Driver Notes:
      *  - Going to a pre-set elevator position automatically sets the pivot to the corresponding tilt
      *  - Make sure to turn on the robot and disable the robot with the all mechanisms back to starting configuration
      *  - Slow mode was changed from a toggle to a hold based on driver preference
-     *  - Activating cone/cube mode works for both intake and scoring target-lock (*MIGHT CHANGE*)
      */
 
     // ========================== \\
     // ======= Drivetrain ======= \\
     // ========================== \\
 
-    boolean shouldBalance = false;
-    if (driverController.getStartButton()){
-      shouldBalance = true;
-    }else{
-      shouldBalance = false;
-    }
-
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
 
-    if (driverController.getYButton()) {
+    if (driverController.getAButton()) {
+      ledStrips.set(LEDMode.PARTY);
+    } else if (driverController.getYButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
       ledStrips.set(LEDMode.CONE);
     } else if (driverController.getXButton()) {
       NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
       ledStrips.set(LEDMode.CUBE);
-    } else if (operatorController.getPOV() == 0 && !operatorController.getStartButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      ledStrips.set(LEDMode.CUBE);
-    } else if (operatorController.getPOV() == 180 && !operatorController.getStartButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      ledStrips.set(LEDMode.CONE);
     }
-
-    // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
-    // SmartDashboard.putNumber("Current Pipeline", pipeline);
 
     if (driverController.getRightBumper()) {
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
@@ -337,51 +318,26 @@ public class Robot extends LoggedRobot {
       drive.getGyroscopeRotation()
     );
 
-    if (driverController.getStartButton()) { // Autobalance
+    if (driverController.getBButton()) { // Lock wheels
+      drive.setWheelLock();
+    } else if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
-    } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
-      // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
-        driveSpeeds = new ChassisSpeeds(
-          // driveSpeeds.vxMetersPerSecond,
-          // driveSpeeds.vyMetersPerSecond,
-          translateX,
-          translateY,
-          gameObjectVision.turnRobot(
-            1.0,
-            turnPID,
-            3.0
-          )
-        );
-      }
-    } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
-        driveSpeeds = new ChassisSpeeds(
-          driveSpeeds.vxMetersPerSecond,
-          gameObjectVision.turnRobot(
-            1.0,
-            strafePID,
-            8.0
-          ),
-          driveSpeeds.omegaRadiansPerSecond
-        );
+    } else {
+      if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track substation
+        ledStrips.set(LEDMode.TARGETLOCK);
+        if (gameObjectVision.targetValid) {
+          driveSpeeds = new ChassisSpeeds(
+            driveSpeeds.vxMetersPerSecond,
+            gameObjectVision.turnRobot(
+              1.0,
+              strafePID,
+              8.0
+            ),
+            driveSpeeds.omegaRadiansPerSecond
+          );
+        }
       }
       
-    } else { // Normal drive
-      // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      //   driveScaler.scale(joystickDeadband(translateX)),
-      //   driveScaler.scale(joystickDeadband(translateY)),
-      //   joystickDeadband(rotate),
-      //   drive.getGyroscopeRotation()
-      // );
-      // if (driverController.getPOV() != -1){
-      //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-      //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
-      // }
-
       double turn;
       switch(driverController.getPOV()) {
         case 0:
@@ -409,35 +365,15 @@ public class Robot extends LoggedRobot {
       );
     }
 
-    if (driverController.getBButton()) { // Wheels locked
+    if (driverController.getBButton()) {
       drive.setWheelLock();
-    } else if (shouldBalance){
+    } else if (driverController.getStartButton()){
       autoPark.balance(drive);
     } else {
       drive.drive(driveSpeeds);
     }
 
-    if (driverController.getXButton()) {
-      // Signal to human player for attention
-    }
-
-    // ===================== \\
-    // ======= Wrist ======= \\
-    // ===================== \\
-
-    // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
-    
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
-     
-      // if (operatorController.getAButton()) {
-      //   intake.setWrist(0.0);
-      // } else if (operatorController.getXButton()) {
-      //   intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
-      // } else {
-      //   intake.setWrist(currentWrist);
-      
-    
-      // }
       intake.setWrist(currentWrist);
       if (operatorController.getXButton()) {
         intake.cubeIntakeRoller();
@@ -447,15 +383,14 @@ public class Robot extends LoggedRobot {
         intake.coneIntakeRoller();
       }
     } else if (operatorController.getLeftBumper()){
-      // intake.setWrist(currentWrist);
-      // intake.cubeIntakeRoller();
       intake.setWrist(0.0);
-      intake.spinRollers(0.075);
       elevator.set(Heights.PRIME);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
     } else if (operatorController.getRightBumper()) {
       intake.setWrist(0.0);
+    } else if (operatorController.getBackButton()) {
+      intake.throwPiece();
     } else {
         if (operatorController.getStartButton()) {
           if (angleTapBool) {
@@ -489,9 +424,6 @@ public class Robot extends LoggedRobot {
               intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS);
             }
           } 
-          // else {
-          //   elevator.set(Heights.STALL);
-          // }
         }
         if (operatorController.getPOV() == 90) {
           intake.intakeRoller();
@@ -501,41 +433,14 @@ public class Robot extends LoggedRobot {
           intake.stopRoller();
         }
     }
-
-    // ======================= \\
-    // ======= Rollers ======= \\
-    // ======================= \\
-
-    // if (operatorController.getLeftTriggerAxis() >= 0.1) { // Run rollers
-    //   intake.intakeRoller();
-    // } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1) { // Score game piece
-    //   intake.scoreRoller();
-    // } else if (operatorController.getRightBumper()) { // Outtake game piece
-    //   intake.outtakeRoller();
-    // } else { // Stop rollers
-    //   intake.stopRoller();
-    // }
-
-    // ======================== \\
-    // ======= Elevator ======= \\
-    // ======================== \\
-
-    // if (operatorController.getAButton()) { // Stowed height
-    //   elevator.set(Heights.STOWED);
-    // } else if (operatorController.getXButton()) { // Mid height
-    //   elevator.set(Heights.MID);
-    // } else if (operatorController.getYButton()) { // High height
-    //   elevator.set(Heights.HIGH);
-    // } else if (driverController.getLeftBumper()) { // Prime
-    //   elevator.set(Heights.PRIME);
-    // } else { // Stall at current height
-    //   elevator.set(Heights.STALL);
-    // }
   }
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    intake.stopRoller();
+    intake.haltWrist();
+    elevator.set(Heights.STALL);
   }
 
   /** This function is called periodically when disabled. */
