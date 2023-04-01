@@ -102,6 +102,11 @@ public class LED {
         FIRE,
         WAVES,
         SNAKE,
+
+        //for substation alignment
+        CLOSE,
+        FAR,
+        LOCKED,
         // LEDs off
         OFF;
     }
@@ -188,6 +193,18 @@ public class LED {
                 // setSnake(col1);
                 timeout = 10;
                 break;
+
+            case CLOSE:
+                setPct(100, PresetColor.RED);
+                break;
+
+            case FAR:
+                setPct(100, PresetColor.BLUE);
+                break;
+
+            case LOCKED:
+                setPct(100, PresetColor.GREEN);
+            break;
             case OFF:
                 setOff();
                 timeout = 0;
@@ -378,6 +395,8 @@ public class LED {
             }
         }
     }
+
+   
 
     public void setBinary(){
         binaryIndex++;

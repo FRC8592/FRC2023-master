@@ -93,7 +93,7 @@ public class FollowerCommand extends Command {
         
         ChassisSpeeds newSpeeds = new ChassisSpeeds(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
         if (vision != null) {
-            double vyVision = vision.turnRobot( 0,   visionPID,   1.0);
+            double vyVision = vision.turnRobot( 0,   visionPID,   1.0, 0);
             if (Math.abs(trajectory.trajectory().sample(trajectory.trajectory().getTotalTimeSeconds()).poseMeters.getX() - drive.getCurrentPos().getX()) <= 0.2) {
                 vyVision = 0;
             }

@@ -230,6 +230,10 @@ public class Vision {
     return Math.toRadians(processedDx);
   }
 
+  public double getOffsetAngleDegrees(){
+    return processedDx;
+  }
+
 
   /**
    * Turn the robot based on limelight data
@@ -239,7 +243,7 @@ public class Vision {
    * 
    * @return The turn speed
    */
-  public double turnRobot(double visionSearchSpeed, PIDController turnPID, double limit){
+  public double turnRobot(double visionSearchSpeed, PIDController turnPID, double limit, double offset){
 
     // Stop turning if we have locked onto the target within acceptable angular error
     // if (targetValid && targetLocked) {
@@ -249,7 +253,7 @@ public class Vision {
     // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
     // Limit maximum speed
     if (targetValid) {
-      turnSpeed = turnPID.calculate(tx.getDouble(0.0), 0);  // Setpoint is always 0 degrees (dead center)
+      turnSpeed = turnPID.calculate(tx.getDouble(0.0), offset);  // Setpoint is always 0 degrees (dead center)
       turnSpeed = Math.max(turnSpeed, -limit);
       turnSpeed = Math.min(turnSpeed, limit);
     }
