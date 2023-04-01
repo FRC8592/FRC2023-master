@@ -150,11 +150,11 @@ public class LED {
         switch (mode) {
             case CONE:
                 setUpAndDown(PresetColor.YELLOW, PresetColor.OFF);
-                timeout=3;
+                timeout=5;
                 break;
             case CUBE:
                 setUpAndDown(PresetColor.PURPLE, PresetColor.OFF);
-                timeout=3;
+                timeout=5;
                 break;
             case TARGETLOCK:
                 setProximity(vision.distanceToTarget());
