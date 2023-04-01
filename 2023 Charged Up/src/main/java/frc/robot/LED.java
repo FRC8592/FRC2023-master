@@ -277,6 +277,8 @@ public class LED {
         }
     }
 
+
+
     public void setFire(boolean runFire) {
         //Random amount for the fireSpawnIDX to more forward
         int random=(int)Math.random();
