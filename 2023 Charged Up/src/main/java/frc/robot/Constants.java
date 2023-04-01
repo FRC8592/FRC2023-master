@@ -304,5 +304,9 @@ public final class Constants {
 
     // Conversion constants
     public static final double INCHES_TO_METERS = 1.0 / 39.37;
+
+    public static final int SUBSTATION_CONE_PIPELINE = 0;
+    public static final double SUBSTATION_ACCEPTABLE_OFFSET = 8.0;
+    public static String LIMELIGHT_REAR       = "limelight-rear";
 }
 

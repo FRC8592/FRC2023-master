@@ -102,6 +102,12 @@ public class LED {
         FIRE,
         WAVES,
         SNAKE,
+
+        
+        //for substation alignment
+        CLOSE,
+        FAR,
+        LOCKED,
         // LEDs off
         PARTY,
         OFF;
@@ -192,6 +198,18 @@ public class LED {
             case PARTY:
                 setPartyMode();
                 timeout = 5;
+                break;
+
+            case CLOSE:
+                setPct(100, PresetColor.RED);
+                break;
+
+            case FAR:
+                setPct(100, PresetColor.BLUE);
+                break;
+
+            case LOCKED:
+                setPct(100, PresetColor.GREEN);
                 break;
             case OFF:
                 setOff();

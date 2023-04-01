@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
   public LED ledStrips;
 
   public Vision gameObjectVision;
+  public Vision substationVision;
   public String currentPiecePipeline;
   private Elevator elevator;
   private Intake intake;
@@ -110,6 +111,9 @@ public class Robot extends LoggedRobot {
     power = new Power();
     drive = new Drivetrain(logger);
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
+     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+     Constants.BALL_TARGET_HEIGHT, logger);
+     substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_ACCEPTABLE_OFFSET,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -230,6 +234,7 @@ public class Robot extends LoggedRobot {
 
     drive.getCurrentPos();
     gameObjectVision.updateVision();
+    substationVision.updateVision();
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
 
@@ -356,23 +361,37 @@ public class Robot extends LoggedRobot {
           gameObjectVision.turnRobot(
             1.0,
             turnPID,
-            3.0
+            3.0,
+            0.0
           )
         );
       }
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
-        driveSpeeds = new ChassisSpeeds(
-          driveSpeeds.vxMetersPerSecond,
-          gameObjectVision.turnRobot(
-            1.0,
-            strafePID,
-            8.0
-          ),
-          driveSpeeds.omegaRadiansPerSecond
+      //if a valid target is in view and the elevator is in the up position
+      if (substationVision.targetValid && elevator.atTiltReference()){
+
+        //led logic
+        if (substationVision.processedDx > Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+          ledStrips.set(LEDMode.FAR);
+        }else if (substationVision.processedDx < Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+          ledStrips.set(LEDMode.CLOSE);
+        }else if (substationVision.processedDx <= Constants.SUBSTATION_ACCEPTABLE_OFFSET + 10 && substationVision.processedDx >= Constants.SUBSTATION_ACCEPTABLE_OFFSET - 10){
+          ledStrips.set(LEDMode.LOCKED);
+        }
+
+
+        double strafeSpeed = substationVision.turnRobot(
+          0,
+          strafePID,
+          1.0,
+          Constants.SUBSTATION_ACCEPTABLE_OFFSET
         );
+        driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          drive.getYaw() >= 0 ? -strafeSpeed : strafeSpeed,
+          driveScaler.scale(-joystickDeadband(translateY)), 
+          // -translateY * 0.3,
+          driveSpeeds.omegaRadiansPerSecond, 
+          drive.getGyroscopeRotation());
       }
       
     } else { // Normal drive
