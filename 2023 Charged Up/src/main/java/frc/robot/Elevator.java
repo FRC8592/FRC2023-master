@@ -52,8 +52,8 @@ public class Elevator {
         STOWED(0.0),
         STALL(0.0),
         PRIME(0.0),
-        MID(Constants.LIFT_MAX_ROTATIONS / 2),
-        HIGH(Constants.LIFT_MAX_ROTATIONS),
+        MID(Constants.LIFT_MAX_ROTATIONS / 2 + 10.0),
+        HIGH(Constants.LIFT_MAX_ROTATIONS + 5.0),
         MANUAL(0.0),
         ;
 
