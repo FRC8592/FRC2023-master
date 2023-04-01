@@ -62,7 +62,7 @@ public class LiftCommand extends Command {
     public void shutdown() {
         // lift.testPlanTilt(null);
         // lift.testPlanLift(null);
-        lift.set(Heights.STALL);
+        // lift.set(Heights.STALL);
     }
     
 
