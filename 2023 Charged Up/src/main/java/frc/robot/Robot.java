@@ -81,6 +81,8 @@ public class Robot extends LoggedRobot {
   public Autopark autoPark;
   private Timer timer = new Timer();
 
+  private boolean isPartyMode = false;
+
   private DriveScaler driveScaler;
 
   public static Field2d FIELD = new Field2d();
@@ -299,20 +301,23 @@ public class Robot extends LoggedRobot {
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
-
-    if (driverController.getYButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.set(LEDMode.CONE);
-    } else if (driverController.getXButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.set(LEDMode.CUBE);
-    } else if (operatorController.getPOV() == 0 && !operatorController.getStartButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      ledStrips.set(LEDMode.CUBE);
-    } else if (operatorController.getPOV() == 180 && !operatorController.getStartButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      ledStrips.set(LEDMode.CONE);
+    
+    if (driverController.getAButtonPressed()) {
+      isPartyMode = !isPartyMode;
     }
+
+    if (isPartyMode) {
+      ledStrips.set(LEDMode.PARTY);
+    } else {
+      if (driverController.getYButton()) {
+        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+        ledStrips.set(LEDMode.CONE);
+      } else if (driverController.getXButton()) {
+        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+        ledStrips.set(LEDMode.CUBE);
+      }
+    } 
+    
 
     // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
     // SmartDashboard.putNumber("Current Pipeline", pipeline);
@@ -417,10 +422,6 @@ public class Robot extends LoggedRobot {
       drive.drive(driveSpeeds);
     }
 
-    if (driverController.getXButton()) {
-      // Signal to human player for attention
-    }
-
     // ===================== \\
     // ======= Wrist ======= \\
     // ===================== \\
@@ -428,34 +429,18 @@ public class Robot extends LoggedRobot {
     // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
     
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
-     
-      // if (operatorController.getAButton()) {
-      //   intake.setWrist(0.0);
-      // } else if (operatorController.getXButton()) {
-      //   intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
-      // } else {
-      //   intake.setWrist(currentWrist);
-      
-    
-      // }
       intake.setWrist(currentWrist);
-      if (operatorController.getXButton()) {
-        intake.cubeIntakeRoller();
-      } else if (operatorController.getYButton()) {
-        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS * 2 / 3);
-      } else {
-        intake.coneIntakeRoller();
-      }
+      intake.coneIntakeRoller();
     } else if (operatorController.getLeftBumper()){
-      // intake.setWrist(currentWrist);
-      // intake.cubeIntakeRoller();
       intake.setWrist(0.0);
       intake.spinRollers(0.075);
       elevator.set(Heights.PRIME);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
-    } else if (operatorController.getRightBumper()) {
+    } else if (operatorController.getRightBumper() || operatorController.getBackButtonReleased() || driverController.getLeftBumperReleased()) {
       intake.setWrist(0.0);
+    } else if (operatorController.getBackButton() || driverController.getLeftBumper()) {
+      intake.throwPiece();
     } else {
         if (operatorController.getStartButton()) {
           if (angleTapBool) {
@@ -475,7 +460,7 @@ public class Robot extends LoggedRobot {
           if (operatorController.getAButton()) {
             elevator.set(Heights.STOWED);
             intake.setWrist(0.0);
-          } else if (operatorController.getBButton() || driverController.getLeftBumper()) {
+          } else if (operatorController.getBButton()) {
             elevator.set(Heights.PRIME);
             intake.setWrist(0.0);
           } else if (operatorController.getXButton()) {

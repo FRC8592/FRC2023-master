@@ -158,9 +158,9 @@ public class Intake {
     }
 
     public void throwPiece() {
-        setWrist(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS));
+        setWrist(SmartDashboard.getNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS / 4));
         double rawWrist = wristEncoder.getPosition();
-        if (Math.abs(rawWrist) >= Constants.WRIST_INTAKE_ROTATIONS / 3) {
+        if (Math.abs(rawWrist) >= Constants.WRIST_INTAKE_ROTATIONS / 5) {
             outtakeRoller();
         }
     }

@@ -103,6 +103,7 @@ public class LED {
         WAVES,
         SNAKE,
         // LEDs off
+        PARTY,
         OFF;
     }
 
@@ -149,11 +150,11 @@ public class LED {
         switch (mode) {
             case CONE:
                 setUpAndDown(PresetColor.YELLOW, PresetColor.OFF);
-                timeout=3;
+                timeout=5;
                 break;
             case CUBE:
                 setUpAndDown(PresetColor.PURPLE, PresetColor.OFF);
-                timeout=3;
+                timeout=5;
                 break;
             case TARGETLOCK:
                 setProximity(vision.distanceToTarget());
@@ -187,6 +188,10 @@ public class LED {
             case SNAKE:
                 // setSnake(col1);
                 timeout = 10;
+                break;
+            case PARTY:
+                setPartyMode();
+                timeout = 5;
                 break;
             case OFF:
                 setOff();
@@ -384,6 +389,14 @@ public class LED {
         for(int i = 0; i < Constants.LED_LENGTH; i++){
             setColor(Constants.LED_LENGTH-i-1,binary[(binaryIndex/6+i)%90]);
         }
+    }
+
+    int count = 0;
+    public void setPartyMode() {
+        count++;
+            for(int i = 0; i < Constants.LED_LENGTH; i++) {
+                liftBuffer.setHSV(i, 8 * (i + count) % 180, 255, 255);
+            }
     }
 
     public void setSnake(PresetColor col1){
