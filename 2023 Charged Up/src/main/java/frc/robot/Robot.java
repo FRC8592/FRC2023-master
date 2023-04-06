@@ -128,7 +128,7 @@ public class Robot extends LoggedRobot {
     driveScaler = new DriveScaler();
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
-
+    
     SmartDashboard.putNumber("Command Counter", 0);
   }
 
@@ -458,9 +458,11 @@ public class Robot extends LoggedRobot {
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
       intake.setWrist(currentWrist);
       intake.coneIntakeRoller();
-      if (intake.rollerMotor.getOutputCurrent() >= Constants.ROLLER_CUBE_INTAKE_CURRENT_THRESHOLD){
-        ledStrips.set(LEDMode.LOCKED);
-      }
+        if (intake.rollerMotor.getOutputCurrent() >= Constants.ROLLER_CUBE_INTAKE_CURRENT_THRESHOLD){
+          ledStrips.set(LEDMode.LOCKED);
+        }else {
+          ledStrips.set(LEDMode.ATTENTION);
+        }
     } else if (operatorController.getLeftBumper()){
       intake.setWrist(0.0);
       intake.spinRollers(0.075);

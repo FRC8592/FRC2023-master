@@ -82,7 +82,7 @@ public final class Constants {
     public static final int WRIST_PID_SLOT = 0;
     public static final double ROLLER_MAX_VELOCITY = 5676.0 / ROLLER_GEAR_RATIO;
     public static final double ROLLER_MAX_ACCELERATION = ROLLER_MAX_VELOCITY; // Rotations per minute per second
-    public static final double ROLLER_CUBE_INTAKE_CURRENT_THRESHOLD = 18.0; // roller cube limit (for piece detection)
+    public static final double ROLLER_CUBE_INTAKE_CURRENT_THRESHOLD = 8.0; // roller cube limit (for piece detection)
     public static final double WRIST_MAX_ACCELERATION = 10000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
     public static final double WRIST_INTAKE_ROTATIONS = 34.75;

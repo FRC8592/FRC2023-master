@@ -210,7 +210,7 @@ public class LED {
 
             case LOCKED:
                 setPct(100, PresetColor.GREEN);
-                timeout=3;
+                timeout=0;
                 break;
             case OFF:
                 setOff();
