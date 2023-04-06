@@ -47,7 +47,7 @@ public class MiddleRightConeGrabCubeBalanceAuto extends BaseAuto {
             .setReversed(true),
         GRID_F.translate(4.5, 0),
         BALANCE_MIDDLE.getPose(),
-        BALANCE_MIDDLE.translate(-1.2, 0.0)
+        BALANCE_MIDDLE.translate(-1.2, -0.25)
     );
 
     @Override
