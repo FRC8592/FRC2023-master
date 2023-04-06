@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake {
     private CANSparkMax wristMotor;
-    private CANSparkMax rollerMotor;
+    public CANSparkMax rollerMotor;
     private SparkMaxPIDController wristCtrl;
     private SparkMaxPIDController rollerCtrl;
     private RelativeEncoder wristEncoder;

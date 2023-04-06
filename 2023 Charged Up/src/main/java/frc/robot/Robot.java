@@ -74,7 +74,7 @@ public class Robot extends LoggedRobot {
   private boolean coneVision = true;
   public Power power;
   private boolean angleTapBool = false;
-  public BeamSensor cubBeamSensor;
+  public BeamSensor cubeBeamSensor;
 
   private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
 
@@ -111,7 +111,7 @@ public class Robot extends LoggedRobot {
     operatorController = new XboxController(1);
     power = new Power();
     drive = new Drivetrain(logger);
-    cubBeamSensor = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
+    cubeBeamSensor = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
@@ -217,7 +217,7 @@ public class Robot extends LoggedRobot {
 
     SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
     
-    currentWrist += 0.75;
+    currentWrist -= 1.25;
     intake.stopRoller();
     intake.haltWrist();
     elevator.set(Heights.STALL);
@@ -457,7 +457,7 @@ public class Robot extends LoggedRobot {
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
       intake.setWrist(currentWrist);
       intake.coneIntakeRoller();
-      if (cubBeamSensor.isBroken()){
+      if (cubeBeamSensor.isBroken()){
         ledStrips.set(LEDMode.LOCKED);
       }
     } else if (operatorController.getLeftBumper()){
@@ -560,7 +560,8 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     ledStrips.set(LEDMode.ATTENTION);
     elevator.writeToSmartDashboard();
-    SmartDashboard.putBoolean("Cube Beam Broken?", cubBeamSensor.isBroken());
+    // SmartDashboard.putBoolean("Cube Beam Broken?", cubeBeamSensor.isBroken());
+
 
     // else if(operatorController.getBButton()){
     //     ledStrips.set(LEDMode.TARGETLOCK);
