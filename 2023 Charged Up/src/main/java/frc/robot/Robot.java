@@ -240,6 +240,7 @@ public class Robot extends LoggedRobot {
     substationVision.updateVision();
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
+    SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
 
 
     /*
@@ -457,7 +458,7 @@ public class Robot extends LoggedRobot {
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
       intake.setWrist(currentWrist);
       intake.coneIntakeRoller();
-      if (cubeBeamSensor.isBroken()){
+      if (intake.rollerMotor.getOutputCurrent() >= 18.0){
         ledStrips.set(LEDMode.LOCKED);
       }
     } else if (operatorController.getLeftBumper()){
