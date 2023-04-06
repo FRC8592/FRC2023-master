@@ -216,7 +216,8 @@ public class Robot extends LoggedRobot {
     autoPark = new Autopark();
 
     SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
-
+    
+    currentWrist += 0.75;
     intake.stopRoller();
     intake.haltWrist();
     elevator.set(Heights.STALL);
