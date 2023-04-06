@@ -458,7 +458,7 @@ public class Robot extends LoggedRobot {
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
       intake.setWrist(currentWrist);
       intake.coneIntakeRoller();
-      if (intake.rollerMotor.getOutputCurrent() >= 18.0){
+      if (intake.rollerMotor.getOutputCurrent() >= Constants.ROLLER_CUBE_INTAKE_CURRENT_THRESHOLD){
         ledStrips.set(LEDMode.LOCKED);
       }
     } else if (operatorController.getLeftBumper()){
