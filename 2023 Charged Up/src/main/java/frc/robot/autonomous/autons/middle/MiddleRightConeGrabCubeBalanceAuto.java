@@ -37,7 +37,7 @@ public class MiddleRightConeGrabCubeBalanceAuto extends BaseAuto {
             .setEndVelocity(1.0)
             .setReversed(false),
         GRID_F.translate(3.0, 0.1),
-        GRID_F.translate(4.5, 0.0)
+        GRID_F.translate(4.3, 0.0)
     );
 
     private SwerveTrajectory GP3_TO_BM = generate(

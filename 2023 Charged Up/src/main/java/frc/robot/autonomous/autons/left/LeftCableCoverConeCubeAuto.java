@@ -71,7 +71,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
             .setEndVelocity(0.0)
             .setReversed(true),
         GAME_PIECE_1.translate(-2.5, 0.0),
-        GAME_PIECE_1.translate(-4.0, -0.05)
+        GAME_PIECE_1.translate(-4.5, -0.05)
     ).addVision().setAcceptanceRange(0.05);
 
     @Override

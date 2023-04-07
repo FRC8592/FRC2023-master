@@ -39,6 +39,7 @@ public class AutonomousSelector {
         RightConeConeAuto.class,
         RightConeCubeBalanceAuto.class,
         RightCableCoverConeCubeAuto.class,
+        RightCableCoverConeCubeGrabCubeAuto.class
     };
 
     public AutonomousSelector() {
