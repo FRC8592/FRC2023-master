@@ -27,14 +27,15 @@ public class BeamSensor {
 	  // edge of the detection rather than just a 'get'.  This effectively debounces the signal.
 	  //	  mBeamInput.readRisingTimestamp()
 		// If a debounce time was requested
-		if(mFilter != null) {
-			mFilter.addNumber(mBeamInput.get() ? 1.0 :0.0);
-			SmartDashboard.putNumber("average: ", mFilter.getAverage());
-			SmartDashboard.putNumber("num added: ", mBeamInput.get() ? 1.0 : 0.0);
-			return mFilter.getAverage() <= 0.5;
-		} else {
-			return mBeamInput.get();
-		}
+		return mBeamInput.get();
+		// if(mFilter != null) {
+		// 	mFilter.addNumber(mBeamInput.get() ? 1.0 :0.0);
+		// 	SmartDashboard.putNumber("average: ", mFilter.getAverage());
+		// 	SmartDashboard.putNumber("num added: ", mBeamInput.get() ? 1.0 : 0.0);
+		// 	return mFilter.getAverage() <= 0.5;
+		// } else {
+		// 	return mBeamInput.get();
+		// }
 	}
 
 	public boolean get() {

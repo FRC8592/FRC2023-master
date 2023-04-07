@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake {
     private CANSparkMax wristMotor;
-    private CANSparkMax rollerMotor;
+    public CANSparkMax rollerMotor;
     private SparkMaxPIDController wristCtrl;
     private SparkMaxPIDController rollerCtrl;
     private RelativeEncoder wristEncoder;
@@ -59,8 +59,8 @@ public class Intake {
 
         wristEncoder.setPosition(0);
 
-        beamCone = new BeamSensor(Constants.BEAM_BREAK_CONE_ID);
-        beamCube = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
+        beamCone = new BeamSensor(5);
+        beamCube = new BeamSensor(6);
         coneTimer = new Timer();
 
         SmartDashboard.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS);
