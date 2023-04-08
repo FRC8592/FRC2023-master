@@ -22,11 +22,11 @@ public class AutonomousSelector {
         LeftConeBalanceAuto.class,
         LeftConeGrabCubeBalanceAuto.class,
         LeftConeCubeAuto.class,
-        // LeftConeConeAuto.class,
+        LeftConeConeAuto.class,
         LeftConeCubeBalanceAuto.class,
         LeftConeCubeGrabConeAuto.class,
         LeftCableCoverConeCubeAuto.class,
-
+        LeftCableCoverConeCubeGrabCubeAuto.class,
 
         MiddleBalanceAuto.class,
         MiddleConeBalanceAuto.class,
@@ -40,6 +40,7 @@ public class AutonomousSelector {
         RightConeCubeBalanceAuto.class,
         RightCableCoverConeCubeAuto.class,
         RightCableCoverConeCubeGrabCubeAuto.class
+        // REMEMBER TO FLIP RIGHT CONE CUBE GRAB CONE AUTO BEFORE PUTTING ON THIS LIST
     };
 
     public AutonomousSelector() {
@@ -67,7 +68,7 @@ public class AutonomousSelector {
             BaseAuto selected = (BaseAuto) autonChooser.getSelected().getDeclaredConstructor().newInstance();
             return selected;
         } catch (Exception e) {
-            return null;
+            return new DoNothingAuto();
         }
     }
 }
