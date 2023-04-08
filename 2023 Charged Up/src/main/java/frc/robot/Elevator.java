@@ -89,7 +89,7 @@ public class Elevator {
 
         tiltCtrl.setP(0.000500, PID_TILT_UP_SLOT);
         tiltCtrl.setI(0.0, PID_TILT_UP_SLOT);
-        tiltCtrl.setD(0.000120, PID_TILT_UP_SLOT);
+        tiltCtrl.setD(0.0003750, PID_TILT_UP_SLOT); //0.000120 -> 0.000200 -> 0.000250 -> 0.000300 -> 0.000350
         // tiltCtrl.setFF(0.000075, PID_TILT_UP_SLOT);
 
         tiltCtrl.setP(0.0001, PID_TILT_DOWN_SLOT);

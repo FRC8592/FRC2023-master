@@ -217,7 +217,7 @@ public class Robot extends LoggedRobot {
 
     SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
     
-    currentWrist -= 1.25;
+    currentWrist = Constants.WRIST_INTAKE_TELEOP_ROTATIONS;
     intake.stopRoller();
     intake.haltWrist();
     elevator.set(Heights.STALL);
