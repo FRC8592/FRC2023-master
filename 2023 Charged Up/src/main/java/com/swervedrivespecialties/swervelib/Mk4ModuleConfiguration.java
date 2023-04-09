@@ -13,22 +13,34 @@ public class Mk4ModuleConfiguration {
     private double driveCurrentLimit = 80.0;
     private double steerCurrentLimit = 20.0;
 
-    // throttle motor PID constants
+    // throttle motor PID values
     public double throttlekP = Double.NaN;
     public double throttlekI = Double.NaN;
     public double throttlekD = Double.NaN;
 
-    // steer motor PID constants
+    // steer motor PID values
     public double steerkP = Double.NaN;
     public double steerkI = Double.NaN;
     public double steerkD = Double.NaN;
 
+    /**
+     * 
+     * @param kP The proportional value to set to the throttle motor
+     * @param kI The integral value to set to the throttle motor
+     * @param kD The derivative value to set to the throttle motor
+     */
     public void setThrottlePID(double kP, double kI, double kD){
         this.throttlekP = kP;
         this.throttlekI = kI;
         this.throttlekD = kD;
     }
     
+    /**
+     * 
+     * @param kP The proportional value to set to the steer motor
+     * @param kI The integral value to set to the steer motor
+     * @param kD The derivative value to set to the steer motor
+     */
     public void setSteerPID(double kP, double kI, double kD){
         this.steerkP = kP;
         this.steerkI = kI;
