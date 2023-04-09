@@ -13,6 +13,29 @@ public class Mk4ModuleConfiguration {
     private double driveCurrentLimit = 80.0;
     private double steerCurrentLimit = 20.0;
 
+    // throttle motor PID constants
+    public double throttlekP = Double.NaN;
+    public double throttlekI = Double.NaN;
+    public double throttlekD = Double.NaN;
+
+    // steer motor PID constants
+    public double steerkP = Double.NaN;
+    public double steerkI = Double.NaN;
+    public double steerkD = Double.NaN;
+
+    public void setThrottlePID(double kP, double kI, double kD){
+        this.throttlekP = kP;
+        this.throttlekI = kI;
+        this.throttlekD = kD;
+    }
+    
+    public void setSteerPID(double kP, double kI, double kD){
+        this.steerkP = kP;
+        this.steerkI = kI;
+        this.steerkD = kD;
+    }
+    
+
     public double getNominalVoltage() {
         return nominalVoltage;
     }
