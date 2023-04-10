@@ -270,6 +270,7 @@ public class Drivetrain {
 
 
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
+        logger.log(this, "SwerveThrottleCurrents", getThrottleAppliedCurrent());
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
 
@@ -403,5 +404,14 @@ public class Drivetrain {
 
     public SwerveDriveKinematics getKinematics() {
         return m_kinematics;
+    }
+
+    public double[] getThrottleAppliedCurrent(){
+        double frontLeftCurrent = m_frontLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+        double frontRightCurrent = m_frontRightModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+        double backLeftCurrent = m_backLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+        double backRightCurrent = m_backRightModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+
+        return new double[] {frontLeftCurrent, frontRightCurrent, backLeftCurrent, backRightCurrent};
     }
 }
