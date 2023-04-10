@@ -610,7 +610,7 @@ public class Robot extends LoggedRobot {
     if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
       return 0;
     } else {
-      return inputJoystick * 0.3;
+      return inputJoystick;
     }
   }
 }
