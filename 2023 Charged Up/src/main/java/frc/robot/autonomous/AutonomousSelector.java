@@ -22,13 +22,10 @@ public class AutonomousSelector {
         LeftConeBalanceAuto.class,
         LeftConeGrabCubeBalanceAuto.class,
         LeftConeCubeAuto.class,
-        // LeftConeConeAuto.class,
         LeftConeCubeBalanceAuto.class,
         LeftConeCubeGrabConeAuto.class,
         LeftCableCoverConeCubeAuto.class,
 
-
-        MiddleBalanceAuto.class,
         MiddleConeBalanceAuto.class,
         MiddleLeftConeGrabCubeBalanceAuto.class,
         MiddleRightConeGrabCubeBalanceAuto.class,
@@ -39,11 +36,11 @@ public class AutonomousSelector {
         RightConeConeAuto.class,
         RightConeCubeBalanceAuto.class,
         RightCableCoverConeCubeAuto.class,
-        RightCableCoverConeCubeGrabCubeAuto.class
+        // RightCableCoverConeCubeGrabCubeAuto.class
     };
 
     public AutonomousSelector() {
-        autonChooser.setDefaultOption("DEFAULT - DO NOTHING", DoNothingAuto.class);
+        autonChooser.setDefaultOption("DEFAULT - DO NOTHING", LeftConeCubeCubeAuto.class);
         for (Class<?> auto : autos) {
             autonChooser.addOption(auto.getSimpleName(), auto);
         }

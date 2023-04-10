@@ -15,8 +15,6 @@ public abstract class BaseAuto {
     protected Vision vision;
     protected CommandQueue queue;
 
-    protected double scoreTime = 1; // Remove once actual intake/outtake on the robot
-
     /**
      * Add all running subsystems for use for all autonomous routines
      * @param pDrive {@code drivetrain} object
