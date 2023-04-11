@@ -59,7 +59,7 @@ public class Drivetrain {
     // Measure the drivetrain's maximum velocity (m/s) or calculate the theoretical maximum.
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6; //4.5
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.5; //4.5
     // 6380.0 / 60.0 *
     //     SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
     //     SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
