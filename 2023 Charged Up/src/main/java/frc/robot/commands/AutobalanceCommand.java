@@ -7,9 +7,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Autopark;
 import frc.robot.Drivetrain;
 import frc.robot.Robot;
+import frc.robot.Vision;
 
 public class AutobalanceCommand extends Command {
     private Drivetrain drive;
+    private Vision vision;
     private Autopark autopark;
     private Timer timer;
     private double prevPitch = 0;
@@ -34,6 +36,11 @@ public class AutobalanceCommand extends Command {
         setTag(tag);
     }
 
+    public AutobalanceCommand(Drivetrain drive, Vision vision) {
+        this.drive = drive;
+        this.vision = vision;
+    }
+
     @Override
     public void initialize() {
         autopark = new Autopark();
@@ -42,6 +49,10 @@ public class AutobalanceCommand extends Command {
         timer.start();
 
         startPose = drive.getCurrentPos();
+
+        if (vision != null) {
+            autopark.enableVision(vision);
+        }
     }
 
     @Override

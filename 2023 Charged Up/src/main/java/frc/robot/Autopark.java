@@ -2,11 +2,14 @@ package frc.robot;
 
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Autopark {
+    private Vision vision;
+    private PIDController visionPID;
 
     public enum AutoBalanceStates {
         DRIVE_FORWARD,
@@ -20,6 +23,11 @@ public class Autopark {
         currentState = AutoBalanceStates.FIX_TILT;
         timer = new Timer();
 
+        visionPID = new PIDController(0.05, 0.0, 0.0);
+    }
+
+    public void enableVision(Vision vision) {
+        this.vision = vision;
     }
     
     public boolean balance(Drivetrain drivetrain){
@@ -46,7 +54,16 @@ public class Autopark {
                     currentState = AutoBalanceStates.STOP; 
                 }
                 else{
-                    drivetrain.drive(new ChassisSpeeds(-(pitch * Constants.PITCH_MULTIPLIER), 0, 0));
+                    ChassisSpeeds desired = new ChassisSpeeds(-(pitch * Constants.PITCH_MULTIPLIER), 0, 0);
+                    if (vision != null) {
+                        double vyVision = vision.turnRobot( 0,   visionPID,   1.0, 0.0);
+                        desired = new ChassisSpeeds(
+                            desired.vxMetersPerSecond,
+                            vyVision,
+                            desired.omegaRadiansPerSecond
+                        );
+                    }
+                    drivetrain.drive(desired);
                     SmartDashboard.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER);
                 }
                 break;

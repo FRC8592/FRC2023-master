@@ -19,13 +19,13 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
     private TrajectoryConfig fastConfig = new TrajectoryConfig(3.75, 1.0);
     private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
-    private SwerveTrajectory C_TO_CABLE_COVER = generate(
+    private SwerveTrajectory A_TO_CABLE_COVER = generate(
         fastConfig
             .setStartVelocity(0.0)
             .setEndVelocity(0.75)
             .setReversed(false),
-        GRID_C.getPose(),
-        INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.2)
+        GRID_A.getPose(),
+        INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.15)
     ).addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.5);
 
     private SwerveTrajectory CABLE_COVER_TO_Ilz = generate(
@@ -33,7 +33,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
             .setStartVelocity(0.75)
             .setEndVelocity(2.0)
             .setReversed(false),
-        INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.2),
+        INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.15),
         INTERMEDIARY_LOADING_ZONE.translate(0.0, 0.1)
     ).addRotation(Rotation2d.fromDegrees(180));
 
@@ -86,7 +86,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
             new PipelineCommand(vision, Pipeline.CUBE), // Change pipeline CUBE
             new JointCommand(
                 new LiftCommand(elevator, Heights.STOWED),
-                new FollowerCommand(drive, C_TO_CABLE_COVER)
+                new FollowerCommand(drive, A_TO_CABLE_COVER)
             ),
             new JointCommand( // STOW 4-bar and INTAKE while moving out community
                 new FollowerCommand(drive, CABLE_COVER_TO_Ilz),

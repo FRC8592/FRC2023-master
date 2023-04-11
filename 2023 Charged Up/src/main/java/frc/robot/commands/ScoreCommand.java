@@ -10,14 +10,26 @@ import frc.robot.Elevator.Heights;
 public class ScoreCommand extends Command {
     private Timer timer;
     private Intake intake;
+    private Elevator elevator;
     private double delay = 0;
 
     public ScoreCommand(Intake intake) {
         this.intake = intake;
     }
 
+    public ScoreCommand(Intake intake, Elevator elevator) {
+        this.intake = intake;
+        this.elevator = elevator;
+    }
+
     public ScoreCommand(Intake intake, double delay) {
         this.intake = intake;
+        this.delay = delay;
+    }
+
+    public ScoreCommand(Intake intake, Elevator elevator, double delay) {
+        this.intake = intake;
+        this.elevator = elevator;
         this.delay = delay;
     }
 
