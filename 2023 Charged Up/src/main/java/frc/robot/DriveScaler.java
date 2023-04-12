@@ -40,4 +40,13 @@ public class DriveScaler {
                 return value;
         }
     }
+
+    // public double slewFilter(double delta, double currentVelo){
+    //     double value = 0;
+    //     if ((currentVelo > 0 && delta < 0) || (currentVelo < 0 && delta > 0)){
+    //         value = Math.max();
+    //         value = Math.min();
+    //     }
+    //     return 0.0;
+    // }
 }
