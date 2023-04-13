@@ -130,7 +130,7 @@ public class Robot extends LoggedRobot {
     // lift.reset();
     driveScaler = new DriveScaler();
 
-    smoothingFilter = new SmoothingFilter(15, 15, 1);
+    smoothingFilter = new SmoothingFilter(17, 17, 1);
 
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
@@ -372,12 +372,14 @@ public class Robot extends LoggedRobot {
     
     // double velX = driveScaler.slewFilter(lastXVelocity, driveScaler.scale(-joystickDeadband(translateX)), 4.5);
     // double velY = driveScaler.slewFilter(lastYVelocity, driveScaler.scale(-joystickDeadband(translateY)), 4.5);
+
+    ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
     
-    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(smoothingFilter.smooth(new ChassisSpeeds(
-      translateX, 
-      translateY,
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
+      smoothedRobotRelative.vxMetersPerSecond, 
+      smoothedRobotRelative.vyMetersPerSecond,
       rotate
-    )), drive.getGyroscopeRotation());
+    ), drive.getGyroscopeRotation());
 
     // lastXVelocity = translateX;
     // lastYVelocity = translateY;
