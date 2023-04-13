@@ -118,7 +118,7 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
-     substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_ACCEPTABLE_OFFSET,
+     substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_OFFSET,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -386,51 +386,37 @@ public class Robot extends LoggedRobot {
 
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
-    } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
-      // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
-        driveSpeeds = new ChassisSpeeds(
-          // driveSpeeds.vxMetersPerSecond,
-          // driveSpeeds.vyMetersPerSecond,
-          translateX,
-          translateY,
-          gameObjectVision.turnRobot(
-            1.0,
-            turnPID,
-            3.0,
-            0.0
-          )
-        );
-      }
+    } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Turn to grid
+      driveSpeeds = new ChassisSpeeds(
+        driveSpeeds.vxMetersPerSecond,
+        driveSpeeds.vyMetersPerSecond,
+        drive.turnToAngle(0)
+      );
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      //if a valid target is in view and the elevator is in the up position
+      double rotation = DriverStation.getAlliance() == Alliance.Red ? drive.turnToAngle(270) : drive.turnToAngle(90);
       if (substationVision.targetValid && elevator.atTiltReference()){
-
-        //led logic
-        if (substationVision.processedDx > Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+        if (substationVision.processedDx > Constants.SUBSTATION_OFFSET + Constants.SUBSTATION_ACCEPTANCE_RADIUS){
           ledStrips.set(LEDMode.FAR);
-        }else if (substationVision.processedDx < Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+        }else if (substationVision.processedDx < Constants.SUBSTATION_OFFSET - Constants.SUBSTATION_ACCEPTANCE_RADIUS){
           ledStrips.set(LEDMode.CLOSE);
-        }else if (substationVision.processedDx <= Constants.SUBSTATION_ACCEPTABLE_OFFSET + 10 && substationVision.processedDx >= Constants.SUBSTATION_ACCEPTABLE_OFFSET - 10){
+        } else {
           ledStrips.set(LEDMode.LOCKED);
         }
-
 
         double strafeSpeed = substationVision.turnRobot(
           0,
           strafePID,
           1.0,
-          Constants.SUBSTATION_ACCEPTABLE_OFFSET
+          Constants.SUBSTATION_OFFSET
         );
+
         driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
           drive.getYaw() >= 0 ? -strafeSpeed : strafeSpeed,
-          driveScaler.scale(-joystickDeadband(translateY)), 
+          -driveScaler.scale(-joystickDeadband(translateY)), 
           // -translateY * 0.3,
-          driveSpeeds.omegaRadiansPerSecond, 
+          rotation, 
           drive.getGyroscopeRotation());
       }
-      
     } else { // Normal drive
       // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
       //   driveScaler.scale(joystickDeadband(translateX)),
@@ -443,31 +429,13 @@ public class Robot extends LoggedRobot {
       //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
       // }
 
-      double turn;
-      switch(driverController.getPOV()) {
-        case 0:
-          turn = drive.turnToAngle(180.0);
-          ledStrips.set(LEDMode.TARGETLOCK);
-          break;
-        case 90:
-          turn = drive.turnToAngle(90.0);
-          break;
-        case 180:
-          turn = drive.turnToAngle(0.0);
-          break;
-        case 270:
-          turn = drive.turnToAngle(270.0);
-          break;
-        default:
-          turn = driveSpeeds.omegaRadiansPerSecond;
-          break;
+      if (driverController.getPOV() != -1) {
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond, 
+          driveSpeeds.vyMetersPerSecond,
+          drive.turnToAngle(180 - driverController.getPOV())
+        );
       }
-
-      driveSpeeds = new ChassisSpeeds(
-        driveSpeeds.vxMetersPerSecond, 
-        driveSpeeds.vyMetersPerSecond,
-        turn
-      );
     }
 
     if (driverController.getBButton()) { // Wheels locked
