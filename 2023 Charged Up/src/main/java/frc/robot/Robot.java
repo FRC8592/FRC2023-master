@@ -130,7 +130,7 @@ public class Robot extends LoggedRobot {
     // lift.reset();
     driveScaler = new DriveScaler();
 
-    smoothingFilter = new SmoothingFilter(17, 17, 1);
+    smoothingFilter = new SmoothingFilter(1, 1, 1); //5, 5, 1
 
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
