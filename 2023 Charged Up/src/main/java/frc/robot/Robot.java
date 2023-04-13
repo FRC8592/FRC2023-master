@@ -75,6 +75,9 @@ public class Robot extends LoggedRobot {
   public Power power;
   private boolean angleTapBool = false;
   public BeamSensor cubeBeamSensor;
+  public SmoothingFilter smoothingFilter;
+
+
 
   private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
 
@@ -126,8 +129,12 @@ public class Robot extends LoggedRobot {
     // intake.reset();
     // lift.reset();
     driveScaler = new DriveScaler();
+
+    smoothingFilter = new SmoothingFilter(15, 15, 1);
+
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
+    
     
     SmartDashboard.putNumber("Command Counter", 0);
   }
@@ -221,6 +228,10 @@ public class Robot extends LoggedRobot {
     intake.stopRoller();
     intake.haltWrist();
     elevator.set(Heights.STALL);
+
+  //   lastXVelocity = 0;
+  //  lastYVelocity = 0;
+
   }
   
   /** This function is called periodically during operator control. */
@@ -232,6 +243,8 @@ public class Robot extends LoggedRobot {
     double translateY;
     double rotate;
     double rotateToAngle;
+
+ 
 
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
 
@@ -343,17 +356,31 @@ public class Robot extends LoggedRobot {
       rotatePower = ConfigRun.ROTATE_POWER_FAST;
     }
 
-    rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-      * rotatePower;
-    translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
-    translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    double translateXScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftY()));
+    double translateYScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftX()));
+    double rotateScaled = driveScaler.scale(joystickDeadband(driverController.getRightX())); 
 
-    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(-joystickDeadband(translateX)), 
-      driveScaler.scale(-joystickDeadband(translateY)), 
-      driveScaler.scale(joystickDeadband(rotate)), 
-      drive.getGyroscopeRotation()
-    );
+    rotate = rotateScaled * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+      * rotatePower;
+    
+    
+    translateX = translateXScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;          
+    translateY = translateYScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;
+
+
+
+    
+    // double velX = driveScaler.slewFilter(lastXVelocity, driveScaler.scale(-joystickDeadband(translateX)), 4.5);
+    // double velY = driveScaler.slewFilter(lastYVelocity, driveScaler.scale(-joystickDeadband(translateY)), 4.5);
+    
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(smoothingFilter.smooth(new ChassisSpeeds(
+      translateX, 
+      translateY,
+      rotate
+    )), drive.getGyroscopeRotation());
+
+    // lastXVelocity = translateX;
+    // lastYVelocity = translateY;
 
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);

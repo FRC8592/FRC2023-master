@@ -316,5 +316,7 @@ public final class Constants {
     public static final int SUBSTATION_CONE_PIPELINE = 0;
     public static final double SUBSTATION_ACCEPTABLE_OFFSET = 8.0;
     public static String LIMELIGHT_REAR       = "limelight-rear";
+
+    public static final double MAX_JOYSTICK_DECELERATION = 0.075; //0.18
 }
 

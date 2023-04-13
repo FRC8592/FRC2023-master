@@ -104,7 +104,7 @@ public class Drivetrain {
         swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
 
         //set PID constants
-        swerveMotorConfig.setThrottlePID(0.01, 0, 0.01); //0.02, 0, 0.01
+        swerveMotorConfig.setThrottlePID(0.02, 0, 0.01); //0.02, 0, 0.01
         swerveMotorConfig.setSteerPID(0.2, 0.0, 0.1);
         
         this.logger = logger;
