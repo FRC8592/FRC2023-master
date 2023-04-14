@@ -63,6 +63,7 @@ public class Robot extends LoggedRobot {
   public LED ledStrips;
 
   public Vision gameObjectVision;
+  public Vision substationVision;
   public String currentPiecePipeline;
   private Elevator elevator;
   private Intake intake;
@@ -73,6 +74,10 @@ public class Robot extends LoggedRobot {
   private boolean coneVision = true;
   public Power power;
   private boolean angleTapBool = false;
+  public BeamSensor cubeBeamSensor;
+  public SmoothingFilter smoothingFilter;
+
+
 
   private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
 
@@ -80,6 +85,8 @@ public class Robot extends LoggedRobot {
   private AutonomousSelector selector;
   public Autopark autoPark;
   private Timer timer = new Timer();
+
+  private boolean isPartyMode = false;
 
   private DriveScaler driveScaler;
 
@@ -107,7 +114,11 @@ public class Robot extends LoggedRobot {
     operatorController = new XboxController(1);
     power = new Power();
     drive = new Drivetrain(logger);
+    cubeBeamSensor = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
+     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
+     Constants.BALL_TARGET_HEIGHT, logger);
+     substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_OFFSET,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -118,9 +129,13 @@ public class Robot extends LoggedRobot {
     // intake.reset();
     // lift.reset();
     driveScaler = new DriveScaler();
+
+    smoothingFilter = new SmoothingFilter(1, 1, 1); //5, 5, 1
+
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
-
+    
+    
     SmartDashboard.putNumber("Command Counter", 0);
   }
 
@@ -208,10 +223,15 @@ public class Robot extends LoggedRobot {
     autoPark = new Autopark();
 
     SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
-
+    
+    currentWrist = Constants.WRIST_INTAKE_TELEOP_ROTATIONS;
     intake.stopRoller();
     intake.haltWrist();
     elevator.set(Heights.STALL);
+
+  //   lastXVelocity = 0;
+  //  lastYVelocity = 0;
+
   }
   
   /** This function is called periodically during operator control. */
@@ -228,8 +248,11 @@ public class Robot extends LoggedRobot {
 
     drive.getCurrentPos();
     gameObjectVision.updateVision();
+    substationVision.updateVision();
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
+    SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
+    logger.log(this, "RobotYaw", drive.getGyroscopeRotation());
 
     /*
      * Controls:
@@ -299,20 +322,26 @@ public class Robot extends LoggedRobot {
     if (driverController.getBackButton()) {
       drive.zeroGyroscope();
     }
-
-    if (driverController.getYButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
-      ledStrips.set(LEDMode.CONE);
-    } else if (driverController.getXButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
-      ledStrips.set(LEDMode.CUBE);
-    } else if (operatorController.getPOV() == 0 && !operatorController.getStartButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.APRILTAG_PIPELINE);
-      ledStrips.set(LEDMode.CUBE);
-    } else if (operatorController.getPOV() == 180 && !operatorController.getStartButton()) {
-      NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.RETROTAPE_PIPELINE);
-      ledStrips.set(LEDMode.CONE);
+    
+    if (driverController.getAButtonPressed()) {
+      if (isPartyMode){
+        ledStrips.set(LEDMode.ATTENTION);
+      }
+      isPartyMode = !isPartyMode;
     }
+
+    if (isPartyMode) {
+      ledStrips.set(LEDMode.PARTY);
+    } else {
+      if (driverController.getYButton()) {
+        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+        ledStrips.set(LEDMode.CONE);
+      } else if (driverController.getXButton()) {
+        NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
+        ledStrips.set(LEDMode.CUBE);
+      }
+    } 
+    
 
     // double pipeline = NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").getDouble(10.0d);
     // SmartDashboard.putNumber("Current Pipeline", pipeline);
@@ -325,51 +354,73 @@ public class Robot extends LoggedRobot {
       rotatePower = ConfigRun.ROTATE_POWER_FAST;
     }
 
-    rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-      * rotatePower;
-    translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
-    translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    double translateXScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftY()));
+    double translateYScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftX()));
+    double rotateScaled = driveScaler.scale(joystickDeadband(driverController.getRightX())); 
 
-    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(-joystickDeadband(translateX)), 
-      driveScaler.scale(-joystickDeadband(translateY)), 
-      driveScaler.scale(joystickDeadband(rotate)), 
-      drive.getGyroscopeRotation()
-    );
+    rotate = rotateScaled * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+      * rotatePower;
+    
+    
+    translateX = translateXScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;          
+    translateY = translateYScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;
+
+
+
+    
+    // double velX = driveScaler.slewFilter(lastXVelocity, driveScaler.scale(-joystickDeadband(translateX)), 4.5);
+    // double velY = driveScaler.slewFilter(lastYVelocity, driveScaler.scale(-joystickDeadband(translateY)), 4.5);
+
+    ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
+    
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
+      smoothedRobotRelative.vxMetersPerSecond, 
+      smoothedRobotRelative.vyMetersPerSecond,
+      rotate
+    ), drive.getGyroscopeRotation());
+
+    // lastXVelocity = translateX;
+    // lastYVelocity = translateY;
 
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
-    } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
-      // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
-        driveSpeeds = new ChassisSpeeds(
-          // driveSpeeds.vxMetersPerSecond,
-          // driveSpeeds.vyMetersPerSecond,
-          translateX,
-          translateY,
-          gameObjectVision.turnRobot(
-            1.0,
-            turnPID,
-            3.0
-          )
-        );
-      }
+    } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Turn to grid
+      driveSpeeds = new ChassisSpeeds(
+        driveSpeeds.vxMetersPerSecond,
+        driveSpeeds.vyMetersPerSecond,
+        drive.turnToAngle(0)
+      );
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
+      double rotation = DriverStation.getAlliance() == Alliance.Red ? drive.turnToAngle(270) : drive.turnToAngle(90);
+      if (substationVision.targetValid){
+        if (substationVision.processedDx > Constants.SUBSTATION_OFFSET + Constants.SUBSTATION_ACCEPTANCE_RADIUS){
+          ledStrips.set(LEDMode.FAR);
+        }else if (substationVision.processedDx < Constants.SUBSTATION_OFFSET - Constants.SUBSTATION_ACCEPTANCE_RADIUS){
+          ledStrips.set(LEDMode.CLOSE);
+        } else {
+          ledStrips.set(LEDMode.LOCKED);
+        }
+
+        double strafeSpeed = substationVision.turnRobot(
+          0,
+          strafePID,
+          1.0,
+          Constants.SUBSTATION_OFFSET
+        );
+
+        driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+          drive.getYaw() >= 0 ? -strafeSpeed : strafeSpeed,
+          -driveScaler.scale(-joystickDeadband(translateY)), 
+          // -translateY * 0.3,
+          rotation, 
+          drive.getGyroscopeRotation());
+      } else {
         driveSpeeds = new ChassisSpeeds(
           driveSpeeds.vxMetersPerSecond,
-          gameObjectVision.turnRobot(
-            1.0,
-            strafePID,
-            8.0
-          ),
-          driveSpeeds.omegaRadiansPerSecond
-        );
+          driveSpeeds.vyMetersPerSecond,
+          DriverStation.getAlliance() == Alliance.Red ? drive.turnToAngle(270) : drive.turnToAngle(90)
+        ); 
       }
-      
     } else { // Normal drive
       // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
       //   driveScaler.scale(joystickDeadband(translateX)),
@@ -381,24 +432,13 @@ public class Robot extends LoggedRobot {
       //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
       //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
       // }
-
       double turn;
       switch(driverController.getPOV()) {
-        case 0:
-          turn = drive.turnToAngle(180.0);
-          ledStrips.set(LEDMode.TARGETLOCK);
-          break;
-        case 90:
-          turn = drive.turnToAngle(90.0);
-          break;
-        case 180:
-          turn = drive.turnToAngle(0.0);
-          break;
-        case 270:
-          turn = drive.turnToAngle(270.0);
+        case -1:
+          turn = driveSpeeds.omegaRadiansPerSecond;
           break;
         default:
-          turn = driveSpeeds.omegaRadiansPerSecond;
+          turn = drive.turnToAngle(180 - driverController.getPOV());
           break;
       }
 
@@ -407,6 +447,18 @@ public class Robot extends LoggedRobot {
         driveSpeeds.vyMetersPerSecond,
         turn
       );
+      // if (driverController.getPOV() != -1) {
+        
+      // } else {
+      //   driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      //     new ChassisSpeeds(      
+      //       smoothedRobotRelative.vxMetersPerSecond, 
+      //       smoothedRobotRelative.vyMetersPerSecond,
+      //       rotate
+      //     ), 
+      //     drive.getGyroscopeRotation()
+      //   );
+      // }
     }
 
     if (driverController.getBButton()) { // Wheels locked
@@ -417,10 +469,6 @@ public class Robot extends LoggedRobot {
       drive.drive(driveSpeeds);
     }
 
-    if (driverController.getXButton()) {
-      // Signal to human player for attention
-    }
-
     // ===================== \\
     // ======= Wrist ======= \\
     // ===================== \\
@@ -428,34 +476,23 @@ public class Robot extends LoggedRobot {
     // NOTE - Left and right triggers are on the same axis in some controllers, so left trigger being negative is the same as right trigger being positive
     
     if (operatorController.getLeftTriggerAxis() >= 0.1) {
-     
-      // if (operatorController.getAButton()) {
-      //   intake.setWrist(0.0);
-      // } else if (operatorController.getXButton()) {
-      //   intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3.0);
-      // } else {
-      //   intake.setWrist(currentWrist);
-      
-    
-      // }
       intake.setWrist(currentWrist);
-      if (operatorController.getXButton()) {
-        intake.cubeIntakeRoller();
-      } else if (operatorController.getYButton()) {
-        intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS * 2 / 3);
-      } else {
-        intake.coneIntakeRoller();
-      }
+      intake.coneIntakeRoller();
+        if (intake.rollerMotor.getOutputCurrent() >= Constants.ROLLER_CUBE_INTAKE_CURRENT_THRESHOLD){
+          ledStrips.set(LEDMode.LOCKED);
+        }else {
+          ledStrips.set(LEDMode.ATTENTION);
+        }
     } else if (operatorController.getLeftBumper()){
-      // intake.setWrist(currentWrist);
-      // intake.cubeIntakeRoller();
       intake.setWrist(0.0);
       intake.spinRollers(0.075);
       elevator.set(Heights.PRIME);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
-    } else if (operatorController.getRightBumper()) {
+    } else if (operatorController.getRightBumper() || operatorController.getBackButtonReleased() || driverController.getLeftBumperReleased()) {
       intake.setWrist(0.0);
+    } else if (operatorController.getBackButton() || driverController.getLeftBumper()) {
+      intake.throwPiece();
     } else {
         if (operatorController.getStartButton()) {
           if (angleTapBool) {
@@ -475,7 +512,7 @@ public class Robot extends LoggedRobot {
           if (operatorController.getAButton()) {
             elevator.set(Heights.STOWED);
             intake.setWrist(0.0);
-          } else if (operatorController.getBButton() || driverController.getLeftBumper()) {
+          } else if (operatorController.getBButton()) {
             elevator.set(Heights.PRIME);
             intake.setWrist(0.0);
           } else if (operatorController.getXButton()) {
@@ -536,6 +573,9 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    intake.stopRoller();
+    intake.haltWrist();
+    elevator.set(Heights.STALL);
   }
 
   /** This function is called periodically when disabled. */
@@ -543,6 +583,9 @@ public class Robot extends LoggedRobot {
   public void disabledPeriodic() {
     ledStrips.set(LEDMode.ATTENTION);
     elevator.writeToSmartDashboard();
+    // SmartDashboard.putBoolean("Cube Beam Broken?", cubeBeamSensor.isBroken());
+
+
     // else if(operatorController.getBButton()){
     //     ledStrips.set(LEDMode.TARGETLOCK);
     // }
@@ -562,7 +605,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-
+    
   }
 
   public void testPeriodic() {
@@ -587,7 +630,7 @@ public class Robot extends LoggedRobot {
     if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
       return 0;
     } else {
-      return inputJoystick * 0.3;
+      return inputJoystick;
     }
   }
 }

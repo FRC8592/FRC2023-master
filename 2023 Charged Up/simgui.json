@@ -64,10 +64,7 @@
         }
       },
       "/SmartDashboard/Field": {
-        "Robot": {
-          "image": "C:\\Users\\Dell G7\\Pictures\\Saved Pictures\\254.jpg"
-        },
-        "image": "C:\\Users\\Dell G7\\Documents\\Robotics\\FRC2023-master\\2023 Charged Up\\Simulation\\Screenshot_20230109_081636.png",
+        "image": "C:\\Users\\Nova-Labs\\Documents\\FRC2023-Master\\2023 Charged Up\\Simulation\\Screenshot_20230109_081636.png",
         "window": {
           "visible": true
         }
@@ -86,5 +83,8 @@
         "open": true
       }
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

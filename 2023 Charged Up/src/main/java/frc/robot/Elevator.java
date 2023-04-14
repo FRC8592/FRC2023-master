@@ -39,12 +39,12 @@ public class Elevator {
     // Velocity in RPM
     private final double MAX_VELOCITY_UP_LIFT = 6000d;
     private final double MAX_VELOCITY_DOWN_LIFT = 6000d;
-    private final double MAX_VELOCITY_TILT_UP = 5000d;
+    private final double MAX_VELOCITY_TILT_UP = 4000d;
     private final double MAX_VELOCITY_TILT_DOWN = 6000d;
 
     // Current in Amps
     private final int MAX_CURRENT_LIFT = 30; // Amps
-    private final int MAX_CURRENT_TILT = 30; // Amps
+    private final int MAX_CURRENT_TILT = 40; // Amps
     
     // Elevator States
     private Heights desiredHeight = Heights.STOWED;
@@ -52,8 +52,8 @@ public class Elevator {
         STOWED(0.0),
         STALL(0.0),
         PRIME(0.0),
-        MID(Constants.LIFT_MAX_ROTATIONS / 2),
-        HIGH(Constants.LIFT_MAX_ROTATIONS),
+        MID(Constants.LIFT_MAX_ROTATIONS / 2 + 10.0),
+        HIGH(Constants.LIFT_MAX_ROTATIONS + 5.0),
         MANUAL(0.0),
         ;
 
@@ -87,9 +87,9 @@ public class Elevator {
         liftCtrl.setD(0.0, PID_DOWN_SLOT_LIFT);
         liftCtrl.setFF(0.000391419, PID_DOWN_SLOT_LIFT);
 
-        tiltCtrl.setP(0.00025, PID_TILT_UP_SLOT);
+        tiltCtrl.setP(0.000500, PID_TILT_UP_SLOT);
         tiltCtrl.setI(0.0, PID_TILT_UP_SLOT);
-        tiltCtrl.setD(0.0, PID_TILT_UP_SLOT);
+        tiltCtrl.setD(0.0003750, PID_TILT_UP_SLOT); //0.000120 -> 0.000200 -> 0.000250 -> 0.000300 -> 0.000350
         // tiltCtrl.setFF(0.000075, PID_TILT_UP_SLOT);
 
         tiltCtrl.setP(0.0001, PID_TILT_DOWN_SLOT);

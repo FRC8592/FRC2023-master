@@ -5,7 +5,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import frc.robot.Elevator.Heights;
 import frc.robot.autonomous.SwerveTrajectory;
 import frc.robot.autonomous.autons.BaseAuto;
-import frc.robot.commands.AutobalanceCommand;
 import frc.robot.commands.CommandQueue;
 import frc.robot.commands.FollowerCommand;
 import frc.robot.commands.IntakeCommand;
@@ -18,8 +17,7 @@ import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class LeftConeCubeGrabConeAuto extends BaseAuto {
     private TrajectoryConfig fastConfig = new TrajectoryConfig(3.75, 1);
-    private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1);
-    private TrajectoryConfig balanceConfig = new TrajectoryConfig(2, 1);
+    private TrajectoryConfig slowConfig = new TrajectoryConfig(2, 1);
 
     private SwerveTrajectory C_TO_Ilz = generate(
         fastConfig
@@ -55,7 +53,7 @@ public class LeftConeCubeGrabConeAuto extends BaseAuto {
     );
 
     private SwerveTrajectory Ilz_TO_B = generate(
-        balanceConfig
+        slowConfig
             .setStartVelocity(1.5)
             .setEndVelocity(0.0)
             .setReversed(true),
@@ -64,9 +62,9 @@ public class LeftConeCubeGrabConeAuto extends BaseAuto {
     );
 
     private SwerveTrajectory B_TO_Ilz = generate(
-        slowConfig
+        fastConfig
             .setStartVelocity(0.0)
-            .setEndVelocity(1.0)
+            .setEndVelocity(fastConfig.getMaxVelocity())
             .setReversed(false),
         GAME_PIECE_1.translate(-3.9, -0.05),
         GAME_PIECE_1.translate(-2.0, -0.05)
@@ -74,12 +72,13 @@ public class LeftConeCubeGrabConeAuto extends BaseAuto {
 
     private SwerveTrajectory Ilz_TO_GP2 = generate(
         fastConfig
-            .setStartVelocity(0.0)
-            .setEndVelocity(1.0)
+            .setStartVelocity(fastConfig.getMaxVelocity())
+            .setEndVelocity(0.0)
             .setReversed(false),
         GAME_PIECE_1.translate(-2.0, -0.05),
         GAME_PIECE_1.translate(-1.0, -0.05),
-        GAME_PIECE_2.translate(0.25, -0.05, Rotation2d.fromDegrees(45))
+        GAME_PIECE_1.translate(-0.5, -0.5),
+        GAME_PIECE_2.translate(-0.25, 0.35, Rotation2d.fromDegrees(-45))
     );
 
     @Override

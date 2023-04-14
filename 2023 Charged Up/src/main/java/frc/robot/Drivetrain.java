@@ -59,7 +59,7 @@ public class Drivetrain {
     // Measure the drivetrain's maximum velocity (m/s) or calculate the theoretical maximum.
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 6; //4.5
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4.5; //4.5
     // 6380.0 / 60.0 *
     //     SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
     //     SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;
@@ -102,6 +102,10 @@ public class Drivetrain {
         swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
         swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_TELEOP_CURRENT);
         swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
+
+        //set PID constants
+        swerveMotorConfig.setThrottlePID(0.02, 0, 0.01); //0.02, 0, 0.01
+        swerveMotorConfig.setSteerPID(0.2, 0.0, 0.1);
         
         this.logger = logger;
 
@@ -189,6 +193,7 @@ public class Drivetrain {
         // if (DriverStation.getAlliance() == Alliance.Red) {
         //     return Rotation2d.fromDegrees(180-m_navx.getYaw());
         // }
+        SmartDashboard.putNumber("GYRO ROTATION", -m_navx.getYaw());
         return Rotation2d.fromDegrees(-m_navx.getYaw());
     }
 
@@ -239,20 +244,15 @@ public class Drivetrain {
         SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
-        // m_frontLeftModule.setModuleSteerAngle(states[0].angle.getRadians())
-        // m_frontRightModule.setModuleSteerAngle(states[1].angle.getRadians());
-        // m_backLeftModule.setModuleSteerAngle(states[2].angle.getRadians());
-        // m_backRightModule.setModuleSteerAngle(states[3].angle.getRadians());
+        double frontLeftVelo = states[0].speedMetersPerSecond;
+        double frontRightVelo = states[1].speedMetersPerSecond;
+        double backLeftVelo = states[2].speedMetersPerSecond;
+        double backRightVelo = states[3].speedMetersPerSecond;
 
-        // setDriveVelocity(metersPerSecondToTicks(states[0].speedMetersPerSecond), m_frontLeftModule);
-        // setDriveVelocity(metersPerSecondToTicks(states[1].speedMetersPerSecond), m_frontRightModule);
-        // setDriveVelocity(metersPerSecondToTicks(states[2].speedMetersPerSecond), m_backLeftModule);
-        // setDriveVelocity(metersPerSecondToTicks(states[3].speedMetersPerSecond), m_backRightModule);
-
-        setModule(m_frontLeftModule, states[0].angle.getRadians(), metersPerSecondToTicks(states[0].speedMetersPerSecond));
-        setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(states[1].speedMetersPerSecond));
-        setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(states[2].speedMetersPerSecond));
-        setModule(m_backRightModule, states[3].angle.getRadians(), metersPerSecondToTicks(states[3].speedMetersPerSecond));
+        setModule(m_frontLeftModule, states[0].angle.getRadians(), metersPerSecondToTicks(frontLeftVelo));
+        setModule(m_frontRightModule, states[1].angle.getRadians(), metersPerSecondToTicks(frontRightVelo));
+        setModule(m_backLeftModule, states[2].angle.getRadians(), metersPerSecondToTicks(backLeftVelo));
+        setModule(m_backRightModule, states[3].angle.getRadians(), metersPerSecondToTicks(backRightVelo));
         
         this.odometry.update(
             getGyroscopeRotation(), 
@@ -265,7 +265,33 @@ public class Drivetrain {
         );
 
 
+        /*
+        * Swerve Module States Array
+        * 0 - Front Left Azimuth
+        * 1 - Front Left Veolcity
+        *
+        * 2 - Front Right Azimuth
+        * 3 - Front Right Velocity
+        *
+        * 4 - Back Left Azimuth
+        * 5 - Back Left Veolcity
+        * 
+        * 6 - Back Right Azimuth
+        * 7 - Back Right Velocity
+        */
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
+        
+        
+        /*
+         * Swerve Module Current and Velocities array
+         * 0 - Front Left
+         * 1 - Front Right
+         * 2 - Back Left
+         * 3 - Back Right
+         */
+        logger.log(this, "SwerveThrottleCurrents", getThrottleAppliedCurrent());
+        logger.log(this, "SwerveModuleDesiredVelocity", new double[] {frontLeftVelo, frontRightVelo, backLeftVelo, backRightVelo});
+        logger.log(this, "SwerveModuleActualVelocity", getThrottleAppliedVelocity());
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
     } 
 
@@ -340,6 +366,9 @@ public class Drivetrain {
     public double metersPerSecondToTicks(double input){
         return input * Constants.METERS_PER_SECOND_TO_TICKS;
     }
+    public double ticksToMetersPerSecond(double input){
+        return input / Constants.METERS_PER_SECOND_TO_TICKS;
+    }
 
     public double getModuleVelocity(SwerveModule module){
         return module.getDriveController().getDriveFalcon().getSelectedSensorVelocity();
@@ -399,5 +428,23 @@ public class Drivetrain {
 
     public SwerveDriveKinematics getKinematics() {
         return m_kinematics;
+    }
+
+    public double[] getThrottleAppliedCurrent(){
+        double frontLeftCurrent = m_frontLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+        double frontRightCurrent = m_frontRightModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+        double backLeftCurrent = m_backLeftModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+        double backRightCurrent = m_backRightModule.getDriveController().getDriveFalcon().getSupplyCurrent();
+
+        return new double[] {frontLeftCurrent, frontRightCurrent, backLeftCurrent, backRightCurrent};
+    }
+
+    public double[] getThrottleAppliedVelocity(){
+        double frontLeftVelo = ticksToMetersPerSecond(m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorVelocity());
+        double frontRightVelo = ticksToMetersPerSecond(m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorVelocity());
+        double backLeftVelo = ticksToMetersPerSecond(m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorVelocity());
+        double backRightVelo = ticksToMetersPerSecond(m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorVelocity());
+
+        return new double[] {Math.abs(frontLeftVelo), Math.abs(frontRightVelo), Math.abs(backLeftVelo), Math.abs(backRightVelo)};
     }
 }

@@ -10,6 +10,7 @@ public class LiftCommand extends Command {
     private Elevator lift;
     private Heights height;
     private double delay = 0;
+    private boolean dependency = false;
 
     public LiftCommand(Elevator lift, Heights height) {
         this.lift = lift;
@@ -21,6 +22,21 @@ public class LiftCommand extends Command {
         this.height = height;
         this.delay = delay;
     }
+
+    public LiftCommand(Elevator lift, Heights height, boolean dependency) {
+        this.lift = lift;
+        this.height = height;
+        this.dependency = dependency;
+    }
+
+    public LiftCommand(Elevator lift, Heights height, double delay, boolean dependency) {
+        this.lift = lift;
+        this.height = height;
+        this.delay = delay;
+        this.dependency = dependency;
+    }
+
+    
 
     @Override
     public void initialize() {
@@ -35,18 +51,18 @@ public class LiftCommand extends Command {
         if (Robot.isReal()) {
             if (timer.get() >= delay) {
                 lift.set(height);
-                return lift.atReference();
+                return lift.atReference() || dependency;
             }
-            return false;
+            return false || dependency;
         }
-        return timer.get() >= 1.0;
+        return timer.get() >= 1.0 || dependency;
     }
 
     @Override
     public void shutdown() {
         // lift.testPlanTilt(null);
         // lift.testPlanLift(null);
-        lift.set(Heights.STALL);
+        // lift.set(Heights.STALL);
     }
     
 

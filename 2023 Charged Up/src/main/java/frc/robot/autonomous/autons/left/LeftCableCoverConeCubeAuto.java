@@ -16,11 +16,11 @@ import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
 public class LeftCableCoverConeCubeAuto extends BaseAuto {
-    private TrajectoryConfig config = new TrajectoryConfig(3.75, 1.0);
+    private TrajectoryConfig fastConfig = new TrajectoryConfig(3.75, 1.0);
     private TrajectoryConfig slowConfig = new TrajectoryConfig(1.0, 1.0);
 
     private SwerveTrajectory C_TO_CABLE_COVER = generate(
-        config
+        fastConfig
             .setStartVelocity(0.0)
             .setEndVelocity(0.75)
             .setReversed(false),
@@ -29,7 +29,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
     ).addRotation(Rotation2d.fromDegrees(180), 2 * Math.PI, 0.5);
 
     private SwerveTrajectory CABLE_COVER_TO_Ilz = generate(
-        config
+        fastConfig
             .setStartVelocity(0.75)
             .setEndVelocity(2.0)
             .setReversed(false),
@@ -38,7 +38,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
     ).addRotation(Rotation2d.fromDegrees(180));
 
     private SwerveTrajectory Ilz_TO_GP1 = generate(
-        config
+        fastConfig
             .setStartVelocity(2.0)
             .setEndVelocity(0.0)
             .setReversed(false),
@@ -47,7 +47,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
     ).addRotation(Rotation2d.fromDegrees(180)).addVision();
 
     private SwerveTrajectory GP1_TO_B = generate(
-        config
+        fastConfig
             .setStartVelocity(0.0)
             .setEndVelocity(1.0)
             .setReversed(true),
@@ -57,7 +57,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
     );
 
     private SwerveTrajectory CABLE_COVER_PASS = generate(
-        config
+        fastConfig
             .setStartVelocity(1.0)
             .setEndVelocity(0.5)
             .setReversed(true),
@@ -71,7 +71,7 @@ public class LeftCableCoverConeCubeAuto extends BaseAuto {
             .setEndVelocity(0.0)
             .setReversed(true),
         GAME_PIECE_1.translate(-2.5, 0.0),
-        GAME_PIECE_1.translate(-4.0, -0.05)
+        GAME_PIECE_1.translate(-4.5, -0.05)
     ).addVision().setAcceptanceRange(0.05);
 
     @Override

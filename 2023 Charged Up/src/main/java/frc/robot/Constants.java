@@ -82,11 +82,13 @@ public final class Constants {
     public static final int WRIST_PID_SLOT = 0;
     public static final double ROLLER_MAX_VELOCITY = 5676.0 / ROLLER_GEAR_RATIO;
     public static final double ROLLER_MAX_ACCELERATION = ROLLER_MAX_VELOCITY; // Rotations per minute per second
+    public static final double ROLLER_CUBE_INTAKE_CURRENT_THRESHOLD = 8.0; // roller cube limit (for piece detection)
     public static final double WRIST_MAX_ACCELERATION = 10000.0; // Rotations per minute per second
     public static final double WRIST_MAX_VELOCITY = 6000.0; // Rotations per minute
-    public static final double WRIST_INTAKE_ROTATIONS = 33.0;
+    public static final double WRIST_INTAKE_ROTATIONS = 34.75;
+    public static final double WRIST_INTAKE_TELEOP_ROTATIONS = 33.5;
     public static final double WRIST_STOWED_ROTATIONS = 0;
-    public static final double WRIST_SCORING_ROTATIONS = 33.0;
+    public static final double WRIST_SCORING_ROTATIONS = 34.25;
     public static final double WRIST_MAX_ROTATIONS = 33.0;
 
     //
@@ -96,7 +98,7 @@ public final class Constants {
     public static final int ELEVATOR_TILT_MOTOR_ID   = 15;
     public static final double LIFT_GEARBOX_RATIO    = 1.0 / 16.0;
     public static final double TILT_GEARBOX_RATIO    = 1.0 / 80.0 * 16.0 / 32.0;
-    public static final double TILT_MAX_ROTATIONS = -23.5; // -25.5
+    public static final double TILT_MAX_ROTATIONS = -23.5; // -23.5
     public static final double LIFT_MAX_ROTATIONS = -80;
     public static final double LIFT_STOWED_ROTATIONS = 0;
     public static final double LIFT_MAX_INCHES = -63;
@@ -295,6 +297,12 @@ public final class Constants {
     public static final int APRILTAG_PIPELINE = 2;
     public static final int RETROTAPE_PIPELINE = 4;
 
+    /*
+     * 2048 - Total num ticks in Falcon 500
+     * 6.75 - MK4i module gear ratio
+     * 60 - Seconds?
+     * 
+     */
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;
 
@@ -304,5 +312,12 @@ public final class Constants {
 
     // Conversion constants
     public static final double INCHES_TO_METERS = 1.0 / 39.37;
+
+    public static final int SUBSTATION_CONE_PIPELINE = 0;
+    public static final double SUBSTATION_OFFSET = 8.0;
+    public static final double SUBSTATION_ACCEPTANCE_RADIUS = 5.0;
+    public static String LIMELIGHT_REAR       = "limelight-rear";
+
+    public static final double MAX_JOYSTICK_DECELERATION = 0.075; //0.18
 }
 
