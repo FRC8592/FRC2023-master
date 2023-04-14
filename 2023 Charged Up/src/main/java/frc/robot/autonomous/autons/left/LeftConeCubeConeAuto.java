@@ -116,7 +116,7 @@ public class LeftConeCubeConeAuto extends BaseAuto {
             new JointCommand( // Intake cube
                 new FollowerCommand(drive, NEUTRAL_ZONE_TO_GP1),
                 new IntakeCommand(intake, true)
-            ),
+            )
             // new JointCommand( // Move back to community
             //     new FollowerCommand(drive, GP1_TO_COMMUNITY),
             //     new LiftCommand(elevator, Heights.PRIME, 1.0, true),
