@@ -25,11 +25,11 @@ public class LeftConeCubeConeAuto extends BaseAuto {
             .setEndVelocity(fastConfig.getMaxVelocity())
             .setReversed(false), 
         GRID_C.getPose(),
-        GRID_B.translate(0.5, 0.0, Rotation2d.fromDegrees(45)),
+        GRID_B.translate(0.5, 0.0),
         INTERMEDIARY_LOADING_ZONE.translate(-1.5, 0.1),
         INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.1),
         INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.1)
-    ).addRotation(Rotation2d.fromDegrees(180), 1.0);
+    ).addRotation(Rotation2d.fromDegrees(180), 0.5);
 
     private SwerveTrajectory NEUTRAL_ZONE_TO_GP1 = generate(
         fastConfig
@@ -46,18 +46,18 @@ public class LeftConeCubeConeAuto extends BaseAuto {
             .setEndVelocity(2.0)
             .setReversed(true), 
         GAME_PIECE_1.translate(0.25, 0.1),
-        INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.1),
-        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.1)
-    ).addRotation(new Rotation2d(), Math.PI / 4, 0.0);
+        INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.0),
+        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.0)
+    );
 
     private SwerveTrajectory COMMUNITY_TO_B = generate(
         slowConfig
             .setStartVelocity(2.0)
             .setEndVelocity(0.0)
             .setReversed(true), 
-        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.1),
+        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.0),
         GRID_B.translate(0.2, 0.0)
-    ).addRotation(new Rotation2d(), Math.PI / 4, 0.0).addVision().setAcceptanceRange(0.1);
+    ).addVision().setAcceptanceRange(0.1);
 
     private SwerveTrajectory B_TO_NEUTRAL_ZONE = generate(
         fastConfig
@@ -69,7 +69,7 @@ public class LeftConeCubeConeAuto extends BaseAuto {
         INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.0),
         GAME_PIECE_1.translate(-0.5, -0.5, Rotation2d.fromDegrees(135)),
         GAME_PIECE_2.translate(-0.25, 0.25, Rotation2d.fromDegrees(135))
-    ).addRotation(Rotation2d.fromDegrees(135), Math.PI / 2, 1.0);
+    ).addRotation(Rotation2d.fromDegrees(135), Math.PI, 1.0);
 
     private SwerveTrajectory NEUTRAL_ZONE_TO_GP2 = generate(
         fastConfig
@@ -97,33 +97,34 @@ public class LeftConeCubeConeAuto extends BaseAuto {
             .setReversed(true), 
         INTERMEDIARY_LOADING_ZONE.translate(-1.5, 0.2),
         INTERMEDIARY_LOADING_ZONE.translate(-2.0, 0.2),
-        GRID_A.translate(0.4, -0.2)
+        GRID_A.translate(0.6, -0.2)
     ).addRotation(new Rotation2d(), Math.PI / 2, 0.0);
 
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new JointCommand( // Score preload
-                new LiftCommand(elevator, Heights.MID),
-                new ScoreCommand(intake, 0.5)
-            ),
-            new JointCommand( // Move to second piece
-                new FollowerCommand(drive, C_TO_NEUTRAL_ZONE),
-                new LiftCommand(elevator, Heights.STOWED),
-                new IntakeCommand(intake, 1.5, true),
-                new PipelineCommand(vision, Pipeline.CUBE)
-            ),
-            new JointCommand( // Intake cube
-                new FollowerCommand(drive, NEUTRAL_ZONE_TO_GP1),
-                new IntakeCommand(intake, true)
-            )
+            new FollowerCommand(drive, C_TO_NEUTRAL_ZONE)
+            // new JointCommand( // Score preload
+            //     new LiftCommand(elevator, Heights.MID),
+            //     new ScoreCommand(intake, 0.5)
+            // ),
+            // new JointCommand( // Move to second piece
+            //     new FollowerCommand(drive, C_TO_NEUTRAL_ZONE),
+            //     new LiftCommand(elevator, Heights.STOWED),
+            //     new IntakeCommand(intake, 1.5, true),
+            //     new PipelineCommand(vision, Pipeline.CUBE)
+            // ),
+            // new JointCommand( // Intake cube
+            //     new FollowerCommand(drive, vision, NEUTRAL_ZONE_TO_GP1),
+            //     new IntakeCommand(intake, true)
+            // )
             // new JointCommand( // Move back to community
             //     new FollowerCommand(drive, GP1_TO_COMMUNITY),
             //     new LiftCommand(elevator, Heights.PRIME, 1.0, true),
             //     new PipelineCommand(vision, Pipeline.APRIL_TAG)
             // ),
             // new JointCommand( // Score second piece
-            //     new FollowerCommand(drive, COMMUNITY_TO_B),
+            //     new FollowerCommand(drive, vision, COMMUNITY_TO_B),
             //     new LiftCommand(elevator, Heights.MID),
             //     new ScoreCommand(intake, 0.25)
             // ),
@@ -134,7 +135,7 @@ public class LeftConeCubeConeAuto extends BaseAuto {
             //     new PipelineCommand(vision, Pipeline.CONE)
             // ),
             // new JointCommand( // Intake third piece
-            //     new FollowerCommand(drive, vision, NEUTRAL_ZONE_TO_GP2),
+            //     new FollowerCommand(drive, NEUTRAL_ZONE_TO_GP2),
             //     new IntakeCommand(intake, true)
             // ),
             // new JointCommand( // Move back to community
@@ -143,7 +144,7 @@ public class LeftConeCubeConeAuto extends BaseAuto {
             //     new PipelineCommand(vision, Pipeline.RETRO_TAPE)
             // ),
             // new JointCommand( // Score third piece
-            //     new FollowerCommand(drive, vision, COMMUNITY_TO_A),
+            //     new FollowerCommand(drive, COMMUNITY_TO_A),
             //     new LiftCommand(elevator, Heights.MID, true),
             //     new ScoreCommand(intake, 0.5)
             // ),
