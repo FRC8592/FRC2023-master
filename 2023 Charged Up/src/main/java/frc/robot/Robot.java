@@ -244,8 +244,6 @@ public class Robot extends LoggedRobot {
     double rotate;
     double rotateToAngle;
 
- 
-
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
 
     drive.getCurrentPos();
@@ -254,7 +252,7 @@ public class Robot extends LoggedRobot {
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
     SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
-
+    logger.log(this, "RobotYaw", drive.getGyroscopeRotation());
 
     /*
      * Controls:
@@ -428,14 +426,33 @@ public class Robot extends LoggedRobot {
       //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
       //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
       // }
-
-      if (driverController.getPOV() != -1) {
-        driveSpeeds = new ChassisSpeeds(
-          driveSpeeds.vxMetersPerSecond, 
-          driveSpeeds.vyMetersPerSecond,
-          drive.turnToAngle(180 - driverController.getPOV())
-        );
+      double turn;
+      switch(driverController.getPOV()) {
+        case -1:
+          turn = driveSpeeds.omegaRadiansPerSecond;
+          break;
+        default:
+          turn = drive.turnToAngle(180 - driverController.getPOV());
+          break;
       }
+
+      driveSpeeds = new ChassisSpeeds(
+        driveSpeeds.vxMetersPerSecond, 
+        driveSpeeds.vyMetersPerSecond,
+        turn
+      );
+      // if (driverController.getPOV() != -1) {
+        
+      // } else {
+      //   driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      //     new ChassisSpeeds(      
+      //       smoothedRobotRelative.vxMetersPerSecond, 
+      //       smoothedRobotRelative.vyMetersPerSecond,
+      //       rotate
+      //     ), 
+      //     drive.getGyroscopeRotation()
+      //   );
+      // }
     }
 
     if (driverController.getBButton()) { // Wheels locked

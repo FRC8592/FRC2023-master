@@ -193,6 +193,7 @@ public class Drivetrain {
         // if (DriverStation.getAlliance() == Alliance.Red) {
         //     return Rotation2d.fromDegrees(180-m_navx.getYaw());
         // }
+        SmartDashboard.putNumber("GYRO ROTATION", -m_navx.getYaw());
         return Rotation2d.fromDegrees(-m_navx.getYaw());
     }
 
