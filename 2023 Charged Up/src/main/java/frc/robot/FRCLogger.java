@@ -97,10 +97,10 @@ public class FRCLogger {
                 SwerveModule swerveModule = (SwerveModule) data;
                 double[] resultDegrees = new double[2];
                 resultDegrees[0] = Math.toDegrees(swerveModule.getSteerAngle());
-                resultDegrees[1] = Math.abs(swerveModule.getDriveVelocity());
+                resultDegrees[1] = swerveModule.getDriveVelocity();
                 double[] resultRadians = new double[2];
                 resultRadians[0] = swerveModule.getSteerAngle();
-                resultRadians[1] = Math.abs(swerveModule.getDriveVelocity());
+                resultRadians[1] = swerveModule.getDriveVelocity();
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Degrees",
                         resultDegrees);
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Radians",
@@ -112,9 +112,9 @@ public class FRCLogger {
                 double[] resultRadians = new double[2 * swerveModules.length];
                 for (int i = 0; i < swerveModules.length; i++) {
                     resultDegrees[i * 2] = Math.toDegrees(swerveModules[i].getSteerAngle());
-                    resultDegrees[i * 2 + 1] = Math.abs(swerveModules[i].getDriveVelocity());
+                    resultDegrees[i * 2 + 1] = swerveModules[i].getDriveVelocity();
                     resultRadians[i * 2] = swerveModules[i].getSteerAngle();
-                    resultRadians[i * 2 + 1] = Math.abs(swerveModules[i].getDriveVelocity());
+                    resultRadians[i * 2 + 1] = swerveModules[i].getDriveVelocity();
                 }
                 Logger.getInstance().recordOutput(logFolder + "/" + (String) path + "/" + name + "/Degrees",
                         resultDegrees);
