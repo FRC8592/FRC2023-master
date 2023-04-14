@@ -392,7 +392,7 @@ public class Robot extends LoggedRobot {
       );
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
       double rotation = DriverStation.getAlliance() == Alliance.Red ? drive.turnToAngle(270) : drive.turnToAngle(90);
-      if (substationVision.targetValid && elevator.atTiltReference()){
+      if (substationVision.targetValid){
         if (substationVision.processedDx > Constants.SUBSTATION_OFFSET + Constants.SUBSTATION_ACCEPTANCE_RADIUS){
           ledStrips.set(LEDMode.FAR);
         }else if (substationVision.processedDx < Constants.SUBSTATION_OFFSET - Constants.SUBSTATION_ACCEPTANCE_RADIUS){
@@ -414,6 +414,12 @@ public class Robot extends LoggedRobot {
           // -translateY * 0.3,
           rotation, 
           drive.getGyroscopeRotation());
+      } else {
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond,
+          driveSpeeds.vyMetersPerSecond,
+          DriverStation.getAlliance() == Alliance.Red ? drive.turnToAngle(270) : drive.turnToAngle(90)
+        ); 
       }
     } else { // Normal drive
       // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
