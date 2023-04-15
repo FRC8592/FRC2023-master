@@ -293,6 +293,8 @@ public class Drivetrain {
         logger.log(this, "SwerveModuleDesiredVelocity", new double[] {frontLeftVelo, frontRightVelo, backLeftVelo, backRightVelo});
         logger.log(this, "SwerveModuleActualVelocity", getThrottleAppliedVelocity());
         // logger.log(this, "CANCoder Values", new double[] {m_frontLeftModule.getSteerAngle(), m_frontRightModule.getSteerAngle(), })
+
+        logger.log(this, "Robot Pose", getCurrentPos());
     } 
 
     public void resetEncoder(){
