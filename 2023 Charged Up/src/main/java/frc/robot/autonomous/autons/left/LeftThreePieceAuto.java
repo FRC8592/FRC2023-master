@@ -12,6 +12,7 @@ import frc.robot.commands.JointCommand;
 import frc.robot.commands.LiftCommand;
 import frc.robot.commands.PipelineCommand;
 import frc.robot.commands.ScoreCommand;
+import frc.robot.commands.ThrowPieceCommand;
 import frc.robot.commands.PipelineCommand.Pipeline;
 import static frc.robot.autonomous.AutonomousPositions.*;
 
@@ -81,6 +82,17 @@ public class LeftThreePieceAuto extends BaseAuto {
         GAME_PIECE_2.translate(0.25, -0.35, Rotation2d.fromDegrees(-45))
     );
 
+    private SwerveTrajectory GP2_TO_B = generate(
+        fastConfig
+            .setStartVelocity(0.0)
+            .setEndVelocity(0.0)
+            .setReversed(true),
+        GAME_PIECE_2.translate(0.25, -0.35, Rotation2d.fromDegrees(-45)),
+        GAME_PIECE_1.translate(-0.6, -0.75),
+        GAME_PIECE_1.translate(-1.0, -0.05),
+        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.0)
+    );
+
     @Override
     public void initialize() {
         queue = new CommandQueue(
@@ -110,13 +122,16 @@ public class LeftThreePieceAuto extends BaseAuto {
                 new ScoreCommand(intake, 0.5)
             ),
             new JointCommand(
-                new LiftCommand(elevator, Heights.STOWED),
+                new LiftCommand(elevator, Heights.STOWED, true),
                 new FollowerCommand(drive, B_TO_Ilz.addRotation(Rotation2d.fromDegrees(135), 2 * Math.PI, 1.0))
             ),
             new JointCommand(
-                new LiftCommand(elevator, Heights.STOWED),
                 new FollowerCommand(drive, Ilz_TO_GP2.addRotation(Rotation2d.fromDegrees(135))),
                 new IntakeCommand(intake, true)
+            ),
+            new JointCommand(
+                new FollowerCommand(drive, GP2_TO_B),
+                new ThrowPieceCommand(intake, 1.0)
             )
         );
     }

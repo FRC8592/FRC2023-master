@@ -110,7 +110,7 @@ public class Intake {
     public void coneIntakeRoller(){
         // rollerCtrl.setReference(1000, ControlType.kSmartVelocity);
         // rollerMotor.set(0.7);
-        rollerMotor.setSmartCurrentLimit(80);
+        rollerMotor.setSmartCurrentLimit(30);
         spinRollers(0.7);
     }
 
