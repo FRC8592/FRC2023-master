@@ -25,20 +25,20 @@ public class LeftConeCubeConeAuto extends BaseAuto {
             .setEndVelocity(fastConfig.getMaxVelocity())
             .setReversed(false), 
         GRID_C.getPose(),
-        GRID_B.translate(0.5, 0.0),
-        INTERMEDIARY_LOADING_ZONE.translate(-1.5, 0.1),
-        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.1),
-        INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.1)
-    ).addRotation(Rotation2d.fromDegrees(180), 0.5);
+        GRID_B.translate(0.5, 0.2, Rotation2d.fromDegrees(45)),
+        INTERMEDIARY_LOADING_ZONE.translate(-1.5, 0.2),
+        INTERMEDIARY_LOADING_ZONE.translate(-1.0, 0.2),
+        INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.2)
+    );
 
     private SwerveTrajectory NEUTRAL_ZONE_TO_GP1 = generate(
         fastConfig
             .setStartVelocity(fastConfig.getMaxVelocity())
             .setEndVelocity(0.0)
             .setReversed(false), 
-        INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.1),
-        GAME_PIECE_1.translate(0.25, 0.1)
-    ).addRotation(Rotation2d.fromDegrees(180)).addVision();
+        INTERMEDIARY_LOADING_ZONE.translate(0.5, 0.2),
+        GAME_PIECE_1.translate(0.25, 0.2)
+    );
 
     private SwerveTrajectory GP1_TO_COMMUNITY = generate(
         fastConfig
@@ -103,7 +103,8 @@ public class LeftConeCubeConeAuto extends BaseAuto {
     @Override
     public void initialize() {
         queue = new CommandQueue(
-            new FollowerCommand(drive, C_TO_NEUTRAL_ZONE)
+            new FollowerCommand(drive, C_TO_NEUTRAL_ZONE.addRotation(Rotation2d.fromDegrees(180), Math.PI / 4, 1.0)),
+            new FollowerCommand(drive, NEUTRAL_ZONE_TO_GP1.addRotation(Rotation2d.fromDegrees(180), Math.PI / 4, 0.0).addVision())
             // new JointCommand( // Score preload
             //     new LiftCommand(elevator, Heights.MID),
             //     new ScoreCommand(intake, 0.5)

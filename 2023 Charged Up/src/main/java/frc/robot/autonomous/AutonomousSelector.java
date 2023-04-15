@@ -19,14 +19,11 @@ public class AutonomousSelector {
         MoveOutCommunityAuto.class,
         PreloadAuto.class,
 
-        // LeftConeBalanceAuto.class,
-        // LeftConeGrabCubeBalanceAuto.class,
         LeftConeCubeAuto.class,
         LeftConeCubeBalanceAuto.class,
         LeftConeCubeGrabConeAuto.class,
         LeftCableCoverConeCubeAuto.class,
         LeftConeCubeConeAuto.class,
-        LeftConeCubeGrabConeBalanceAuto.class,
 
         MiddleConeBalanceAuto.class,
         MiddleLeftConeGrabCubeBalanceAuto.class,
