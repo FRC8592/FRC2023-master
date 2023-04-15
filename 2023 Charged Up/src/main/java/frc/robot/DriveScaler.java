@@ -36,6 +36,8 @@ public class DriveScaler {
                 return Math.pow(value, 2) * Math.signum(value);
             case "CUBIC":
                 return Math.pow(value, 3);
+            case "NEWTON_DRIVE":
+                return value; // Come up with a cool, unique scaling method
             case "LINEAR_NEWTON_DRIVE":
                 return (1/(1-deadband))*(value-deadband);
             case "QUADRATIC_NEWTON_DRIVE":
@@ -43,5 +45,17 @@ public class DriveScaler {
             default:
                 return value;
         }
+    }
+
+    public double slewFilter(double currentVelo, double setPoint, double maxAccel){
+        double delta = setPoint - currentVelo;
+        
+        delta = Math.signum(delta) * Math.min(maxAccel, Math.abs(delta));
+
+        double calculatedResult = currentVelo + delta;
+
+  
+
+        return calculatedResult;
     }
 }

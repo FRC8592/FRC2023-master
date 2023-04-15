@@ -22,9 +22,9 @@ public final class ConfigRun {
     // Driving Power
     //
     public static final double TRANSLATE_POWER_FAST = 1.0;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER_FAST    = 1.0;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double TRANSLATE_POWER_SLOW = 0.3;     // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER_SLOW    = 0.3;     // Scaling for teleop driving.  1.0 is maximum   
+    public static final double ROTATE_POWER_FAST    = 0.75;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double TRANSLATE_POWER_SLOW = 0.15;     // Scaling for teleop driving.  1.0 is maximum
+    public static final double ROTATE_POWER_SLOW    = 0.15;     // Scaling for teleop driving.  1.0 is maximum   
 
     //
     // Joystick configuration
@@ -34,7 +34,7 @@ public final class ConfigRun {
     //
     // Maximum current provided to motors to help limit battery drain and harsh turning & acceleration
     //
-    public static final double MAX_SWERVE_DRIVE_TELEOP_CURRENT = 40.0; // Lower values will reduce acceleration
+    public static final double MAX_SWERVE_DRIVE_TELEOP_CURRENT = 20.0; // Lower values will reduce acceleration //20.0
     public static final double MAX_SWERVE_DRIVE_AUTO_CURRENT = 15.0; // Lower values will reduce acceleration
     public static final double MAX_SWERVE_STEER_CURRENT = 10.0; // Lower values will turn slower
 

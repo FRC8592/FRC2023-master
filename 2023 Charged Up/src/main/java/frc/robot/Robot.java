@@ -75,6 +75,9 @@ public class Robot extends LoggedRobot {
   public Power power;
   private boolean angleTapBool = false;
   public BeamSensor cubeBeamSensor;
+  public SmoothingFilter smoothingFilter;
+
+
 
   private double currentWrist = Constants.WRIST_INTAKE_ROTATIONS;
 
@@ -115,7 +118,7 @@ public class Robot extends LoggedRobot {
     gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
-     substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_ACCEPTABLE_OFFSET,
+     substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_OFFSET,
      Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
      Constants.BALL_TARGET_HEIGHT, logger);
     turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
@@ -126,8 +129,12 @@ public class Robot extends LoggedRobot {
     // intake.reset();
     // lift.reset();
     driveScaler = new DriveScaler();
+
+    smoothingFilter = new SmoothingFilter(1, 1, 1); //5, 5, 1
+
     SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
+    
     
     SmartDashboard.putNumber("Command Counter", 0);
   }
@@ -221,6 +228,10 @@ public class Robot extends LoggedRobot {
     intake.stopRoller();
     intake.haltWrist();
     elevator.set(Heights.STALL);
+
+  //   lastXVelocity = 0;
+  //  lastYVelocity = 0;
+
   }
   
   /** This function is called periodically during operator control. */
@@ -241,7 +252,7 @@ public class Robot extends LoggedRobot {
     elevator.update();
     SmartDashboard.putNumber("Current Wrist", currentWrist);
     SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
-
+    logger.log(this, "RobotYaw", drive.getGyroscopeRotation());
 
     /*
      * Controls:
@@ -343,65 +354,73 @@ public class Robot extends LoggedRobot {
       rotatePower = ConfigRun.ROTATE_POWER_FAST;
     }
 
-    rotate = ((driverController.getRightX()) * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-      * rotatePower;
-    translateX = ((driverController.getLeftY()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;          
-    translateY = ((driverController.getLeftX()) * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    double translateXScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftY()));
+    double translateYScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftX()));
+    double rotateScaled = driveScaler.scale(joystickDeadband(driverController.getRightX())); 
 
-    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      driveScaler.scale(-joystickDeadband(translateX)), 
-      driveScaler.scale(-joystickDeadband(translateY)), 
-      driveScaler.scale(joystickDeadband(rotate)), 
-      drive.getGyroscopeRotation()
-    );
+    rotate = rotateScaled * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+      * rotatePower;
+    
+    
+    translateX = translateXScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;          
+    translateY = translateYScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;
+
+
+
+    
+    // double velX = driveScaler.slewFilter(lastXVelocity, driveScaler.scale(-joystickDeadband(translateX)), 4.5);
+    // double velY = driveScaler.slewFilter(lastYVelocity, driveScaler.scale(-joystickDeadband(translateY)), 4.5);
+
+    ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
+    
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
+      smoothedRobotRelative.vxMetersPerSecond, 
+      smoothedRobotRelative.vyMetersPerSecond,
+      rotate
+    ), drive.getGyroscopeRotation());
+
+    // lastXVelocity = translateX;
+    // lastYVelocity = translateY;
 
     if (driverController.getStartButton()) { // Autobalance
       autoPark.balance(drive);
-    } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Track game piece
-      // set LED to targetlock
-      ledStrips.set(LEDMode.TARGETLOCK);
-      if (gameObjectVision.targetValid) {
-        driveSpeeds = new ChassisSpeeds(
-          // driveSpeeds.vxMetersPerSecond,
-          // driveSpeeds.vyMetersPerSecond,
-          translateX,
-          translateY,
-          gameObjectVision.turnRobot(
-            1.0,
-            turnPID,
-            3.0,
-            0.0
-          )
-        );
-      }
+    } else if (driverController.getLeftTriggerAxis() >= 0.1) { // Turn to grid
+      driveSpeeds = new ChassisSpeeds(
+        driveSpeeds.vxMetersPerSecond,
+        driveSpeeds.vyMetersPerSecond,
+        drive.turnToAngle(0)
+      );
     } else if (driverController.getRightTriggerAxis() >= 0.1 || driverController.getLeftTriggerAxis() <= -0.1) { // Track scoring grid
-      //if a valid target is in view and the elevator is in the up position
-      if (substationVision.targetValid && elevator.atTiltReference()){
-
-        //led logic
-        if (substationVision.processedDx > Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+      double rotation = DriverStation.getAlliance() == Alliance.Red ? drive.turnToAngle(270) : drive.turnToAngle(90);
+      if (substationVision.targetValid){
+        if (substationVision.processedDx > Constants.SUBSTATION_OFFSET + Constants.SUBSTATION_ACCEPTANCE_RADIUS){
           ledStrips.set(LEDMode.FAR);
-        }else if (substationVision.processedDx < Constants.SUBSTATION_ACCEPTABLE_OFFSET){
+        }else if (substationVision.processedDx < Constants.SUBSTATION_OFFSET - Constants.SUBSTATION_ACCEPTANCE_RADIUS){
           ledStrips.set(LEDMode.CLOSE);
-        }else if (substationVision.processedDx <= Constants.SUBSTATION_ACCEPTABLE_OFFSET + 10 && substationVision.processedDx >= Constants.SUBSTATION_ACCEPTABLE_OFFSET - 10){
+        } else {
           ledStrips.set(LEDMode.LOCKED);
         }
-
 
         double strafeSpeed = substationVision.turnRobot(
           0,
           strafePID,
           1.0,
-          Constants.SUBSTATION_ACCEPTABLE_OFFSET
+          Constants.SUBSTATION_OFFSET
         );
+
         driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
           drive.getYaw() >= 0 ? -strafeSpeed : strafeSpeed,
-          driveScaler.scale(-joystickDeadband(translateY)), 
+          -driveScaler.scale(-joystickDeadband(translateY)), 
           // -translateY * 0.3,
-          driveSpeeds.omegaRadiansPerSecond, 
+          rotation, 
           drive.getGyroscopeRotation());
+      } else {
+        driveSpeeds = new ChassisSpeeds(
+          driveSpeeds.vxMetersPerSecond,
+          driveSpeeds.vyMetersPerSecond,
+          DriverStation.getAlliance() == Alliance.Red ? drive.turnToAngle(270) : drive.turnToAngle(90)
+        ); 
       }
-      
     } else { // Normal drive
       // driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
       //   driveScaler.scale(joystickDeadband(translateX)),
@@ -413,24 +432,13 @@ public class Robot extends LoggedRobot {
       //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
       //       drive.turnToAngle(driverController.getPOV()), drive.getGyroscopeRotation()));
       // }
-
       double turn;
       switch(driverController.getPOV()) {
-        case 0:
-          turn = drive.turnToAngle(180.0);
-          ledStrips.set(LEDMode.TARGETLOCK);
-          break;
-        case 90:
-          turn = drive.turnToAngle(90.0);
-          break;
-        case 180:
-          turn = drive.turnToAngle(0.0);
-          break;
-        case 270:
-          turn = drive.turnToAngle(270.0);
+        case -1:
+          turn = driveSpeeds.omegaRadiansPerSecond;
           break;
         default:
-          turn = driveSpeeds.omegaRadiansPerSecond;
+          turn = drive.turnToAngle(180 - driverController.getPOV());
           break;
       }
 
@@ -439,6 +447,18 @@ public class Robot extends LoggedRobot {
         driveSpeeds.vyMetersPerSecond,
         turn
       );
+      // if (driverController.getPOV() != -1) {
+        
+      // } else {
+      //   driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      //     new ChassisSpeeds(      
+      //       smoothedRobotRelative.vxMetersPerSecond, 
+      //       smoothedRobotRelative.vyMetersPerSecond,
+      //       rotate
+      //     ), 
+      //     drive.getGyroscopeRotation()
+      //   );
+      // }
     }
 
     if (driverController.getBButton()) { // Wheels locked

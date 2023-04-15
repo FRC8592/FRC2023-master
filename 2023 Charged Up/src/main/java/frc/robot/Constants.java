@@ -297,6 +297,12 @@ public final class Constants {
     public static final int APRILTAG_PIPELINE = 2;
     public static final int RETROTAPE_PIPELINE = 4;
 
+    /*
+     * 2048 - Total num ticks in Falcon 500
+     * 6.75 - MK4i module gear ratio
+     * 60 - Seconds?
+     * 
+     */
     public static final double METERS_PER_SECOND_TO_TICKS = ((2048 * 6.75 * 60) / (200 * Math.PI * 0.0508));
     public static final double WHEEL_LOCK_RADIANS = 0.785398;
 
@@ -308,7 +314,10 @@ public final class Constants {
     public static final double INCHES_TO_METERS = 1.0 / 39.37;
 
     public static final int SUBSTATION_CONE_PIPELINE = 0;
-    public static final double SUBSTATION_ACCEPTABLE_OFFSET = 8.0;
+    public static final double SUBSTATION_OFFSET = 8.0;
+    public static final double SUBSTATION_ACCEPTANCE_RADIUS = 5.0;
     public static String LIMELIGHT_REAR       = "limelight-rear";
+
+    public static final double MAX_JOYSTICK_DECELERATION = 0.075; //0.18
 }
 
