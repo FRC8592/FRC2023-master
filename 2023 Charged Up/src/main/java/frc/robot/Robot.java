@@ -373,6 +373,11 @@ public class Robot extends LoggedRobot {
 
     ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
     
+
+    SmartDashboard.putNumber("SmoothedJoystickX", smoothedRobotRelative.vxMetersPerSecond);
+    SmartDashboard.putNumber("SmoothedJoystickY", smoothedRobotRelative.vyMetersPerSecond);
+    SmartDashboard.putNumber("SmoothedJoystickRotate", smoothedRobotRelative.omegaRadiansPerSecond);
+
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
       smoothedRobotRelative.vxMetersPerSecond, 
       smoothedRobotRelative.vyMetersPerSecond,

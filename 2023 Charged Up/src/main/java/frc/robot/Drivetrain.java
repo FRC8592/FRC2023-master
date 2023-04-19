@@ -281,7 +281,6 @@ public class Drivetrain {
         */
         logger.log(this, "SwerveModuleStates", new SwerveModule[] {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule});
         
-        
         /*
          * Swerve Module Current and Velocities array
          * 0 - Front Left
