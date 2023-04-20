@@ -185,14 +185,14 @@ public class Vision {
     //SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
     //SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
     //SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
-    SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
+    // SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
     //SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
     //SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
     //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
     //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
-    SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
-    SmartDashboard.putBoolean(limelightName + "/inRange", targetRange >120 && targetRange < 265);
-    SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
+    // SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
+    // SmartDashboard.putBoolean(limelightName + "/inRange", targetRange >120 && targetRange < 265);
+    // SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     //SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
     //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
@@ -263,7 +263,7 @@ public class Vision {
       turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
     }
 
-    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+    // SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
 
     logger.log(this, "Turn Speed", turnSpeed);
 

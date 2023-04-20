@@ -89,10 +89,12 @@ public class Drivetrain {
     // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
     
+    
     /**Initialize drivetrain
      * 
      */
     public Drivetrain(FRCLogger logger) {
+        this.m_navx.enableLogging(false);
         Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -193,7 +195,7 @@ public class Drivetrain {
         // if (DriverStation.getAlliance() == Alliance.Red) {
         //     return Rotation2d.fromDegrees(180-m_navx.getYaw());
         // }
-        SmartDashboard.putNumber("GYRO ROTATION", -m_navx.getYaw());
+        // SmartDashboard.putNumber("GYRO ROTATION", -m_navx.getYaw());
         return Rotation2d.fromDegrees(-m_navx.getYaw());
     }
 
@@ -225,12 +227,12 @@ public class Drivetrain {
 
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
-        SmartDashboard.putNumber("Drive X", pos.getX()); //meters to inches
-        SmartDashboard.putNumber("Drive Y", pos.getY());
+        // SmartDashboard.putNumber("Drive X", pos.getX()); //meters to inches
+        // SmartDashboard.putNumber("Drive Y", pos.getY());
 
-        SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
-        SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
-        SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
+        // SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
+        // SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
+        // SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
         return pos;
     }
 
@@ -240,8 +242,8 @@ public class Drivetrain {
     
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
-        SmartDashboard.putNumber("Chassis Speeds X", chassisSpeeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
+        //SmartDashboard.putNumber("Chassis Speeds X", chassisSpeeds.vxMetersPerSecond);
+        //SmartDashboard.putNumber("Chassis Speeds Y", chassisSpeeds.vyMetersPerSecond);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         double frontLeftVelo = states[0].speedMetersPerSecond;
@@ -315,10 +317,10 @@ public class Drivetrain {
         // double targetDifference = yaw - targetDegrees;
         double turn = turnPID.calculate(0, getErrorAngle(getCurrentPos(), new Pose2d(0, 0, Rotation2d.fromDegrees(targetDegrees))));
 
-        SmartDashboard.putNumber("Current Yaw", yaw);
-        SmartDashboard.putNumber("Target Degrees", targetDegrees);
-        SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
-        SmartDashboard.putNumber("TurnTo PID", -turn);
+        // SmartDashboard.putNumber("Current Yaw", yaw);
+        // SmartDashboard.putNumber("Target Degrees", targetDegrees);
+        // SmartDashboard.putNumber("Target Difference", yaw - targetDegrees);
+        // SmartDashboard.putNumber("TurnTo PID", -turn);
 
         // return -turnToPID.calculate(yaw, targetDegrees);
         return -turn;
@@ -347,10 +349,10 @@ public class Drivetrain {
    }
 
     public void getSwervePositions() {
-        SmartDashboard.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
-        SmartDashboard.putNumber("Front Right Posiiton", m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
-        SmartDashboard.putNumber("Back Left Posiiton", m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
-        SmartDashboard.putNumber("Back Right Posiiton", m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        // SmartDashboard.putNumber("Front Left Posiiton", m_frontLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        // SmartDashboard.putNumber("Front Right Posiiton", m_frontRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        // SmartDashboard.putNumber("Back Left Posiiton", m_backLeftModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
+        // SmartDashboard.putNumber("Back Right Posiiton", m_backRightModule.getDriveController().getDriveFalcon().getSelectedSensorPosition()*kFalconTicksToMeters);
     }
 
     private SwerveModulePosition getSMPosition(SwerveModule mod){
@@ -391,7 +393,7 @@ public class Drivetrain {
         }else{
             velocityToApply = velocityMetersPerSecond;
         }
-        SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
+        // SmartDashboard.putNumber("Velocity to Apply", velocityToApply);
         setDriveVelocity(velocityToApply, module);
     }
     /* WHEEL LOCK MODE FOR AUTOPARK - Liam M */

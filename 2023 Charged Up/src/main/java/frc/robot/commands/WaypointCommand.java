@@ -130,18 +130,18 @@ public class WaypointCommand extends Command {
         ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(autoDrive.moveToWayPoint(drive.getCurrentPos()), drive.getGyroscopeRotation());
         drive.drive(filter == null ? speeds : filter.smooth(speeds));
 
-        SmartDashboard.putNumber("Auto/Speed X", speeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("Auto/Speed Y", speeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("Auto/Speed Omega", speeds.omegaRadiansPerSecond);
+        // SmartDashboard.putNumber("Auto/Speed X", speeds.vxMetersPerSecond);
+        // SmartDashboard.putNumber("Auto/Speed Y", speeds.vyMetersPerSecond);
+        // SmartDashboard.putNumber("Auto/Speed Omega", speeds.omegaRadiansPerSecond);
 
         return autoDrive.finishedAllWaypoints() && autoDrive.getDistance(drive.getCurrentPos(), poses.get(poses.size() - 1)) <= ACCEPTANCE_RADIUS;
     }
 
     @Override
     public void shutdown() {
-        SmartDashboard.putNumber("Auto/Speed X", 0d);
-        SmartDashboard.putNumber("Auto/Speed Y", 0d);
-        SmartDashboard.putNumber("Auto/Speed Omega", 0d);
+        // SmartDashboard.putNumber("Auto/Speed X", 0d);
+        // SmartDashboard.putNumber("Auto/Speed Y", 0d);
+        // SmartDashboard.putNumber("Auto/Speed Omega", 0d);
         drive.drive(new ChassisSpeeds(0, 0, 0));
     }
 

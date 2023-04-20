@@ -132,11 +132,11 @@ public class Robot extends LoggedRobot {
 
     smoothingFilter = new SmoothingFilter(1, 1, 1); //5, 5, 1
 
-    SmartDashboard.putData(FIELD);
+    // SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
     
     
-    SmartDashboard.putNumber("Command Counter", 0);
+    // SmartDashboard.putNumber("Command Counter", 0);
   }
 
   /**
@@ -222,7 +222,7 @@ public class Robot extends LoggedRobot {
     drive.setTeleopCurrentLimit();
     autoPark = new Autopark();
 
-    SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
+    // SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
     
     currentWrist = Constants.WRIST_INTAKE_TELEOP_ROTATIONS;
     intake.stopRoller();
@@ -250,8 +250,8 @@ public class Robot extends LoggedRobot {
     gameObjectVision.updateVision();
     substationVision.updateVision();
     elevator.update();
-    SmartDashboard.putNumber("Current Wrist", currentWrist);
-    SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Current Wrist", currentWrist);
+    // SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
     logger.log(this, "RobotYaw", drive.getGyroscopeRotation());
 
     /*
@@ -374,9 +374,9 @@ public class Robot extends LoggedRobot {
     ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
     
 
-    SmartDashboard.putNumber("SmoothedJoystickX", smoothedRobotRelative.vxMetersPerSecond);
-    SmartDashboard.putNumber("SmoothedJoystickY", smoothedRobotRelative.vyMetersPerSecond);
-    SmartDashboard.putNumber("SmoothedJoystickRotate", smoothedRobotRelative.omegaRadiansPerSecond);
+    // SmartDashboard.putNumber("SmoothedJoystickX", smoothedRobotRelative.vxMetersPerSecond);
+    // SmartDashboard.putNumber("SmoothedJoystickY", smoothedRobotRelative.vyMetersPerSecond);
+    // SmartDashboard.putNumber("SmoothedJoystickRotate", smoothedRobotRelative.omegaRadiansPerSecond);
 
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
       smoothedRobotRelative.vxMetersPerSecond, 
@@ -614,8 +614,8 @@ public class Robot extends LoggedRobot {
   }
 
   public void testPeriodic() {
-    SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
-    SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    // SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
+    // SmartDashboard.putNumber("Yaw Number", drive.getYaw());
     
 
     

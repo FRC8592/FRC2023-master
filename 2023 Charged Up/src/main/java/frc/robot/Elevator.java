@@ -129,7 +129,7 @@ public class Elevator {
         liftCtrl.setSmartMotionAllowedClosedLoopError(0.1, PID_UP_SLOT_LIFT);
         liftCtrl.setSmartMotionAllowedClosedLoopError(0.1, PID_DOWN_SLOT_LIFT);
 
-        SmartDashboard.putNumber("Desired Max Tilt", Constants.TILT_MAX_ROTATIONS);
+        // SmartDashboard.putNumber("Desired Max Tilt", Constants.TILT_MAX_ROTATIONS);
     }
 
     // Logs values to SmartDashboard
@@ -157,16 +157,16 @@ public class Elevator {
                 errorTilt = Constants.TILT_MAX_ROTATIONS - rawTilt;
         }
 
-        SmartDashboard.putNumber("Elevator Rotations", rawLift);
-        SmartDashboard.putNumber("Elevator Current", liftMotor.getOutputCurrent());
-        SmartDashboard.putString("Elevator State", desiredHeight.name());
-        SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
-        SmartDashboard.putNumber("Elevator Velocity", liftEncoder.getVelocity());
+        // SmartDashboard.putNumber("Elevator Rotations", rawLift);
+        // SmartDashboard.putNumber("Elevator Current", liftMotor.getOutputCurrent());
+        // SmartDashboard.putString("Elevator State", desiredHeight.name());
+        // SmartDashboard.putNumber("Elevator Error Rotations", desiredHeight.getHeight() - rawLift);
+        // SmartDashboard.putNumber("Elevator Velocity", liftEncoder.getVelocity());
         
         
-        SmartDashboard.putNumber("Tilt Rotations", rawTilt);
-        SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
+        // SmartDashboard.putNumber("Tilt Rotations", rawTilt);
+        // SmartDashboard.putNumber("Tilt Current", tiltMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("Tilt Error Rotations", errorTilt);
         
     }
  

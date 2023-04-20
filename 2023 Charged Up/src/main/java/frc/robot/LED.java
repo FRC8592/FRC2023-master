@@ -151,7 +151,7 @@ public class LED {
      * Periodically update the LEDs based on the current state
      */
     public void updatePeriodic() {
-        SmartDashboard.putString("LED Mode", mode.name());
+        // SmartDashboard.putString("LED Mode", mode.name());
         // Switch between the possible states of the LED
         switch (mode) {
             case CONE:
@@ -222,10 +222,10 @@ public class LED {
             fireBlobs=new ArrayList<Blob>();
         }
 
-        SmartDashboard.putNumber("LED Power Voltage", power.voltage);
+        // SmartDashboard.putNumber("LED Power Voltage", power.voltage);
         //If we have low voltage
         if ((power.voltage < Constants.MINIMUM_VOLTAGE || lowVolts) && power.voltage > 0) {
-            SmartDashboard.putBoolean("Low Voltage", true);
+            // SmartDashboard.putBoolean("Low Voltage", true);
             delayTimer.start();
             lowVolts = true;
             lowVoltage();
@@ -235,7 +235,7 @@ public class LED {
                 lowVolts = false;
             } 
         } else {
-            SmartDashboard.putBoolean("Low Voltage", false);
+            // SmartDashboard.putBoolean("Low Voltage", false);
         }
 
         if(lockTimer.get() > timeout){

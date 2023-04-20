@@ -23,8 +23,8 @@ public class Intake {
     private Timer coneTimer;
 
     public void logBeamBreaks(){
-        SmartDashboard.putBoolean("Cone Beam Break", !beamCone.isBroken());
-        SmartDashboard.putBoolean("Cube Beam Break", !beamCube.isBroken());
+        // SmartDashboard.putBoolean("Cone Beam Break", !beamCone.isBroken());
+        // SmartDashboard.putBoolean("Cube Beam Break", !beamCube.isBroken());
     }
 
     public Intake() {
@@ -63,7 +63,7 @@ public class Intake {
         beamCube = new BeamSensor(6);
         coneTimer = new Timer();
 
-        SmartDashboard.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS);
+        // SmartDashboard.putNumber("Wrist Desired Rotations", Constants.WRIST_INTAKE_ROTATIONS);
     }
 
     public void reset() {
@@ -74,13 +74,13 @@ public class Intake {
     public void writeToSmartDashboard() {
         double rawWristPosition = wristEncoder.getPosition(); // rotations
         
-        SmartDashboard.putNumber("Wrist position", rawWristPosition);
-        SmartDashboard.putNumber("Wrist velocity", wristEncoder.getVelocity());
-        SmartDashboard.putNumber("Wrist current", wristMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Roller current", rollerMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Roller velocity", rollerEncoder.getVelocity());
-        SmartDashboard.putBoolean("Cone beam broken", beamCone.isBroken());
-        SmartDashboard.putBoolean("Cube beam broken", beamCube.isBroken());
+        // SmartDashboard.putNumber("Wrist position", rawWristPosition);
+        // SmartDashboard.putNumber("Wrist velocity", wristEncoder.getVelocity());
+        // SmartDashboard.putNumber("Wrist current", wristMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("Roller current", rollerMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("Roller velocity", rollerEncoder.getVelocity());
+        // SmartDashboard.putBoolean("Cone beam broken", beamCone.isBroken());
+        // SmartDashboard.putBoolean("Cube beam broken", beamCube.isBroken());
     }
 
     public void intakeRoller() {

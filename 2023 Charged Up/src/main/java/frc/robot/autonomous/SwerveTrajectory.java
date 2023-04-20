@@ -153,18 +153,18 @@ public class SwerveTrajectory {
             );
 
             // desired = ChassisSpeeds.fromFieldRelativeSpeeds(desired, robotPose.getRotation());
-            SmartDashboard.putNumber("Current Heading", robotPose.getRotation().getDegrees());
+            // SmartDashboard.putNumber("Current Heading", robotPose.getRotation().getDegrees());
         }
 
-        SmartDashboard.putNumber("Error X", getEndingPose().getX() - robotPose.getX());
-        SmartDashboard.putNumber("Error Y", getEndingPose().getY() - robotPose.getY());
-        SmartDashboard.putNumber("Error Theta", rotation.getDegrees() - robotPose.getRotation().getDegrees());
+        // SmartDashboard.putNumber("Error X", getEndingPose().getX() - robotPose.getX());
+        // SmartDashboard.putNumber("Error Y", getEndingPose().getY() - robotPose.getY());
+        // SmartDashboard.putNumber("Error Theta", rotation.getDegrees() - robotPose.getRotation().getDegrees());
 
-        SmartDashboard.putNumber("Ending X", getEndingPose().getX());
-        SmartDashboard.putNumber("Ending Y", getEndingPose().getY());
-        SmartDashboard.putNumber("Ending Theta", rotation.getDegrees());
+        // SmartDashboard.putNumber("Ending X", getEndingPose().getX());
+        // SmartDashboard.putNumber("Ending Y", getEndingPose().getY());
+        // SmartDashboard.putNumber("Ending Theta", rotation.getDegrees());
 
-        SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
+        // SmartDashboard.putBoolean("AT SETPOINT", mDrivePID.atReference());
 
         poseRobot = robotPose;
 
