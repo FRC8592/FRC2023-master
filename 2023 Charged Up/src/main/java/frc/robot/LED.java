@@ -156,79 +156,79 @@ public class LED {
         switch (mode) {
             case CONE:
                 setUpAndDown(PresetColor.YELLOW, PresetColor.OFF);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout=5;
                 break;
             case CUBE:
                 setUpAndDown(PresetColor.PURPLE, PresetColor.OFF);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout=5;
                 break;
             case TARGETLOCK:
                 setProximity(vision.distanceToTarget());
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout=-1;
                 break;
             case STOPPLACING:
                 // setBlink(PresetColor.RED, 0.5);
                 setWaves(PresetColor.RED);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout=2;
                 break;
             case ATTENTION:
                 setUpAndDown(PresetColor.CYAN, PresetColor.ORANGE);
-                setBrightness(0.5);
+                setBrightness(10.0);
                 timeout=3;
                 break;
             case UP_AND_DOWN:
                 setUpAndDown(col1, col2);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout = 10;
                 break;
             case FIRE:
                 setFire(true);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout = 10;
                 break;
             case BINARY:
                 // setBinary();
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout = 10;
                 break;
             case WAVES:
                 setWaves(col1);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout = 10;
                 break;
             case SNAKE:
                 // setSnake(col1);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout = 10;
                 break;
             case PARTY:
                 setPartyMode();
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout = 5;
                 break;
 
             case CLOSE:
                 setPct(100, PresetColor.RED);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 break;
 
             case FAR:
                 setPct(100, PresetColor.BLUE);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 break;
 
             case LOCKED:
                 setPct(100, PresetColor.GREEN);
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout=0;
                 break;
             case OFF:
                 setOff();
-                setBrightness(1.0);
+                setBrightness(100.0);
                 timeout = 0;
                 break;
         }
