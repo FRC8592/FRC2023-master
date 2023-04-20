@@ -494,9 +494,11 @@ public class Robot extends LoggedRobot {
       elevator.set(Heights.PRIME);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
-    } else if (operatorController.getRightBumper() || operatorController.getBackButtonReleased() || driverController.getLeftBumperReleased()) {
+    } else if (operatorController.getRightBumper()) {
+      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3);
+    } else if (operatorController.getBackButtonReleased() || driverController.getLeftBumperReleased()){
       intake.setWrist(0.0);
-    } else if (operatorController.getBackButton() || driverController.getLeftBumper()) {
+    }else if (operatorController.getBackButton() || driverController.getLeftBumper()) {
       intake.throwPiece();
     } else {
         if (operatorController.getStartButton()) {
