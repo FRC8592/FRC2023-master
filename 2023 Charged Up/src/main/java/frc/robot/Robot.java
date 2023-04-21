@@ -541,7 +541,8 @@ public class Robot extends LoggedRobot {
           // }
         }
         if (operatorController.getPOV() == 90) {
-          intake.intakeRoller();
+          // intake.intakeRoller();
+          intake.spinRollers(0.8);
         } else if (operatorController.getPOV() == 270) {
           intake.outtakeRoller();
         } else {
