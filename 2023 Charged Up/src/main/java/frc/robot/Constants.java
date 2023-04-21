@@ -90,6 +90,7 @@ public final class Constants {
     public static final double WRIST_STOWED_ROTATIONS = 0;
     public static final double WRIST_SCORING_ROTATIONS = 34.25;
     public static final double WRIST_MAX_ROTATIONS = 33.0;
+    public static  final double ROLLER_SS_INTAKE_SPEED = 0.075;
 
     //
     // Constants and IDs for elevator hardware (NEEDS SETTING)

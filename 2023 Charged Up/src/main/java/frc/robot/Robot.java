@@ -134,6 +134,9 @@ public class Robot extends LoggedRobot {
 
     // SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
+
+    //Logging initial roller speed for substation intaking
+    SmartDashboard.putNumber("Substation Intake Roller Speed", Constants.ROLLER_SS_INTAKE_SPEED);
     
     
     // SmartDashboard.putNumber("Command Counter", 0);
@@ -490,7 +493,7 @@ public class Robot extends LoggedRobot {
         }
     } else if (operatorController.getLeftBumper()){
       intake.setWrist(0.0);
-      intake.spinRollers(0.075);
+      intake.spinRollers(SmartDashboard.getNumber("Substation Intake Roller Speed", Constants.ROLLER_SS_INTAKE_SPEED)); //0.075
       elevator.set(Heights.PRIME);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
