@@ -21,8 +21,8 @@ public final class ConfigRun {
     //
     // Driving Power
     //
-    public static final double TRANSLATE_POWER_FAST = 1.0;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER_FAST    = 0.75;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double TRANSLATE_POWER_FAST = 0.15; //1.0      // Scaling for teleop driving.  1.0 is maximum
+    public static final double ROTATE_POWER_FAST    = 0.15; //0.75     // Scaling for teleop driving.  1.0 is maximum
     public static final double TRANSLATE_POWER_SLOW = 0.15;     // Scaling for teleop driving.  1.0 is maximum
     public static final double ROTATE_POWER_SLOW    = 0.15;     // Scaling for teleop driving.  1.0 is maximum   
 
