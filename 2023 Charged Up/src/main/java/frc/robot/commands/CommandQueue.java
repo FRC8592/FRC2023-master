@@ -44,7 +44,7 @@ public class CommandQueue {
      */
     public void run() {
         if (!isFinished()) {
-            SmartDashboard.putString("Current Running Command", queue.peek().tag() == "" ? "DEFAULT COMMAND" : queue.peek().tag());
+            // SmartDashboard.putString("Current Running Command", queue.peek().tag() == "" ? "DEFAULT COMMAND" : queue.peek().tag());
 
             //if command has been executed reset and get ready for the next command
             if (queue.peek().execute()) {
@@ -52,12 +52,12 @@ public class CommandQueue {
                 queue.poll();
                 timer.reset();
                 timer.start();
-                SmartDashboard.putNumber("Command Counter", counter);
+                // SmartDashboard.putNumber("Command Counter", counter);
                 counter++;
                 if (queue.size() != 0) {
                     queue.peek().initialize();
                 } else {
-                    SmartDashboard.putString("Current Running Command", "NO COMMAND");
+                    // SmartDashboard.putString("Current Running Command", "NO COMMAND");
                 }
             }
         }

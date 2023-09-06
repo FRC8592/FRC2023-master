@@ -68,9 +68,9 @@ public class AutobalanceCommand extends Command {
 
             boolean park = !autopark.balance(drive);
 
-            SmartDashboard.putBoolean("Distance Exceeded", distanceExceeded);
-            SmartDashboard.putBoolean("Cycles Exceeded", cyclesExceeded);
-            SmartDashboard.putBoolean("Park", park);
+            // SmartDashboard.putBoolean("Distance Exceeded", distanceExceeded);
+            // SmartDashboard.putBoolean("Cycles Exceeded", cyclesExceeded);
+            // SmartDashboard.putBoolean("Park", park);
 
             prevPitch = pitch;
             return park || /*cyclesExceeded || */ distanceExceeded;

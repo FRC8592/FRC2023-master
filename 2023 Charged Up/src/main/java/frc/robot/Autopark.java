@@ -36,7 +36,7 @@ public class Autopark {
                 }
                 else {
                     drivetrain.drive(new ChassisSpeeds(-0.7, 0, 0)); //the slower the better
-                    SmartDashboard.putNumber("Movement speed", 0.7);
+                    // SmartDashboard.putNumber("Movement speed", 0.7);
                 }
                 break;
             
@@ -47,7 +47,7 @@ public class Autopark {
                 }
                 else{
                     drivetrain.drive(new ChassisSpeeds(-(pitch * Constants.PITCH_MULTIPLIER), 0, 0));
-                    SmartDashboard.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER);
+                    // SmartDashboard.putNumber("Movement speed", pitch * Constants.PITCH_MULTIPLIER);
                 }
                 break;
 
@@ -57,7 +57,7 @@ public class Autopark {
                 }
                 // drivetrain.drive(new ChassisSpeeds(0, 0, 0));
                 drivetrain.setWheelLock();
-                SmartDashboard.putNumber("Movement speed", 0.0);
+                // SmartDashboard.putNumber("Movement speed", 0.0);
                 break;  
                 }
             

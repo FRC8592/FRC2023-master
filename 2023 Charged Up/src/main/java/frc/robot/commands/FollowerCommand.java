@@ -98,7 +98,7 @@ public class FollowerCommand extends Command {
                 vyVision = 0;
             }
 
-            SmartDashboard.putNumber("VY Speed From Vision", vyVision);
+            // SmartDashboard.putNumber("VY Speed From Vision", vyVision);
 
             newSpeeds = new ChassisSpeeds(
                 speeds.vxMetersPerSecond,
@@ -120,9 +120,9 @@ public class FollowerCommand extends Command {
         Trajectory traj = trajectory.trajectory();
         Robot.FIELD.setRobotPose(new Pose2d(pose.getTranslation(), traj.sample(traj.getTotalTimeSeconds()).poseMeters.getRotation()));
 
-        SmartDashboard.putNumber("Field Relative X Velocity", desiredSpeeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("Field Relative Y Velocity", desiredSpeeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("Field Relative Omega", desiredSpeeds.omegaRadiansPerSecond);
+        // SmartDashboard.putNumber("Field Relative X Velocity", desiredSpeeds.vxMetersPerSecond);
+        // SmartDashboard.putNumber("Field Relative Y Velocity", desiredSpeeds.vyMetersPerSecond);
+        // SmartDashboard.putNumber("Field Relative Omega", desiredSpeeds.omegaRadiansPerSecond);
     }
 
     @Override

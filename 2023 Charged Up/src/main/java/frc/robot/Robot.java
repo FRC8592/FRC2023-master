@@ -132,11 +132,11 @@ public class Robot extends LoggedRobot {
 
     smoothingFilter = new SmoothingFilter(1, 1, 1); //5, 5, 1
 
-    SmartDashboard.putData(FIELD);
+    // SmartDashboard.putData(FIELD);
     selector = new AutonomousSelector();
     
     
-    SmartDashboard.putNumber("Command Counter", 0);
+    // SmartDashboard.putNumber("Command Counter", 0);
   }
 
   /**
@@ -222,7 +222,7 @@ public class Robot extends LoggedRobot {
     drive.setTeleopCurrentLimit();
     autoPark = new Autopark();
 
-    SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
+    // SmartDashboard.putNumber("Desired Scale", driveScaler.scale(0.5));
     
     currentWrist = Constants.WRIST_INTAKE_TELEOP_ROTATIONS;
     intake.stopRoller();
@@ -250,8 +250,8 @@ public class Robot extends LoggedRobot {
     gameObjectVision.updateVision();
     substationVision.updateVision();
     elevator.update();
-    SmartDashboard.putNumber("Current Wrist", currentWrist);
-    SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
+    // SmartDashboard.putNumber("Current Wrist", currentWrist);
+    // SmartDashboard.putNumber("Roller Output Current", intake.rollerMotor.getOutputCurrent());
     logger.log(this, "RobotYaw", drive.getGyroscopeRotation());
 
     /*
@@ -373,6 +373,11 @@ public class Robot extends LoggedRobot {
 
     ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
     
+
+    // SmartDashboard.putNumber("SmoothedJoystickX", smoothedRobotRelative.vxMetersPerSecond);
+    // SmartDashboard.putNumber("SmoothedJoystickY", smoothedRobotRelative.vyMetersPerSecond);
+    // SmartDashboard.putNumber("SmoothedJoystickRotate", smoothedRobotRelative.omegaRadiansPerSecond);
+
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
       smoothedRobotRelative.vxMetersPerSecond, 
       smoothedRobotRelative.vyMetersPerSecond,
@@ -489,9 +494,11 @@ public class Robot extends LoggedRobot {
       elevator.set(Heights.PRIME);
     } else if (operatorController.getRightTriggerAxis() >= 0.1 || operatorController.getLeftTriggerAxis() <= -0.1){
       intake.outtakeRoller();
-    } else if (operatorController.getRightBumper() || operatorController.getBackButtonReleased() || driverController.getLeftBumperReleased()) {
+    } else if (operatorController.getRightBumper()) {
+      intake.setWrist(Constants.WRIST_INTAKE_ROTATIONS / 3);
+    } else if (operatorController.getBackButtonReleased() || driverController.getLeftBumperReleased()){
       intake.setWrist(0.0);
-    } else if (operatorController.getBackButton() || driverController.getLeftBumper()) {
+    }else if (operatorController.getBackButton() || driverController.getLeftBumper()) {
       intake.throwPiece();
     } else {
         if (operatorController.getStartButton()) {
@@ -609,8 +616,8 @@ public class Robot extends LoggedRobot {
   }
 
   public void testPeriodic() {
-    SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
-    SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    // SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
+    // SmartDashboard.putNumber("Yaw Number", drive.getYaw());
     
 
     
