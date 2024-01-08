@@ -618,8 +618,31 @@ public class Robot extends LoggedRobot {
   public void testPeriodic() {
     // SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
     // SmartDashboard.putNumber("Yaw Number", drive.getYaw());
-    
+    // SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
+    // SmartDashboard.putNumber("Yaw Number", drive.getYaw());
+    double translatePower;
+    double translateX;
+    double translateY;
+    double rotate;
+    double rotateToAngle;
 
+    ChassisSpeeds driveSpeeds = new ChassisSpeeds();
+
+    drive.getCurrentPos();
+    gameObjectVision.updateVision();
+
+    if (driverController.getAButton()) {
+      double offset = gameObjectVision.offsetAngle();
+      drive.drive(new ChassisSpeeds(0, 0, -offset/5.0d));
+
+
+    }
+
+    if (driverController.getBButton()) {
+      double target = drive.getYaw() - gameObjectVision.offsetAngle();
+      drive.drive(new ChassisSpeeds(0, 0, drive.turnToAngle(target) ));
+
+    }
     
   }
 
