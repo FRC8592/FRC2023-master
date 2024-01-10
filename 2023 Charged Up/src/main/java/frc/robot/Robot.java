@@ -612,38 +612,50 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
+    NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
     
   }
 
   public void testPeriodic() {
-    // SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
-    // SmartDashboard.putNumber("Yaw Number", drive.getYaw());
-    // SmartDashboard.putString("Yaw", drive.getGyroscopeRotation().toString());
-    // SmartDashboard.putNumber("Yaw Number", drive.getYaw());
     double translatePower;
     double translateX;
     double translateY;
     double rotate;
     double rotateToAngle;
+    translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+    double rotatePower = ConfigRun.ROTATE_POWER_SLOW;
 
     ChassisSpeeds driveSpeeds = new ChassisSpeeds();
 
     drive.getCurrentPos();
     gameObjectVision.updateVision();
 
+    double translateXScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftY()));
+    double translateYScaled = driveScaler.scale(-joystickDeadband(driverController.getLeftX()));
+    double rotateScaled = driveScaler.scale(joystickDeadband(driverController.getRightX())); 
+
+    rotate = rotateScaled * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * rotatePower;
+    
+    translateX = translateXScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;          
+    translateY = translateYScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;
+    ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
+    
     if (driverController.getAButton()) {
       double offset = gameObjectVision.offsetAngle();
-      drive.drive(new ChassisSpeeds(0, 0, -offset/5.0d));
-
-
-    }
-
-    if (driverController.getBButton()) {
-      double target = drive.getYaw() - gameObjectVision.offsetAngle();
-      drive.drive(new ChassisSpeeds(0, 0, drive.turnToAngle(target) ));
-
-    }
+      rotate = offset*4;
+      SmartDashboard.putNumber( "gameObjectVisionOffset", offset);
+      SmartDashboard.putBoolean("isTargetValid", gameObjectVision.isTargetValid());
+    } else if (driverController.getBButton()) {
     
+      double rotateSpeed = gameObjectVision.turnRobot(0, turnPID, Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 0);
+      rotate = rotateSpeed;
+    }
+    driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
+      smoothedRobotRelative.vxMetersPerSecond, 
+      smoothedRobotRelative.vyMetersPerSecond,
+      rotate
+    ), drive.getGyroscopeRotation());
+    drive.drive(driveSpeeds);
   }
 
   /** This function is called once when the robot is first started up. */

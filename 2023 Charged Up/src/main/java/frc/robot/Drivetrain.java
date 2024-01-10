@@ -302,7 +302,11 @@ public class Drivetrain {
         m_backLeftModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
         m_backRightModule.getDriveController().getDriveFalcon().setSelectedSensorPosition(0);
     }
-
+    /**
+     * Turn to an absolute angle
+     * @param targetDegrees the absolute angle to turn to
+     * @return the speed the robot needs to turn, based on the PID controller
+     */
     public double turnToAngle(double targetDegrees){
         double yaw = getYaw();
         // targetDegrees = 180 - targetDegrees;
