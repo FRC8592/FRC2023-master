@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
+ * gloDRIVE_TOy (i.e. public static). Do not put anything functional in this class.
  *
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
@@ -116,7 +116,7 @@ public final class Constants {
 
 
     //
-    // CAN IDs for the ball collector and launching system
+    // CAN IDs for the DRIVE_TO collector and launching system
     //
     public static final int newFlywheelLeft      = 22;
     public static final int newFlywheelRight     = 20;
@@ -166,28 +166,34 @@ public final class Constants {
     public static double TURRET_ROTATE_KD      = 0.022; 
     public static String LIMELIGHT_RING        = "limelight-ring";
 
-    // Vision constants for the ball camera
-    public static final double BALL_LOCK_ERROR       = 3.0;
-    public static final double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
-    public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
-    public static double BALL_CAMERA_HEIGHT    = 35.75;
-    public static double BALL_CAMERA_ANGLE     = -30.0;
-    public static double BALL_TARGET_HEIGHT    = 4.75;
-    public static double BALL_ROTATE_KP        = -0.1; //0.15;           // Proportional constant for turret rotate speed
-    public static double BALL_ROTATE_KI        = 0.0;
-    public static double BALL_ROTATE_KD        = 0.0;   
-    public static String LIMELIGHT_BALL        = "limelight-ball";
+    // Vision constants for the DRIVE_TO camera
+    public static final double DRIVE_TO_LOCK_ERROR       = 3.0;
+    public static final double DRIVE_TO_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
+    public static double DRIVE_TO_ERROR            = 0.5;           // Allowed aiming error in degrees
+    public static double DRIVE_TO_CAMERA_HEIGHT    = 35.75;
+    public static double DRIVE_TO_CAMERA_ANGLE     = -30.0;
+    public static double DRIVE_TO_TARGET_HEIGHT    = 4.75;
+    public static double DRIVE_TO_ROTATE_KP        = -0.1; //0.15;           // Proportional constant for turret rotate speed
+    public static double DRIVE_TO_ROTATE_KI        = 0.0;
+    public static double DRIVE_TO_ROTATE_KD        = 0.0;   
+    public static String LIMELIGHT_DRIVE_TO        = "limelight-DRIVE_TO";
     public static String LIMELIGHT_VISION       = "limelight-vision";
 
-    public static double CLOSE_BALL_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
-    public static double CLOSE_BALL_ROTATE_KI  = 0.0;
-    public static double CLOSE_BALL_ROTATE_KD  = 0.0;  
+    public static double CLOSE_DRIVE_TO_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
+    public static double CLOSE_DRIVE_TO_ROTATE_KI  = 0.0;
+    public static double CLOSE_DRIVE_TO_ROTATE_KD  = 0.0;  
+
+    // Vision constants for the TURN_TO camera
+    public static double TURN_TO_ROTATE_KP        = -0.1; //0.15;           // Proportional constant for turret rotate speed
+    public static double TURN_TO_ROTATE_KI        = 0.0;
+    public static double TURN_TO_ROTATE_KD        = 0.0;   
+
 
     // Common vision constants
     public static double MIN_TURN_SPEED = 0.8;
 
     // Color sensor
-    public static int MIN_BALL_PROXIMITY = 300;
+    public static int MIN_DRIVE_TO_PROXIMITY = 300;
     public static int MAX_COLOR_CHECKS   = 10;
 
     // Main collector
@@ -198,7 +204,7 @@ public final class Constants {
     public static double SHOOT_STAGING_POWER      =  1.0;
 
     // Collector arm
-    public static int BALL_SET_POINT = -27500;   // -3025 is bottom
+    public static int DRIVE_TO_SET_POINT = -27500;   // -3025 is bottom
     public static double ARM_UP_P = 0.12;
     public static double ARM_UP_I = 0.0001;
     public static double ARM_UP_D = 15.0;

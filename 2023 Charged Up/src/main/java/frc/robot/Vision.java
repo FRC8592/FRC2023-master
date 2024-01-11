@@ -68,6 +68,9 @@ public class Vision {
   private final double IN_TO_METERS = 0.0254;
   
   private FRCLogger logger;
+
+  // PID for locking in X/Y
+  private PIDController visionPid;
   
 
   /**
@@ -101,8 +104,8 @@ public class Vision {
     this.cameraAngle   = cameraAngle;
     this.targetHeight  = targetHeight;
 
-    // Creat the PID controller for turning
-
+    // Create the PID controller
+  
     
     this.logger = logger;
   }
@@ -243,7 +246,7 @@ public class Vision {
    * 
    * @return The turn speed
    */
-  public double turnRobot(double visionSearchSpeed, PIDController turnPID, double limit, double offset){
+  public double lockTargetSpeed(double defaultSpeed, PIDController targetPID, String lockToVariable, double limit, double offset){
 
     // Stop turning if we have locked onto the target within acceptable angular error
     // if (targetValid && targetLocked) {
@@ -253,19 +256,20 @@ public class Vision {
     // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
     // Limit maximum speed
     if (targetValid) {
-      turnSpeed = turnPID.calculate(tx.getDouble(0.0), offset);  // Setpoint is always 0 degrees (dead center)
+      if(lockToVariable == "tx") turnSpeed = targetPID.calculate(tx.getDouble(0.0), offset);  // Setpoint is always 0 degrees (dead center)
+      else if(lockToVariable == "ty") turnSpeed = targetPID.calculate(ty.getDouble(0.0), offset);  // Setpoint is always 0 degrees (dead center)
       turnSpeed = Math.max(turnSpeed, -limit);
       turnSpeed = Math.min(turnSpeed, limit);
     }
 
     // If no targetValid, spin in a circle to search
     else {
-      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
+      turnSpeed = defaultSpeed;    // Spin in a circle until a target is located
     }
 
     // SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
 
-    logger.log(this, "Turn Speed", turnSpeed);
+    logger.log(this, "Lock Speed", turnSpeed);
 
     return turnSpeed;
   }

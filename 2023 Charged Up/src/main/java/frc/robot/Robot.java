@@ -69,6 +69,7 @@ public class Robot extends LoggedRobot {
   private Intake intake;
   public FRCLogger logger;
   public PIDController turnPID;
+  public PIDController driveToPID;
   public PIDController strafePID;
   public boolean wasZeroed = false;
   private boolean coneVision = true;
@@ -115,13 +116,14 @@ public class Robot extends LoggedRobot {
     power = new Power();
     drive = new Drivetrain(logger);
     cubeBeamSensor = new BeamSensor(Constants.BEAM_BREAK_CUBE_ID);
-    gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.BALL_LOCK_ERROR,
-     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, logger);
+    gameObjectVision = new Vision(Constants.LIMELIGHT_VISION, Constants.DRIVE_TO_LOCK_ERROR,
+     Constants.DRIVE_TO_CLOSE_ERROR, Constants.DRIVE_TO_CAMERA_HEIGHT, Constants.DRIVE_TO_CAMERA_ANGLE, 
+     Constants.DRIVE_TO_TARGET_HEIGHT, logger);
      substationVision = new Vision(Constants.LIMELIGHT_REAR, Constants.SUBSTATION_OFFSET,
-     Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, 
-     Constants.BALL_TARGET_HEIGHT, logger);
-    turnPID = new PIDController(Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI, Constants.BALL_ROTATE_KD);
+     Constants.DRIVE_TO_CLOSE_ERROR, Constants.DRIVE_TO_CAMERA_HEIGHT, Constants.DRIVE_TO_CAMERA_ANGLE, 
+     Constants.DRIVE_TO_TARGET_HEIGHT, logger);
+    turnPID = new PIDController(Constants.TURN_TO_ROTATE_KP, Constants.TURN_TO_ROTATE_KI, Constants.TURN_TO_ROTATE_KD);
+    driveToPID = new PIDController(Constants.DRIVE_TO_ROTATE_KP, Constants.DRIVE_TO_ROTATE_KI, Constants.DRIVE_TO_ROTATE_KD);
     ledStrips = new LED(power, gameObjectVision);
     strafePID = new PIDController(-0.05, 0, 0);
     elevator = new Elevator();
@@ -406,10 +408,11 @@ public class Robot extends LoggedRobot {
           ledStrips.set(LEDMode.LOCKED);
         }
 
-        double strafeSpeed = substationVision.turnRobot(
+        double strafeSpeed = substationVision.lockTargetSpeed(
           0,
           strafePID,
-          1.0,
+          "tx"
+,          1.0,
           Constants.SUBSTATION_OFFSET
         );
 
@@ -612,7 +615,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-    NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CONE_PIPELINE);
+    NetworkTableInstance.getDefault().getTable("limelight-vision").getEntry("pipeline").setNumber(Constants.CUBE_PIPELINE);
     
   }
 
@@ -638,18 +641,16 @@ public class Robot extends LoggedRobot {
     
     translateX = translateXScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;          
     translateY = translateYScaled * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND * translatePower;
-    ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
+    if (driverController.getBButton()) {
     
-    if (driverController.getAButton()) {
-      double offset = gameObjectVision.offsetAngle();
-      rotate = offset*4;
-      SmartDashboard.putNumber( "gameObjectVisionOffset", offset);
-      SmartDashboard.putBoolean("isTargetValid", gameObjectVision.isTargetValid());
-    } else if (driverController.getBButton()) {
-    
-      double rotateSpeed = gameObjectVision.turnRobot(0, turnPID, Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 0);
+      double rotateSpeed = gameObjectVision.lockTargetSpeed(0, turnPID, "tx", Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 0);
       rotate = rotateSpeed;
+
+      double driveToSpeed = gameObjectVision.lockTargetSpeed(0, strafePID, "ty", 1.0, -20); // 20 means its sorta close
+      // translateY = driveToSpeed; // go forwards at driveToSpeed towards the target
+      SmartDashboard.putNumber("pid based forward vel", driveToSpeed);
     }
+    ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
     driveSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(      
       smoothedRobotRelative.vxMetersPerSecond, 
       smoothedRobotRelative.vyMetersPerSecond,
