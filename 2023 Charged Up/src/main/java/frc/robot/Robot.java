@@ -647,7 +647,7 @@ public class Robot extends LoggedRobot {
       rotate = rotateSpeed;
 
       double driveToSpeed = gameObjectVision.lockTargetSpeed(0, strafePID, "ty", 1.0, -20); // 20 means its sorta close
-      // translateY = driveToSpeed; // go forwards at driveToSpeed towards the target
+      translateY = driveToSpeed; // go forwards at driveToSpeed towards the target
       SmartDashboard.putNumber("pid based forward vel", driveToSpeed);
     }
     ChassisSpeeds smoothedRobotRelative = smoothingFilter.smooth(new ChassisSpeeds(translateX, translateY, 0));
