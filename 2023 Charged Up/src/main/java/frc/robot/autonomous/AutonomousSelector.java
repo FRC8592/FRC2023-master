@@ -5,10 +5,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.autonomous.autons.*;
-import frc.robot.autonomous.autons.left.*;
-import frc.robot.autonomous.autons.middle.*;
-import frc.robot.autonomous.autons.other.*;
-import frc.robot.autonomous.autons.right.*;
 
 public class AutonomousSelector {
     public ShuffleboardTab autonTab = Shuffleboard.getTab("Auton Configuration");
@@ -16,34 +12,11 @@ public class AutonomousSelector {
     private GenericEntry delayEntry;
 
     public Class<?>[] autos = {
-        MoveOutCommunityAuto.class,
-        PreloadAuto.class,
-
-        LeftConeBalanceAuto.class,
-        LeftConeGrabCubeBalanceAuto.class,
-        LeftConeCubeAuto.class,
-        // LeftConeConeAuto.class,
-        LeftConeCubeBalanceAuto.class,
-        LeftConeCubeGrabConeAuto.class,
-        LeftCableCoverConeCubeAuto.class,
-
-
-        MiddleBalanceAuto.class,
-        MiddleConeBalanceAuto.class,
-        MiddleLeftConeGrabCubeBalanceAuto.class,
-        MiddleRightConeGrabCubeBalanceAuto.class,
-        
-        RightConeBalanceAuto.class,
-        RightConeGrabCubeBalanceAuto.class,
-        RightConeCubeAuto.class,
-        RightConeConeAuto.class,
-        RightConeCubeBalanceAuto.class,
-        RightCableCoverConeCubeAuto.class,
-        RightCableCoverConeCubeGrabCubeAuto.class
+        ThreeNoteAuto.class
     };
 
     public AutonomousSelector() {
-        autonChooser.setDefaultOption("DEFAULT - DO NOTHING", DoNothingAuto.class);
+        autonChooser.setDefaultOption("DEFAULT - DO NOTHING", BaseAuto.class);
         for (Class<?> auto : autos) {
             autonChooser.addOption(auto.getSimpleName(), auto);
         }

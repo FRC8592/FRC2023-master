@@ -10,48 +10,28 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 
 // Adjustments made based on simulation results
 public enum AutonomousPositions {
-    GRID_A(1.664 + 0.6, 5.013 - 0.05),
-    GRID_B(1.664 + 0.6, 4.448),
-    GRID_C(1.664 + 0.6, 3.876 + 0.1),
-    GRID_D(1.664 + 0.6, 3.296),
-    GRID_E(1.664 + 0.6, 2.682 - 0.2 + 0.5),
-    GRID_F(1.664 + 0.6, 2.136),
-    GRID_G(1.664 + 0.6, 1.579 - 0.1 + 0.5),
-    GRID_H(1.664 + 0.6, 1.579 - 0.1),
-    GRID_I(1.664 + 0.6, 0.384 + 0.5),
     
-    BALANCE_CABLE_COVER(5.292, 1.902), // Consider pushing x position out to not bump into charging station
-    BALANCE_MIDDLE(5.292 - 0.75 + 0.75 + 0.5, 2.682 - 0.2 + 0.5),
-    BALANCE_LOADING_ZONE(5.292, 3.523), // Consider pushing x position out to not bump into charging station
+    
+    SUBWOOFER_UP(1.0, 6.25, Rotation2d.fromDegrees(45)),
+    SUBWOOFER_MIDDLE(1.4, 5.5, new Rotation2d()),
+    SUBWOOFER_DOWN(1.0, 4.5, Rotation2d.fromDegrees(-45)),
+    WING_NOTE_1(2.7, 6.75, new Rotation2d()),
+    WING_NOTE_2(2.7, 5.5, new Rotation2d()),
+    WING_NOTE_3(2.7, 4.125, new Rotation2d()),
+    MID_NOTE_1(8.0, 7.125, new Rotation2d()),
+    MID_NOTE_2(8.0, 5.5, new Rotation2d()),
+    MID_NOTE_3(8.0, 4.125, new Rotation2d()),
+    MID_NOTE_4(8.0, 2.6, new Rotation2d()),
+    MID_NOTE_5(8.0, 1.1, new Rotation2d()),
 
-    // Positions all mixed up for intermediary
-    INTERMEDIARY_LOADING_ZONE(4.985, 5.013 - 0.5), // Changed to parallel with Grid_A 
-    INTERMEDIARY_CABLE_COVER(4.985, 0.884 + 0.6), // Changed to parallel with Grid_H
-    INTERMEDIARY_BALANCE(4.985, 2.727 + 0.5),
 
-    // Additional points for helping with proper spline building
-    // COMMUNITY_LOADING_ZONE(3.284 - 0.2, 4.684),
-    COMMUNITY_LOADING_ZONE(3.284 - 0.2, 4.0),
-    COMMUNITY_CABLE_COVER(3.284 - 0.2, 0.646 + 0.5),
-
-    GAME_PIECE_1(7.169 - 0.5, 4.615 + 0.4 - 0.4),
-    GAME_PIECE_2(7.169 - 0.5, 3.398 + 0.4 - 0.2), // Same as GP3 in document; Confirm real
-    GAME_PIECE_3(7.169 - 0.5, 2.138 + 0.3), // Same as GP2 in document; Confirm real
-    GAME_PIECE_4(7.169 - 0.5, 0.964 + 0.4),
-
-    TEST_1(2.0, 1.0),
-    TEST_2(4.0, 1.0),
-
-    RED_WALL(16, 0), // Middle of red alliance station wall (7.936 is middle y)
-
-    OVERRIDE(0d, 0d),
     ;
 
     private Translation2d translation;
     private Rotation2d ref;
-    AutonomousPositions(double xPos, double yPos) {
+    AutonomousPositions(double xPos, double yPos, Rotation2d rotation) {
         translation = new Translation2d(xPos, yPos);
-        ref = new Rotation2d();
+        ref = rotation;
     }
 
     public Translation2d getTranslation() {

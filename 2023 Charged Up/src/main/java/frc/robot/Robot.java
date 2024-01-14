@@ -646,7 +646,7 @@ public class Robot extends LoggedRobot {
       double rotateSpeed = gameObjectVision.lockTargetSpeed(0, turnPID, "tx", Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 0);
       rotate = rotateSpeed;
 
-      double driveToSpeed = gameObjectVision.lockTargetSpeed(0, strafePID, "ty", 1.0, -20); // 20 means its sorta close
+      double driveToSpeed = gameObjectVision.lockTargetSpeed(0, strafePID, "ty", 1.0, 20); // 20 means its sorta close
       translateY = driveToSpeed; // go forwards at driveToSpeed towards the target
       SmartDashboard.putNumber("pid based forward vel", driveToSpeed);
     }
